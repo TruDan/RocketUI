@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU;x64;x86</Platforms>
+        <LangVersion>8.0</LangVersion>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <Folder Update="./**/*">
+            <IsNamespaceProvider>false</IsNamespaceProvider>
+        </Folder>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
+        <PackageReference Include="Portable.Xaml" Version="0.26.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\lib\SharpVR\SharpVR\SharpVR.csproj" />
+    </ItemGroup>
+
+</Project>

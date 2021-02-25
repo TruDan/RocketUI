@@ -1,0 +1,14 @@
+﻿<Project>
+    <PropertyGroup>
+        
+    </PropertyGroup>
+    
+    <Target Name="IncludeXamlFilesAsContent">
+        <ItemGroup>
+            <EmbeddedResource Include="**\*.xaml">
+                <Generator>MSBuild:Compile</Generator>
+            </EmbeddedResource>
+        </ItemGroup>
+        <Message Text="Applied MSBuild Target to define *.xaml items as EmbeddedResource" />
+    </Target>
+</Project>
