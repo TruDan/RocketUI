@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
         <PublishReadyToRun>false</PublishReadyToRun>
         <TieredCompilation>false</TieredCompilation>
@@ -9,6 +9,13 @@
         <Version>1.0.0</Version>
     </PropertyGroup>
 
+    <!--
+        DotNet Tool Related Props
+    -->
+    <PropertyGroup>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>rocketui</ToolCommandName>
+    </PropertyGroup>
 
     <ItemGroup>
         <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
