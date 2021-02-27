@@ -20,7 +20,7 @@
         <PackageReference Include="Portable.Xaml" Version="0.26.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\..\lib\SharpVR\SharpVR\SharpVR.csproj" />
+      <PackageReference Include="SharpVR.MonoGame" Version="1.0.2" />
     </ItemGroup>
 
 </Project>

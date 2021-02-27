@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RocketUI.Design", "src\Rock
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RocketUI.Design.Host", "src\RocketUI.Design.Host\RocketUI.Design.Host.csproj", "{837930CB-C302-4345-9A52-DF1EC436CF8C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{80936BD7-EDEC-4947-80E1-547A27BB84FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,10 @@ Global
 		{837930CB-C302-4345-9A52-DF1EC436CF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{837930CB-C302-4345-9A52-DF1EC436CF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{837930CB-C302-4345-9A52-DF1EC436CF8C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{343C5A50-B18D-436C-8DCC-75E6207C2CBD} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
+		{9D431E3C-8830-41FE-80A6-31342D4B4494} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
+		{837930CB-C302-4345-9A52-DF1EC436CF8C} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
 	EndGlobalSection
 EndGlobal
