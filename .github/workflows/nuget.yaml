@@ -1,0 +1,32 @@
+name: 'Build, Pack & Publish'
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Publish NuGet
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        INCLUDE_SYMBOLS: true
+        PROJECT_FILE_PATH: src/RocketUI/RocketUI.csproj
+        NUGET_KEY: ${{secrets.NUGET_KEY}}
+
+    - name: Publish NuGet
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        INCLUDE_SYMBOLS: true
+        PROJECT_FILE_PATH: src/RocketUI.Design/RocketUI.Design.csproj
+        NUGET_KEY: ${{secrets.NUGET_KEY}}
+
+    - name: Publish NuGet
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        INCLUDE_SYMBOLS: true
+        PROJECT_FILE_PATH: src/RocketUI.Design.Host/RocketUI.Design.Host.csproj
+        NUGET_KEY: ${{secrets.NUGET_KEY}}
