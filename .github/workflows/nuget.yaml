@@ -37,8 +37,8 @@ jobs:
     - name: Publish NuGet Packages
       shell: bash
       run: |
-        for f in ./nuget/*.nupkg ./nuget/*.snupkg; do
-          dotnet nuget push "$f" -k ${{ secrets.NUGET_KEY }} --skip-duplicate
+        for f in ./nuget/*.nupkg; do
+          dotnet nuget push "$f" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate
         done
         
     - name: Upload Artifacts
