@@ -8,10 +8,14 @@ namespace RocketUI.Input.Listeners
     {
         public static EventHandler<KeyboardInputListener> InstanceCreated;
         
-        public KeyboardInputListener() : base(PlayerIndex.One)
+        public KeyboardInputListener() : this(PlayerIndex.One)
+        {
+		}
+
+        public KeyboardInputListener(PlayerIndex playerIndex) : base(playerIndex)
         {
             InstanceCreated?.Invoke(this, this);
-		}
+        }
 
         protected override KeyboardState GetCurrentState()
         {

@@ -57,7 +57,7 @@ namespace RocketUI
             
             Effect.World = Matrix.Identity;
             Effect.View = Matrix.Identity;
-            Effect.Projection = Matrix.CreateOrthographic(graphicsDevice.PresentationParameters.BackBufferWidth,graphicsDevice.PresentationParameters.BackBufferHeight, 0.1f, 1000.0f);
+            Effect.Projection = Matrix.Identity;
             
 //            Context = GraphicsContext.CreateContext(_graphicsDevice, BlendState.NonPremultiplied, DepthStencilState.None, RasterizerState, SamplerState.PointClamp);
             Context = GraphicsContext.CreateContext(_graphicsDevice, BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullNone, SamplerState.AnisotropicWrap);
@@ -512,6 +512,12 @@ namespace RocketUI
         }
 
         #endregion
+
+        public void UpdateProjection()
+        {
+            Effect.View = Matrix.CreateLookAt(Vector3.Backward, Vector3.Zero, Vector3.Up);
+            Effect.Projection = Matrix.CreateOrthographicOffCenter(0, _renderer.ScaledResolution.ViewportSize.Width, _renderer.ScaledResolution.ViewportSize.Height, 0, 0.1f, 1000.0f);
+        }
     }
 
     internal class ContextDisposable : IDisposable

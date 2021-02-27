@@ -187,6 +187,8 @@ namespace RocketUI
             MaxHeight    = height;
             Width        = width;
             Height       = height;
+            
+            InvalidateLayout(true);
         }
 
         public void InvalidateLayout(bool invalidateChildren = true)
@@ -456,18 +458,19 @@ namespace RocketUI
 
         protected virtual void OnAfterArrange()
         {
-            //if (ParentElement != null && ClipToBounds)
-            //{
-            //    RenderBounds   = Rectangle.Intersect(Bounds, ParentElement.RenderBounds);
-            //    RenderSize     = RenderBounds.Size;
-            //    RenderPosition = RenderBounds.Location.ToVector2();
-            //}
-            //else
-            //{
-            //    RenderBounds   = Bounds;
-            //    RenderSize     = Size;
-            //    RenderPosition = Position.ToVector2();
-            //}
+
+            if (ParentElement != null && ClipToBounds)
+            {
+                RenderBounds   = Rectangle.Intersect(Bounds, ParentElement.RenderBounds);
+                RenderSize     = RenderBounds.Size;
+                RenderPosition = RenderBounds.Location.ToVector2();
+            }
+            else
+            {
+                RenderBounds   = Bounds;
+                RenderSize     = Size;
+                RenderPosition = Position.ToVector2();
+            }
         }
 
         protected virtual void ArrangeCore(Rectangle newBounds)

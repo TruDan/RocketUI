@@ -60,7 +60,7 @@ namespace RocketUI
 			}
 		}
 
-		private int _guiScale = 2;
+		private int _guiScale = 0;
 		private Size _viewportSize;
 
 		public int GuiScale

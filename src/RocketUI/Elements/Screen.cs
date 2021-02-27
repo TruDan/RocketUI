@@ -28,9 +28,7 @@ namespace RocketUI
 
         public void UpdateSize(int width, int height)
         {
-            Width = width;
-            Height = height;
-
+            SetFixedSize(width, height);
             InvalidateLayout(true);
         }
         

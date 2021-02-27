@@ -8,7 +8,7 @@ namespace RocketUI
         public Texture2D Texture { get; }
 
         public Rectangle ClipBounds { get; }
-
+        
         public int Width => ClipBounds.Width;
         public int Height => ClipBounds.Height;
 

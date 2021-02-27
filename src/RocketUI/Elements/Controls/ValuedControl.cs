@@ -2,7 +2,7 @@
 
 namespace RocketUI
 {
-    public class ValuedControl<TValue> : RocketControl, IValuedControl<TValue> where TValue : IEquatable<TValue>
+    public class ValuedControl<TValue> : RocketControl, IValuedControl<TValue>
     {
         public event EventHandler<TValue> ValueChanged;
 

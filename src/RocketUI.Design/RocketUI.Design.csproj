@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\RocketUI\RocketUI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
+      <PackageReference Include="NLog" Version="4.7.8" />
+    </ItemGroup>
+
+</Project>

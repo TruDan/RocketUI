@@ -19,6 +19,14 @@ namespace RocketUI.Serialization.Xaml
 				   ?? throw new InvalidOperationException($"Embedded resource '{type.FullName}.xaml' not found in assembly '{type.Assembly}'");
 		}
 
+		private static Stream GetStream(string path)
+		{
+			if (File.Exists(path))
+				return new FileStream(path, FileMode.Open, FileAccess.Read);
+			
+			throw new InvalidOperationException($"File resource '{path}' not found");
+		}
+
 		private static Stream GetStream(Type type, string resourceName)
 		{
 			return type.Assembly.GetManifestResourceStream(resourceName);
@@ -103,6 +111,42 @@ namespace RocketUI.Serialization.Xaml
 			{
 				if (stream == null)
 					throw new ArgumentException(nameof(resourceName), $"Embedded resource '{resourceName}' not found in assembly '{typeof(T).Assembly}'");
+
+				Load<T>(stream, instance);
+			}
+		}
+		/// <summary>
+		/// Loads the specified instance with a specified fully qualified xaml embedded resource
+		/// </summary>
+		/// <remarks>
+		/// This will load the embedded resource from the same assembly as <paramref name="instance"/> with the 
+		/// specified <paramref name="resourceName"/> embedded resource.
+		/// 
+		/// If you want to specify a different xaml, use <see cref="Load{T}(Stream, T)"/>
+		/// </remarks>
+		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
+		/// <param name="instance">Instance to use as the starting object</param>
+		/// <param name="resourceName">Fully qualified name of the embedded resource to load.</param>
+		/// <returns>An existing instance of the specified type with the contents loaded from the xaml stream</returns>
+		public static void LoadFromFile<T>(T instance, string filePath)
+		{
+			if (Equals(instance, null))
+				throw new ArgumentNullException(nameof(instance));
+
+			if (!Path.GetExtension(filePath).Equals("xaml", StringComparison.InvariantCultureIgnoreCase))
+			{
+				filePath = Path.ChangeExtension(filePath, "xaml");
+			}
+
+			if (!Path.IsPathFullyQualified(filePath))
+			{
+				filePath = Path.GetFullPath(filePath);
+			}
+			
+			using (var stream = GetStream(filePath))
+			{
+				if (stream == null)
+					throw new InvalidOperationException($"File resource '{filePath}' not found");
 
 				Load<T>(stream, instance);
 			}

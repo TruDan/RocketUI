@@ -14,4 +14,6 @@ namespace RocketUI.Input.Listeners
         bool IsPressed(InputCommand command);
 
     }
+    
+    public delegate IInputListener InputListenerFactory(PlayerIndex playerIndex);
 }

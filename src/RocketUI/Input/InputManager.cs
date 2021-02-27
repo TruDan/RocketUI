@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Xna.Framework;
 using RocketUI.Input.Listeners;
+using SharpVR;
 
 namespace RocketUI.Input
 {
@@ -44,12 +47,17 @@ namespace RocketUI.Input
         {
             UpdateOrder = -10;
             var playerOne     = GetOrAddPlayerManager(PlayerIndex.One);
-            var mouseListener = new MouseInputListener(PlayerIndex.One);
-            var vrListener    = new VRControllerInputListener(PlayerIndex.One);
 
-            playerOne.AddListener(mouseListener);
-            playerOne.AddListener(vrListener);
-            playerOne.AddListener(new KeyboardInputListener());
+            var listeners = game.Services.GetService<IEnumerable<InputListenerFactory>>();
+            if (listeners != null)
+            {
+                foreach (var listenerFactory in listeners)
+                {
+                    var listener = listenerFactory(PlayerIndex.One);
+                    if (listener != null)
+                        playerOne.AddListener(listener);
+                }
+            }
         }
 
         public PlayerInputManager GetOrAddPlayerManager(PlayerIndex playerIndex)
@@ -82,5 +90,15 @@ namespace RocketUI.Input
         {
             return PlayerInputManagers.Values.ToArray().Any(playerInputManagerFunc);
         }
+    }
+
+    public static class InputManagerServiceCollectionExtensions
+    {
+        public static IServiceCollection AddInputListenerFactory(this IServiceCollection services, InputListenerFactory inputListenerFactory)
+        {
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<InputListenerFactory>(provider => inputListenerFactory));
+            return services;
+        } 
     }
 }
