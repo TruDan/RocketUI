@@ -13,8 +13,9 @@ namespace RocketUI
         IFont Font { get; set; }
 
         SoundEffectInstance GetSoundEffect(GuiSoundEffects soundEffects);
-        TextureSlice2D GetTexture(string                          texture);
-        Texture2D GetTexture2D(string                        texture);
+        TextureSlice2D GetTexture(GuiTextures                     guiTexture);
+        TextureSlice2D GetTexture(string                          texturePath);
+        Texture2D GetTexture2D(GuiTextures                        guiTexture);
 
         string GetTranslation(string key);
 
