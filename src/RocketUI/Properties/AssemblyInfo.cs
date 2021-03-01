@@ -9,7 +9,7 @@ using Portable.Xaml.Markup;
 #endif
 
 [assembly: NeutralResourcesLanguage("en-US")]
-[assembly: CLSCompliant(true)]
+//[assembly: CLSCompliant(true)]
 
 [assembly: XmlnsDefinition(RocketUI.Serialization.Xaml.RocketXamlSchemaContext.RocketNamespace, "RocketUI", AssemblyName = "RocketUI")]
 [assembly: XmlnsDefinition(RocketUI.Serialization.Xaml.RocketXamlSchemaContext.RocketNamespace, "RocketUI")]

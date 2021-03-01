@@ -81,6 +81,11 @@ namespace RocketUI
 			UpdateDisplayText();
         }
 
+        public TextInput() : this(null)
+        {
+	        
+        }
+
 		//private bool _isPlaceholder = false;
 		private KeyboardState _kbState;
 		private double _lastKeyInputTime = 0d;

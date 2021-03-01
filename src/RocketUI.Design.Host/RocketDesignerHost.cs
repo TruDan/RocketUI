@@ -30,6 +30,12 @@ namespace RocketUI.Design
                 options = new RocketDesignerHostOptions();
 
             Options = options;
+
+            if (!string.IsNullOrEmpty(options.ProjectPath))
+            {
+                
+            }
+            
             var guiRendererType = ResolveGuiRendererType(options);
             if (guiRendererType != null)
             {

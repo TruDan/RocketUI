@@ -203,5 +203,9 @@ namespace RocketUI
         }
         protected virtual void OnCursorLeave(Point cursorPosition) { }
 
+        public RocketControl()
+        {
+            
+        }
     }
 }

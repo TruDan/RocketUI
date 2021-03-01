@@ -1,8 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Portable.Xaml.Markup;
 
 namespace RocketUI
 {
+    [ContentProperty(nameof(Text))]
     public class AutoUpdatingTextElement : TextElement
     {
         private readonly Func<string> _updateFunc;
@@ -13,6 +15,11 @@ namespace RocketUI
             _updateFunc = updateFunc;
             Text        = _updateFunc();
             _nextUpdate = TimeSpan.Zero;
+        }
+
+        public AutoUpdatingTextElement()
+        {
+            
         }
 
         private TimeSpan _nextUpdate;

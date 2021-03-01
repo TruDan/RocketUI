@@ -1,10 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RocketUI", "src\RocketUI\RocketUI.csproj", "{343C5A50-B18D-436C-8DCC-75E6207C2CBD}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RocketUI", "src\RocketUI\RocketUI.csproj", "{343C5A50-B18D-436C-8DCC-75E6207C2CBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RocketUI.Design", "src\RocketUI.Design\RocketUI.Design.csproj", "{9D431E3C-8830-41FE-80A6-31342D4B4494}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RocketUI.Design", "src\RocketUI.Design\RocketUI.Design.csproj", "{9D431E3C-8830-41FE-80A6-31342D4B4494}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RocketUI.Design.Host", "src\RocketUI.Design.Host\RocketUI.Design.Host.csproj", "{837930CB-C302-4345-9A52-DF1EC436CF8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RocketUI.Design.Host", "src\RocketUI.Design.Host\RocketUI.Design.Host.csproj", "{837930CB-C302-4345-9A52-DF1EC436CF8C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{80936BD7-EDEC-4947-80E1-547A27BB84FE}"
 EndProject
@@ -27,9 +30,15 @@ Global
 		{837930CB-C302-4345-9A52-DF1EC436CF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{837930CB-C302-4345-9A52-DF1EC436CF8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{343C5A50-B18D-436C-8DCC-75E6207C2CBD} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
 		{9D431E3C-8830-41FE-80A6-31342D4B4494} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
 		{837930CB-C302-4345-9A52-DF1EC436CF8C} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EE104040-7866-4803-A4D7-C8B3426D2DE8}
 	EndGlobalSection
 EndGlobal

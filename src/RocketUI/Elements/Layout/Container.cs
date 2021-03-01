@@ -2,6 +2,9 @@
 {
     public class Container : RocketElement
 	{
-
+		public Container()
+		{
+			
+		}
 	}
 }

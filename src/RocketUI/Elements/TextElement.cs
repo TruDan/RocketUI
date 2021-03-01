@@ -11,7 +11,7 @@ namespace RocketUI
 		public Uri ClickedText;
 	}
 
-	[ContentProperty(nameof(TextElement.Text))]
+	[ContentProperty(nameof(Text))]
     public class TextElement : RocketElement //GuiControl
 	{
 	    public static readonly Color DefaultTextBackgroundColor = new Color(Color.Black, 0.6f);
@@ -152,6 +152,11 @@ namespace RocketUI
 			Margin = new Thickness(2);
 		}
 
+	    public TextElement()
+	    {
+		    
+	    }
+	    
 		protected override void OnInit(IGuiRenderer renderer)
         {
             base.OnInit(renderer);

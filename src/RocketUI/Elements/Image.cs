@@ -25,6 +25,11 @@
             ResizeToImageSize = true;
         }
 
+        public Image()
+        {
+            
+        }
+
         protected override void OnInit(IGuiRenderer renderer)
         {
             base.OnInit(renderer);

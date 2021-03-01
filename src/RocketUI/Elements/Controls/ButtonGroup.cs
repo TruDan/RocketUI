@@ -88,5 +88,9 @@ namespace RocketUI
 
 			base.OnChildRemoved(element);
 		}
+
+		public ButtonGroup()
+		{
+		}
 	}
 }

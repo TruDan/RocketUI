@@ -14,6 +14,11 @@ namespace RocketUI
             _defaultRowBuilder = defaultRowBuilder;
         }
 
+        public ScrollableMultiStackContainer()
+        {
+            
+        }
+
         public void AddChild(int row, IGuiElement element)
         {
             EnsureRows(row + 1);
@@ -69,6 +74,11 @@ namespace RocketUI
         public MultiStackContainer(Action<StackContainer> defaultRowBuilder = null)
         {
             _defaultRowBuilder = defaultRowBuilder;
+        }
+
+        public MultiStackContainer()
+        {
+            
         }
 
         public void AddChild(int row, IGuiElement element)

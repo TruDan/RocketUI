@@ -76,6 +76,11 @@ namespace RocketUI
             }
         }
 
+        public Button() : this(null)
+        {
+            
+        }
+        
         protected override void OnInit(IGuiRenderer renderer)
         {
             base.OnInit(renderer);

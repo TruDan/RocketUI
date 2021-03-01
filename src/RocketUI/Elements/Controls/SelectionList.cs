@@ -8,6 +8,11 @@ namespace RocketUI
 
         private SelectionListItem _selectedItem;
 
+        public SelectionList()
+        {
+            
+        }
+        
         public SelectionListItem SelectedItem
         {
             get => _selectedItem;

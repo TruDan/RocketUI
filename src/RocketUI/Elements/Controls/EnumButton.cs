@@ -24,5 +24,10 @@ namespace RocketUI
         }
 
         public ValueFormatter<TEnum> DisplayFormat { get; set; } = "{0}";
+
+        public EnumButton()
+        {
+            
+        }
     }
 }

@@ -37,6 +37,13 @@ namespace RocketUI.Design.Host
                 get => base.AssemblyName;
                 set => base.AssemblyName = value;
             }
+
+            [Option('p',"project", Required = false)]
+            public string ProjectPath
+            {
+                get;
+                set;
+            }
         }
         
         [STAThread]
