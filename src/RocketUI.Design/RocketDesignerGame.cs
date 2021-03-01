@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -33,18 +34,32 @@ namespace RocketUI.Design
 
         public void PreviewScreen(string screenXamlPath)
         {
-            if (_previewScreen != null)
+            if (_exceptionScreen != null)
             {
-                GuiManager.RemoveScreen(_previewScreen);
-                _previewScreen = null;
+                GuiManager.RemoveScreen(_exceptionScreen);
+                _exceptionScreen = null;
             }
-            if(string.IsNullOrEmpty(screenXamlPath)) return;
-            
-            Log.Info("Previewing screen {0}", screenXamlPath);
-            var screen = new Screen();
-            RocketXamlLoader.LoadFromFile(screen, screenXamlPath);
-            _previewScreen = screen;
-            GuiManager?.AddScreen(_previewScreen);
+
+            try
+            {
+                if (_previewScreen != null)
+                {
+                    GuiManager.RemoveScreen(_previewScreen);
+                    _previewScreen = null;
+                }
+
+                if (string.IsNullOrEmpty(screenXamlPath)) return;
+
+                Log.Info("Previewing screen {0}", screenXamlPath);
+                var screen = new Screen();
+                RocketXamlLoader.LoadFromFile(screen, screenXamlPath);
+                _previewScreen = screen;
+                GuiManager?.AddScreen(_previewScreen);
+            }
+            catch (Exception ex)
+            {
+                RenderException(ex);
+            }
         }
 
         protected override void Initialize()
@@ -125,6 +140,72 @@ namespace RocketUI.Design
             base.Dispose(disposing);
 
             GpuResourceManager.Dispose();
+        }
+
+        private ExceptionScreen _exceptionScreen;
+        
+        public void RenderException(Exception exception)
+        {
+            if (_exceptionScreen != null)
+            {
+                GuiManager.RemoveScreen(_exceptionScreen);
+                _exceptionScreen = null;
+            }
+
+            _exceptionScreen = new ExceptionScreen(exception);
+            
+            // if(_previewScreen != null)
+            //     GuiManager.RemoveScreen(_previewScreen);
+            
+            GuiManager.Screens.Add(_exceptionScreen);
+        }
+    }
+
+    public class ExceptionScreen : Screen
+    {
+        private readonly StackContainer _container;
+        public ExceptionScreen(Exception exception)
+        {
+            AddChild(_container = new StackContainer()
+            {
+                Anchor = Alignment.MiddleCenter,
+                Margin = new Thickness(10),
+                BackgroundOverlay = Color.Black * 0.5f,
+                Orientation = Orientation.Vertical
+            });
+            
+            _container.AddChild(new TextElement("Exception")
+            {
+                Scale = 2.0f,
+                TextColor = Color.OrangeRed
+            });
+
+            _container.AddChild(new TextElement(exception.Message)
+            {
+                TextColor = Color.OrangeRed
+            });
+            
+            if (exception.StackTrace != null)
+            {
+                StackContainer stacktrace;
+                _container.AddChild(stacktrace = new StackContainer()
+                {
+                    Orientation = Orientation.Vertical
+                });
+                foreach (var s in exception.StackTrace.Split('\n'))
+                {
+                    stacktrace.AddChild(new TextElement(s)
+                    {
+                        TextColor = Color.OrangeRed,
+                        Scale = 0.75f
+                    });
+                }
+            }
+        }
+
+        public ExceptionScreen()
+        {
+            
         }
     }
 }
