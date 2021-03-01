@@ -11,9 +11,9 @@ namespace RocketUI.Input
 {
     public class PlayerInputManagerEvent
     {
-        public PlayerIndex PlayerIndex { get; }
+        public PlayerIndex        PlayerIndex        { get; }
         public PlayerInputManager PlayerInputManager { get; }
-        
+
         protected PlayerInputManagerEvent(PlayerIndex index, PlayerInputManager inputManager)
         {
             PlayerIndex = index;
@@ -27,17 +27,18 @@ namespace RocketUI.Input
         {
         }
     }
-    
+
     public sealed class PlayerInputManagerRemoved : PlayerInputManagerEvent
     {
         public PlayerInputManagerRemoved(PlayerIndex index, PlayerInputManager inputManager) : base(index, inputManager)
         {
         }
     }
-    
+
     public class InputManager : GameComponent
     {
-        private Dictionary<PlayerIndex, PlayerInputManager> PlayerInputManagers { get; } = new Dictionary<PlayerIndex, PlayerInputManager>();
+        private Dictionary<PlayerIndex, PlayerInputManager> PlayerInputManagers { get; } =
+            new Dictionary<PlayerIndex, PlayerInputManager>();
 
         public int PlayerCount => PlayerInputManagers.Count;
 
@@ -46,7 +47,7 @@ namespace RocketUI.Input
         public InputManager(Game game) : base(game)
         {
             UpdateOrder = -10;
-            var playerOne     = GetOrAddPlayerManager(PlayerIndex.One);
+            var playerOne = GetOrAddPlayerManager(PlayerIndex.One);
 
             var listeners = game.Services.GetService<IEnumerable<InputListenerFactory>>();
             if (listeners != null)
@@ -66,7 +67,7 @@ namespace RocketUI.Input
             {
                 playerInputManager = new PlayerInputManager(playerIndex);
                 PlayerInputManagers.Add(playerIndex, playerInputManager);
-                
+
                 InputManagerAdded?.Invoke(this, new PlayerInputManagerAdded(playerIndex, playerInputManager));
             }
 
@@ -76,13 +77,13 @@ namespace RocketUI.Input
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            
+
             //if (!Game.IsActive)
             //    return;
-            
+
             foreach (var playerInputManager in PlayerInputManagers.Values.ToArray())
             {
-               playerInputManager.Update(gameTime);
+                playerInputManager.Update(gameTime);
             }
         }
 
@@ -94,11 +95,13 @@ namespace RocketUI.Input
 
     public static class InputManagerServiceCollectionExtensions
     {
-        public static IServiceCollection AddInputListenerFactory(this IServiceCollection services, InputListenerFactory inputListenerFactory)
+        public static IServiceCollection AddInputListenerFactory<T>(this IServiceCollection services,
+            InputListenerFactory<T> inputListenerFactory) where T : class, IInputListener
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<InputListenerFactory>(provider => inputListenerFactory));
+                ServiceDescriptor.Singleton<IInputListenerFactory, DefaultInputListenerFactory<T>>(provider =>
+                    new DefaultInputListenerFactory<T>(inputListenerFactory)));
             return services;
-        } 
+        }
     }
 }
