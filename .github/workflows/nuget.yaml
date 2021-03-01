@@ -19,12 +19,6 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
       
-    - name: GitVersioning
-      uses: dotnet/nbgv@master
-      id: gitver
-      with:
-        setAllVars: true
-
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -32,7 +26,7 @@ jobs:
         
     - name: Build & Pack Projects
       shell: bash
-      run: dotnet pack -o ./nuget -p:PackageVersion=${{ steps.gitver.outputs.NugetPackageVersion }} --include-symbols --include-source
+      run: dotnet pack -o ./nuget -p:PackageVersion=1.0.${{ github.run_number }} --include-symbols --include-source
     
     - name: Publish NuGet Packages
       shell: bash
