@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NLog;
+using RocketUI.Design.Screens;
 using RocketUI.Input;
 using RocketUI.Serialization.Xaml;
 using RocketUI.Utilities.Helpers;
@@ -13,6 +14,10 @@ namespace RocketUI.Design
     public class RocketDesignerGame : Game
     {
         private static readonly Logger         Log = LogManager.GetCurrentClassLogger();
+
+        private static RocketDesignerGame _instance;
+        public static  RocketDesignerGame Instance => _instance;
+        
         public                  IGuiRenderer   GuiRenderer    { get; private set; }
         public                  GuiManager     GuiManager     { get; private set; }
         public                  InputManager   InputManager   { get; private set; }
@@ -20,14 +25,17 @@ namespace RocketUI.Design
 
         public GraphicsDeviceManager GraphicsDeviceManager => _graphics;
 
+        private DesignerScreen        _designerScreen;
         private GraphicsDeviceManager _graphics;
 
         public RocketDesignerGame(IGuiRenderer renderer)
         {
+            _instance = this;
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = Path.Combine(Path.GetFullPath(Path.GetDirectoryName(renderer.GetType().Assembly.Location)), "Content");
 
             GuiRenderer = renderer;
+            _designerScreen = new DesignerScreen();
         }
 
         private Screen _previewScreen;
@@ -36,7 +44,8 @@ namespace RocketUI.Design
         {
             if (_exceptionScreen != null)
             {
-                GuiManager.RemoveScreen(_exceptionScreen);
+                _designerScreen.SetScreen(null);
+                //GuiManager.RemoveScreen(_exceptionScreen);
                 _exceptionScreen = null;
             }
 
@@ -44,7 +53,8 @@ namespace RocketUI.Design
             {
                 if (_previewScreen != null)
                 {
-                    GuiManager.RemoveScreen(_previewScreen);
+                    _designerScreen.SetScreen(null);
+//                    GuiManager.RemoveScreen(_previewScreen);
                     _previewScreen = null;
                 }
 
@@ -54,7 +64,9 @@ namespace RocketUI.Design
                 var screen = new Screen();
                 RocketXamlLoader.LoadFromFile(screen, screenXamlPath);
                 _previewScreen = screen;
-                GuiManager?.AddScreen(_previewScreen);
+                
+                _designerScreen.SetScreen(_previewScreen);
+                //GuiManager?.AddScreen(_previewScreen);
             }
             catch (Exception ex)
             {
@@ -110,15 +122,18 @@ namespace RocketUI.Design
                 Anchor = Alignment.Fixed
             });
 
-            if (_previewScreen != null)
-                GuiManager.AddScreen(_previewScreen);
+            if (_designerScreen != null)
+                GuiManager.AddScreen(_designerScreen);
 
             _graphics.GraphicsDevice.Viewport = new Viewport(Window.ClientBounds);
             GraphicsDevice.PresentationParameters.BackBufferHeight = Window.ClientBounds.Height;
             GraphicsDevice.PresentationParameters.BackBufferWidth = Window.ClientBounds.Width;
-            GuiManager.SetSize(Window.ClientBounds.Width, Window.ClientBounds.Height);
+
+            GraphicsDeviceManager.PreferredBackBufferWidth = Window.ClientBounds.Width;
+            GraphicsDeviceManager.PreferredBackBufferHeight = Window.ClientBounds.Height;
+            GraphicsDeviceManager.ApplyChanges();
             
-            GuiManager.Screens.ForEach(screen => screen.UpdateLayout());
+            GuiManager.SetSize(Window.ClientBounds.Width, Window.ClientBounds.Height);
         }
 
         protected override void Update(GameTime gameTime)
@@ -148,7 +163,8 @@ namespace RocketUI.Design
         {
             if (_exceptionScreen != null)
             {
-                GuiManager.RemoveScreen(_exceptionScreen);
+                _designerScreen.SetScreen(null);
+                //GuiManager.RemoveScreen(_exceptionScreen);
                 _exceptionScreen = null;
             }
 
@@ -157,7 +173,8 @@ namespace RocketUI.Design
             // if(_previewScreen != null)
             //     GuiManager.RemoveScreen(_previewScreen);
             
-            GuiManager.Screens.Add(_exceptionScreen);
+            _designerScreen.SetScreen(_exceptionScreen);
+            //GuiManager.Screens.Add(_exceptionScreen);
         }
     }
 

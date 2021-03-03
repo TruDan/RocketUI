@@ -21,8 +21,8 @@ namespace RocketUI
 
         public Screen()
         {
-            AutoSizeMode = AutoSizeMode.None;
-            Anchor = Alignment.Fill;
+            // AutoSizeMode = AutoSizeMode.None;
+            // Anchor = Alignment.Fixed;
             ClipToBounds = true;
         }
 

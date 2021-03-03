@@ -97,7 +97,7 @@ namespace RocketUI.Input
 
         public Ray GetCursorRay()
         {
-            return _cursorInputListener.GetCursorRay();
+            return _cursorInputListener?.GetCursorRay() ?? new Ray();
         }
     }
 }

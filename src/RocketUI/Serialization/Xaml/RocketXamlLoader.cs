@@ -14,7 +14,8 @@ namespace RocketUI.Serialization.Xaml
 
 		private static Stream GetStream(Type type)
 		{
-			return GetStream(type, type.FullName + ".xaml")
+			return GetStream(type, type.FullName)
+			       ?? GetStream(type, type.FullName + ".xaml")
 				   ?? GetStream(type, type.Name + ".xaml")
 				   ?? throw new InvalidOperationException($"Embedded resource '{type.FullName}.xaml' not found in assembly '{type.Assembly}'");
 		}

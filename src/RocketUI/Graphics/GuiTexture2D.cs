@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.ComponentModel;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using RocketUI.Utilities.Converters;
 
 namespace RocketUI
 {
@@ -39,6 +41,7 @@ namespace RocketUI
         }
     }
     
+    [TypeConverter(typeof(GuiTexture2DTypeConverter))]
     public struct GuiTexture2D : ITexture2D
     {
         public Color?            Color           { get; set; }

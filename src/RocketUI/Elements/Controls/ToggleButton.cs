@@ -56,6 +56,12 @@ namespace RocketUI
 
         public ToggleButton(string text) : base(text)
         {
+            DisplayFormat = new ValueFormatter<bool>(b => text);
+        }
+        
+        public ToggleButton(string text, Action<bool> onValueChanged) : this(text)
+        {
+            ValueChanged += (sender, value) => onValueChanged(value);
         }
 
         protected virtual void OnCheckedChanged()

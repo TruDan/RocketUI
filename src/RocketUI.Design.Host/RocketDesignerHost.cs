@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Xna.Framework;
 using MonoGame.Framework.Utilities;
 using NLog;
@@ -22,9 +24,15 @@ namespace RocketUI.Design
 
         public RocketDesignerHostOptions Options { get; }
 
+        public IConfiguration             HostConfiguration { get; }
+        public RocketDesignerHostSettings HostSettings      { get; }
+        
         public RocketDesignerHost(RocketDesignerHostOptions options)
         {
             //RocketXamlLoader.DesignMode = true;
+            HostConfiguration = LoadHostConfiguration();
+            HostSettings = new RocketDesignerHostSettings();
+            HostConfiguration.Bind(HostConfiguration);
             
             if (options == null)
                 options = new RocketDesignerHostOptions();
@@ -44,10 +52,10 @@ namespace RocketUI.Design
             
             var guiRenderer     = TryCreateGuiRenderer(guiRendererType);
             Game = new RocketDesignerGame(guiRenderer);
-            Game.Services.AddService(typeof(IEnumerable<InputListenerFactory>), new List<InputListenerFactory>()
+            Game.Services.AddService(typeof(IEnumerable<IInputListenerFactory>), new List<IInputListenerFactory>()
             {
-                playerIndex => new MouseInputListener(playerIndex),
-                playerIndex => new KeyboardInputListener(playerIndex)
+                new DefaultInputListenerFactory<MouseInputListener>(playerIndex => new MouseInputListener(playerIndex)),
+                new DefaultInputListenerFactory<KeyboardInputListener>(playerIndex => new KeyboardInputListener(playerIndex))
             });
 
             if (!string.IsNullOrWhiteSpace(options.File))
@@ -55,6 +63,15 @@ namespace RocketUI.Design
                 Game.Components.Add(new FileWatcherComponent(Game, options.File, OnFileUpdate));
                 Game.PreviewScreen(options.File);
             }
+        }
+
+        private IConfigurationRoot LoadHostConfiguration()
+        {
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                .AddJsonFile("appsettings.json", optional: true);
+
+            return configBuilder.Build();
         }
 
         private void OnFileUpdate(string obj)
@@ -85,11 +102,13 @@ namespace RocketUI.Design
             return null;
         }
 
-        private static Type ResolveGuiRendererType(RocketDesignerHostOptions options)
+        private Type ResolveGuiRendererType(RocketDesignerHostOptions options)
         {
             if (options.AssemblySearchPaths == null)
                 throw new ArgumentNullException(nameof(options.AssemblySearchPaths));
 
+            var blacklistExpressions = GlobExpression.ParseFromStrings(HostSettings.AssemblySearchBlacklist.ToArray());
+            
             foreach (var searchPath in options.AssemblySearchPaths)
             {
                 foreach (var assemblyPathRaw in Directory.GetFiles(searchPath, "*.dll", SearchOption.AllDirectories))
@@ -99,14 +118,11 @@ namespace RocketUI.Design
                         var assemblyPath = Path.GetFullPath(assemblyPathRaw);
                         Log.Debug("Searching Assembly '{0}'", assemblyPath);
 
-                        var assembly =
-                            System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+                        var assembly = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
                         
-                        if (assembly.GetName()?.Name?.StartsWith("RocketUI", StringComparison.InvariantCulture) ??
-                            false)
+                        if (blacklistExpressions.IsMatch(assembly.GetName().FullName) || blacklistExpressions.IsMatch(assemblyPath))
                         {
-                            Log.Debug("Skipping Assembly '{0}' because it starts with RocketUI",
-                                assembly.GetName()?.Name ?? assemblyPath);
+                            Log.Debug("Skipping Assembly '{0}' because of blacklist", assembly.GetName()?.Name ?? assemblyPath);
                             continue;
                         }
 

@@ -516,7 +516,7 @@ namespace RocketUI
         public void UpdateProjection()
         {
             Effect.View = Matrix.CreateLookAt(Vector3.Backward, Vector3.Zero, Vector3.Up);
-            Effect.Projection = Matrix.CreateOrthographicOffCenter(0, _renderer.ScaledResolution.ViewportSize.Width, _renderer.ScaledResolution.ViewportSize.Height, 0, 0.1f, 1000.0f);
+            Effect.Projection = Matrix.CreateOrthographicOffCenter(0, _renderer.ScaledResolution.ScaledWidth, _renderer.ScaledResolution.ScaledHeight, 0, 0.1f, 1000.0f);
         }
     }
 

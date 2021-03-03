@@ -49,12 +49,12 @@ namespace RocketUI.Input
             UpdateOrder = -10;
             var playerOne = GetOrAddPlayerManager(PlayerIndex.One);
 
-            var listeners = game.Services.GetService<IEnumerable<InputListenerFactory>>();
+            var listeners = game.Services.GetService<IEnumerable<IInputListenerFactory>>();
             if (listeners != null)
             {
                 foreach (var listenerFactory in listeners)
                 {
-                    var listener = listenerFactory(PlayerIndex.One);
+                    var listener = listenerFactory.CreateInputListener(PlayerIndex.One);
                     if (listener != null)
                         playerOne.AddListener(listener);
                 }
@@ -90,18 +90,6 @@ namespace RocketUI.Input
         public bool Any(Func<PlayerInputManager, bool> playerInputManagerFunc)
         {
             return PlayerInputManagers.Values.ToArray().Any(playerInputManagerFunc);
-        }
-    }
-
-    public static class InputManagerServiceCollectionExtensions
-    {
-        public static IServiceCollection AddInputListenerFactory<T>(this IServiceCollection services,
-            InputListenerFactory<T> inputListenerFactory) where T : class, IInputListener
-        {
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IInputListenerFactory, DefaultInputListenerFactory<T>>(provider =>
-                    new DefaultInputListenerFactory<T>(inputListenerFactory)));
-            return services;
         }
     }
 }

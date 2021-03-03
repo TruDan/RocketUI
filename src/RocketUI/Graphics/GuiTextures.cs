@@ -1,4 +1,6 @@
-﻿namespace RocketUI
+﻿using System;
+
+namespace RocketUI
 {
     public enum GuiSoundEffects
     {
@@ -78,6 +80,17 @@
         public override string ToString()
         {
             return $"{Namespace}:{Key}";
+        }
+
+        public static GuiTextures Parse(string text)
+        {
+            var split = text.Split(':', 2);
+            if (split.Length == 2)
+            {
+                return new GuiTextures(split[0], split[1]);
+            }
+
+            throw new FormatException("Invalid GuiTextures format, expected 'namespace:key'");
         }
     }
 }

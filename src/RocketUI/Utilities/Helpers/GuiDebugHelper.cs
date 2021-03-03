@@ -123,7 +123,7 @@ namespace RocketUI.Utilities.Helpers
 			    }
                 if (BoundingBoxesEnabled)
                 {
-                	screen.ForEachChild(c => DrawElementRecursive(c));
+	                DrawElementRecursive(screen);
                 }
 
                 if (BoundingBoxesHoverEnabled)

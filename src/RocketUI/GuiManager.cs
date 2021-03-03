@@ -77,7 +77,6 @@ namespace RocketUI
         private void ScaledResolutionOnScaleChanged(object sender, UiScaleEventArgs args)
         {
             Init();
-            SetSize(args.ScaledWidth, args.ScaledHeight);
         }
 
         public void SetSize(int width, int height)
@@ -87,7 +86,7 @@ namespace RocketUI
             
             foreach (var screen in Screens.ToArray())
             {
-                screen.UpdateSize(width, height);
+                screen.UpdateSize(GuiRenderer.ScaledResolution.ScaledWidth, GuiRenderer.ScaledResolution.ScaledHeight);
             }
         }
 
@@ -102,7 +101,7 @@ namespace RocketUI
          //   SpriteBatch = new SpriteBatch(graphicsDevice);
             GuiRenderer.Init(Game.GraphicsDevice, ServiceProvider);
             ApplyFont(GuiRenderer.Font);
-
+            SetSize(ScaledResolution.ViewportSize.Width, ScaledResolution.ViewportSize.Height);
       //      GuiSpriteBatch?.Dispose();
       //      GuiSpriteBatch = new GuiSpriteBatch(GuiRenderer, graphicsDevice, SpriteBatch);
         }
@@ -160,6 +159,8 @@ namespace RocketUI
         public void AddScreen(Screen screen)
         {
             screen.GuiManager = this;
+            screen.AutoSizeMode = AutoSizeMode.None;
+            screen.Anchor = Alignment.Fixed;
             
             if(!(screen is IGuiScreen3D))
                 screen.UpdateSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);

@@ -237,38 +237,16 @@ namespace RocketUI
 
 				Children.Add(element);
 			}
-
-			element.ParentElement = this;
-
-			if (_initialised)
-			{
-				element.Init(_guiRenderer);
-			}
-
-			OnChildAdded(element);
-
-			ChildAdded?.Invoke(this, new GuiElementChildEventArgs(this, element));
-			
-			InvalidateLayout();
 		}
 
 		public void RemoveChild(IGuiElement element)
 		{
 			if (element == this) return;
-
-			OnChildRemoved(element);
-
+			
 			lock (_childrenLock)
 			{
 				Children.Remove(element);
 			}
-
-			if(element.ParentElement == this)
-				element.ParentElement = null;
-			
-			ChildRemoved?.Invoke(this, new GuiElementChildEventArgs(this, element));
-			
-			InvalidateLayout();
 		}
 		
 		
@@ -279,10 +257,14 @@ namespace RocketUI
 				foreach (IGuiElement item in e.NewItems)
 				{
 					item.ParentElement = this;
+					
+					OnChildAdded(item);
+					
 					if(_initialised)
 						item.Init(_guiRenderer, true);
 
-					OnChildAdded(item);
+					
+					ChildAdded?.Invoke(this, new GuiElementChildEventArgs(this, item));
 
 					InvalidateLayout();
 				}
@@ -296,6 +278,8 @@ namespace RocketUI
 
 					if (item.ParentElement == this)
 						item.ParentElement = null;
+					
+					ChildRemoved?.Invoke(this, new GuiElementChildEventArgs(this, item));
 					
 					InvalidateLayout();
 				}

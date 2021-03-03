@@ -181,13 +181,14 @@ namespace RocketUI
 		protected void SetFixedSize(int width, int height)
         {
             AutoSizeMode = AutoSizeMode.None;
+            Anchor       = Alignment.Fixed;
             MinWidth     = width;
-            MaxWidth     = width;
             MinHeight    = height;
+            MaxWidth     = width;
             MaxHeight    = height;
             Width        = width;
             Height       = height;
-            
+
             InvalidateLayout(true);
         }
 
@@ -362,7 +363,7 @@ namespace RocketUI
                 {
                     size.Height = availableSize.Height;
                 }
-            }
+            }  
 
             size = Size.Clamp(size, size, availableSize);
 
@@ -427,7 +428,7 @@ namespace RocketUI
                 Bounds      = newBounds;
 
                 Size     = newBounds.Size;
-                Position = newBounds.Location;
+                Position    = newBounds.Location;
                 
                 IsLayoutDirty = false;
 
@@ -458,19 +459,18 @@ namespace RocketUI
 
         protected virtual void OnAfterArrange()
         {
-
-            if (ParentElement != null && ClipToBounds)
-            {
-                RenderBounds   = Rectangle.Intersect(Bounds, ParentElement.RenderBounds);
-                RenderSize     = RenderBounds.Size;
-                RenderPosition = RenderBounds.Location.ToVector2();
-            }
-            else
-            {
-                RenderBounds   = Bounds;
-                RenderSize     = Size;
-                RenderPosition = Position.ToVector2();
-            }
+            // if (ParentElement != null && ClipToBounds)
+            // {
+            //     RenderBounds   = Rectangle.Intersect(Bounds, ParentElement.RenderBounds);
+            //     RenderSize     = RenderBounds.Size;
+            //     RenderPosition = RenderBounds.Location.ToVector2();
+            // }
+            // else
+            // {
+            //     RenderBounds   = Bounds;
+            //     RenderSize     = Size;
+            //     RenderPosition = Position.ToVector2();
+            // }
         }
 
         protected virtual void ArrangeCore(Rectangle newBounds)
