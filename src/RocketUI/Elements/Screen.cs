@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 
 namespace RocketUI
 {
@@ -6,14 +7,16 @@ namespace RocketUI
     {
         public bool IsLayoutInProgress { get; protected set; } = false;
 
+        [JsonIgnore]
         public override IGuiFocusContext FocusContext
         {
             get { return this; }
         }
 
+        [JsonIgnore]
         public override IGuiScreen RootScreen
         {
-            get => this;
+            get => ParentElement is IGuiScreen parentScreen ? parentScreen : this;
         }
 
         public IGuiControl FocusedControl { get; private set; }
@@ -32,8 +35,9 @@ namespace RocketUI
             InvalidateLayout(true);
         }
         
-        private object     _updateLock = new object();
-        public  GuiManager GuiManager { get; internal set; }
+        private  object     _updateLock = new object();
+        public   GuiManager GuiManager    { get; internal set; }
+        public bool       IsSelfManaged { get; set; }
 
         public void UpdateLayout()
         {

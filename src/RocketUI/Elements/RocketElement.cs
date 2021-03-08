@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using Portable.Xaml.Markup;
 using RocketUI.Attributes;
 using RocketUI.Serialization;
@@ -19,6 +20,7 @@ namespace RocketUI
 	
 	[RuntimeNameProperty(nameof(Id))]
 	[ContentProperty(nameof(Children))]
+	[Serializable]
 	public partial class RocketElement : IGuiElement, IDisposable
 	{
 		private PropertyStore _properties;
@@ -26,6 +28,7 @@ namespace RocketUI
 		/// <summary>
 		/// Gets the dictionary of properties for this widget
 		/// </summary>
+		[JsonIgnore]
 		public PropertyStore Properties
 		{
 			get
@@ -43,6 +46,8 @@ namespace RocketUI
 		public Guid Id { get; } = Guid.NewGuid();
         
 		public string Name { get; set; }
+		
+		[JsonIgnore]
 		public object Tag  { get; set; }
 		
 		private IGuiScreen       _screen;
@@ -63,13 +68,13 @@ namespace RocketUI
 		//	}
 		//}
 
-		[DebuggerVisible(Visible = false)]
+		[DebuggerVisible(Visible = false), JsonIgnore]
 		public virtual IGuiScreen RootScreen
 		{
 			get => ParentElement?.RootScreen;
 		}
 
-		[DebuggerVisible(Visible = false)]
+		[DebuggerVisible(Visible = false), JsonIgnore]
 		public IGuiElement ParentElement
 		{
 			get => _parentElement;
@@ -87,7 +92,7 @@ namespace RocketUI
 		}
 
 
-		[DebuggerVisible(Visible = false)]
+		[DebuggerVisible(Visible = false), JsonIgnore]
 		public virtual IGuiFocusContext FocusContext
 		{
 			get { return _focusContext ?? ParentElement?.FocusContext ?? RootScreen; }
@@ -95,7 +100,7 @@ namespace RocketUI
 		}
 
 
-		[DebuggerVisible(Visible = false)]
+		[DebuggerVisible(Visible = false), JsonIgnore]
 		public IGuiElement[] ChildElements
 		{
 			get
@@ -111,7 +116,7 @@ namespace RocketUI
 
 		private ObservableCollection<IGuiElement> _children;
 		
-		[DebuggerVisible(Visible = false)] 
+		[DebuggerVisible(Visible = false), JsonIgnore] 
 		public ObservableCollection<IGuiElement> Children
 		{
 			get
@@ -125,12 +130,12 @@ namespace RocketUI
 			}
 		}
 
-		[DebuggerVisible(Visible = false)]
+		[DebuggerVisible(Visible = false), JsonIgnore]
 		public bool HasChildren => Children.Count > 0;
 
 		public int ChildCount => Children.Count;
 
-		[DebuggerVisible(Visible = false)]
+		[DebuggerVisible(Visible = false), JsonIgnore]
 		internal IReadOnlyList<IGuiElement> AllChildren =>
 			ChildElements.OfType<RocketElement>().SelectMany(c => new[] {c}.Union(c.AllChildren)).ToList();
 
@@ -177,6 +182,7 @@ namespace RocketUI
 		private IGuiRenderer _guiRenderer;
 		private bool         _initialised;
 
+		[JsonIgnore]
 		protected IGuiRenderer GuiRenderer => _guiRenderer;
 
 		public RocketElement()

@@ -203,7 +203,7 @@ namespace RocketUI
 
             foreach (var screen in screens)
             {
-                if (screen == null || screen is IGuiManaged)
+                if (screen == null || screen is IGuiManaged || screen.IsSelfManaged)
                     continue;
 
                 screen.Update(gameTime);
@@ -244,7 +244,7 @@ namespace RocketUI
         {
             foreach (var screen in Screens.ToArray())
             {
-                if (screen == null || screen is IGuiManaged)
+                if (screen == null || screen is IGuiManaged || screen.IsSelfManaged)
                     continue;
                 
                 action.Invoke(screen);

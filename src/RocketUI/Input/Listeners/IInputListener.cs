@@ -6,6 +6,8 @@ namespace RocketUI.Input.Listeners
     {
         PlayerIndex PlayerIndex { get; }
 
+        int Order { get; set; }
+        
         void Update(GameTime gameTime);
 
         bool IsDown(InputCommand       command);

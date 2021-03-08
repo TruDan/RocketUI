@@ -4,7 +4,7 @@ using SharpVR;
 
 namespace RocketUI.Input.Listeners
 {
-    public class VRControllerInputListener : InputListenerBase<VRControllerPairState, VRButtons>, ICursorInputListener
+    public class VRControllerInputListener : InputListenerBase<VRControllerPairState, VRButtons>, IVRControllerInputListener
     {
         public Hand       ActiveHand       { get; private set; }
         public Quaternion ControllerOffset { get; set; }
@@ -13,6 +13,8 @@ namespace RocketUI.Input.Listeners
 
         public VRControllerInputListener(PlayerIndex playerIndex) : base(playerIndex)
         {
+            Order = -100;
+            
             RegisterMap(InputCommand.MoveForwards, VRButtons.LeftDPadUp);
             RegisterMap(InputCommand.MoveBackwards, VRButtons.LeftDPadDown);
             RegisterMap(InputCommand.MoveLeft, VRButtons.LeftDPadLeft);

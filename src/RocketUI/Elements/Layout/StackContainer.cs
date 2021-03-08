@@ -88,7 +88,7 @@ namespace RocketUI
 				lastOffset = thisOffset;
 			}
 
-			size -= lastOffset;
+			//size -= lastOffset;
 
 			return size;
 		}

@@ -9,6 +9,8 @@ namespace RocketUI.Input.Listeners
     {
         public PlayerIndex PlayerIndex { get; }
 
+        public int Order { get; set; } = 0;
+
         private readonly IDictionary<InputCommand, List<TButtons>> _buttonMap = new Dictionary<InputCommand, List<TButtons>>();
 
         protected TState PreviousState, CurrentState;

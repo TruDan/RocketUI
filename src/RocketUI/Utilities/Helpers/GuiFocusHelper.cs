@@ -139,7 +139,7 @@ namespace RocketUI
             if (screen.HasValue)
             {
                 var (screen3d, cursorPosition) = screen.Value;
-                cursorPosition = GuiManager.GuiRenderer.Unproject(cursorPosition);
+                //cursorPosition = GuiManager.GuiRenderer.Unproject(cursorPosition);
 
                 //if (Vector2.DistanceSquared(rawCursorPosition, _previousCursorPosition) >= 1)
                 {
@@ -157,9 +157,9 @@ namespace RocketUI
             foreach (var screen in screens)
             {
                 Transform3D transform = new Transform3D();
-                if (screen is IGuiScreen3D screen3d)
+                if (screen.Tag is ITransformable transformable)
                 {
-                    transform = screen3d.Transform;
+                    transform = transformable.Transform;
                 }
 
                 var normal   = Vector3.Transform(Vector3.Backward, transform.Rotation);

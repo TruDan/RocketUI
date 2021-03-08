@@ -1,13 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
+using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
+using RocketUI.Attributes;
 
 namespace RocketUI.Serialization
 {
 	public class PropertyStore : Dictionary<object, object>
 	{
+		public static readonly Type[] SerializableTypes = new Type[]
+		{
+			typeof(int),
+			typeof(long),
+			typeof(byte),
+			typeof(short),
+			typeof(uint),
+			typeof(ulong),
+			typeof(ushort),
+			typeof(double),
+			typeof(float),
+			typeof(decimal),
+			typeof(DateTime),
+			typeof(DateTimeOffset),
+			typeof(TimeSpan),
+			typeof(Vector3),
+			typeof(Vector2),
+			typeof(System.Numerics.Vector3),
+			typeof(System.Numerics.Vector2),
+			typeof(Size),
+			typeof(Rectangle),
+			typeof(Point),
+			typeof(Thickness),
+			typeof(RocketUI.Alignment),
+			typeof(RocketUI.Orientation)
+		};
+		
 		/// <summary>
 		/// Gets the parent object that this property store is attached to
 		/// </summary>
@@ -15,6 +46,7 @@ namespace RocketUI.Serialization
 		/// This is used to attach/remove events
 		/// </remarks>
 		/// <value>The parent object</value>
+		[JsonIgnore]
 		public object Parent { get; private set; }
 
 		/// <summary>
@@ -24,6 +56,31 @@ namespace RocketUI.Serialization
 		public PropertyStore(object parent)
 		{
 			this.Parent = parent;
+			Initialize();
+		}
+
+		public void Initialize()
+		{
+			foreach (var propertyInfo in Parent.GetType().GetProperties())
+			{
+				var debuggerVisibleAttr = propertyInfo.GetCustomAttributes().OfType<DebuggerVisibleAttribute>().FirstOrDefault();
+				if (debuggerVisibleAttr != null)
+				{
+					if(!debuggerVisibleAttr.Visible) continue;
+				}
+
+				if (ShouldSerializeType(propertyInfo.PropertyType) && propertyInfo.CanRead)
+				{
+					this[propertyInfo.Name] = propertyInfo.GetValue(Parent);
+				}
+			}
+		}
+
+		private static bool ShouldSerializeType(Type type)
+		{
+			if (type.IsEnum || type.IsPrimitive || type.IsValueType) return true;
+			if (SerializableTypes.Contains(type)) return true;
+			return false;
 		}
 
 		bool IsEqual<T>(T existing, T value)

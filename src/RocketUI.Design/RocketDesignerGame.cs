@@ -93,7 +93,7 @@ namespace RocketUI.Design
 
             GraphicsDeviceManager.ApplyChanges();
 
-            InputManager = new InputManager(this);
+            InputManager = new InputManager(this, Services);
             Components.Add(InputManager);
 
             base.Initialize();
@@ -112,6 +112,7 @@ namespace RocketUI.Design
             GuiManager.Init();
             
             GuiDebugHelper = new GuiDebugHelper(this, GuiManager);
+            Components.Add(GuiDebugHelper);
             //GuiDebugHelper.Enabled = true;
 
             GuiManager.AddScreen(new BackgroundScreen()

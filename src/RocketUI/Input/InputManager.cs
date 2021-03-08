@@ -37,6 +37,8 @@ namespace RocketUI.Input
 
     public class InputManager : GameComponent
     {
+        private readonly IServiceProvider _serviceProvider;
+
         private Dictionary<PlayerIndex, PlayerInputManager> PlayerInputManagers { get; } =
             new Dictionary<PlayerIndex, PlayerInputManager>();
 
@@ -44,21 +46,12 @@ namespace RocketUI.Input
 
         public EventHandler<PlayerInputManagerAdded> InputManagerAdded;
 
-        public InputManager(Game game) : base(game)
+        public InputManager(Game game, IServiceProvider serviceProvider) : base(game)
         {
+            _serviceProvider = serviceProvider;
             UpdateOrder = -10;
-            var playerOne = GetOrAddPlayerManager(PlayerIndex.One);
+            //var playerOne = GetOrAddPlayerManager(PlayerIndex.One);
 
-            var listeners = game.Services.GetService<IEnumerable<IInputListenerFactory>>();
-            if (listeners != null)
-            {
-                foreach (var listenerFactory in listeners)
-                {
-                    var listener = listenerFactory.CreateInputListener(PlayerIndex.One);
-                    if (listener != null)
-                        playerOne.AddListener(listener);
-                }
-            }
         }
 
         public PlayerInputManager GetOrAddPlayerManager(PlayerIndex playerIndex)
@@ -66,6 +59,18 @@ namespace RocketUI.Input
             if (!PlayerInputManagers.TryGetValue(playerIndex, out var playerInputManager))
             {
                 playerInputManager = new PlayerInputManager(playerIndex);
+                
+                var listeners = _serviceProvider.GetService<IEnumerable<IInputListenerFactory>>();
+                if (listeners != null)
+                {
+                    foreach (var listenerFactory in listeners)
+                    {
+                        var listener = listenerFactory.CreateInputListener(playerIndex);
+                        if (listener != null)
+                            playerInputManager.AddListener(listener);
+                    }
+                }
+                
                 PlayerInputManagers.Add(playerIndex, playerInputManager);
 
                 InputManagerAdded?.Invoke(this, new PlayerInputManagerAdded(playerIndex, playerInputManager));

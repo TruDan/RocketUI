@@ -31,7 +31,6 @@ namespace RocketUI.Design.Screens
             _toolbar.AddChild(new ToggleButton("Toggle Enabled", (value) => _debugHelper.Enabled = value));
             _toolbar.AddChild(new ToggleButton("Toggle Boundary Boxes", (value) => _debugHelper.BoundingBoxesEnabled = value));
             _toolbar.AddChild(new ToggleButton("Toggle Boundary Boxes Hover", (value) => _debugHelper.BoundingBoxesHoverEnabled = value));
-
         }
 
         public void SetScreen(Screen screen)

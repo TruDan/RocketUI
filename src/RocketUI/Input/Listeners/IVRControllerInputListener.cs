@@ -1,6 +1,6 @@
 ﻿namespace RocketUI.Input.Listeners
 {
-    public interface IVRControllerInputListener
+    public interface IVRControllerInputListener : ICursorInputListener
     {
     }
 }

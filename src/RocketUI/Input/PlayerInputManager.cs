@@ -23,19 +23,13 @@ namespace RocketUI.Input
         public PlayerIndex PlayerIndex { get; }
         public InputType   InputType   { get; private set; }
 
-        public ICursorInputListener CursorInputListener
-        {
-            get => _cursorInputListener;
-        }
-
         private List<IInputListener> InputListeners { get; } = new List<IInputListener>();
 
         public List<InputActionBinding> Bindings { get; } = new List<InputActionBinding>();
 
         public EventHandler<InputListenerAdded> InputListenerAdded;
 
-        private bool                 _isVr = false;
-        private ICursorInputListener _cursorInputListener;
+        private bool _isVr = false;
 
         public PlayerInputManager(PlayerIndex playerIndex, InputType inputType = InputType.GamePad)
         {
@@ -46,10 +40,6 @@ namespace RocketUI.Input
         public void AddListener(IInputListener listener)
         {
             InputListeners.Add(listener);
-            if (listener is ICursorInputListener cursorInputListener)
-            {
-                _cursorInputListener = cursorInputListener;
-            }
 
             InputListenerAdded?.Invoke(this, new InputListenerAdded(listener));
         }
@@ -80,6 +70,7 @@ namespace RocketUI.Input
         {
             return InputListeners.Any(l => commands.Any(l.IsUp));
         }
+
         public bool IsDown(params InputCommand[] commands)
         {
             return InputListeners.Any(l => commands.Any(l.IsDown));
@@ -97,7 +88,13 @@ namespace RocketUI.Input
 
         public Ray GetCursorRay()
         {
-            return _cursorInputListener?.GetCursorRay() ?? new Ray();
+            foreach (var inputListener in InputListeners.OrderBy(x => x.Order).OfType<ICursorInputListener>())
+            {
+                var cursorRay = inputListener.GetCursorRay();
+                return cursorRay;
+            }
+
+            return new Ray();
         }
     }
 }

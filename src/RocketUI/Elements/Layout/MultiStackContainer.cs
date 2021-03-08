@@ -104,6 +104,7 @@ namespace RocketUI
             var stack = new StackContainer()
             {
                 Orientation = Orientation == Orientation.Horizontal ? Orientation.Vertical : Orientation.Horizontal,
+                Anchor = ChildAnchor,
                 ChildAnchor = ChildAnchor.SwapXy()
             };
 
