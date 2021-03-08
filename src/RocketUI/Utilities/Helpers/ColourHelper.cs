@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Globalization;
+using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace RocketUI.Utilities.Helpers
 {
     public static class ColorHelper
     {
-        
         public static Color HexToColor(string hexString)
         {
             //replace # occurences
@@ -21,7 +21,20 @@ namespace RocketUI.Utilities.Helpers
 
             return new Color(r, g, b);
         }
-        
+
+        public static string ToHexString(this Color color, string prefix = "#")
+        {
+            var sb = new StringBuilder();
+            sb.Append(prefix);
+            sb.Append(color.R.ToString("X"));
+            sb.Append(color.G.ToString("X"));
+            sb.Append(color.B.ToString("X"));
+            if (color.A != byte.MaxValue)
+                sb.Append(color.A.ToString("X"));
+
+            return sb.ToString();
+        }
+
         public static Color Darken(this Color color, float amount)
         {
             var hsl = (HslColor) color;
@@ -43,25 +56,27 @@ namespace RocketUI.Utilities.Helpers
             h = 0; // default to black
             s = 0;
             l = 0;
-            v = Math.Max(r,g);
-            v = Math.Max(v,b);
-            m = Math.Min(r,g);
-            m = Math.Min(m,b);
+            v = Math.Max(r, g);
+            v = Math.Max(v, b);
+            m = Math.Min(r, g);
+            m = Math.Min(m, b);
             l = (m + v) / 2.0;
             if (l <= 0.0)
             {
                 return;
             }
+
             vm = v - m;
             s = vm;
             if (s > 0.0)
             {
-                s /= (l <= 0.5) ? (v + m ) : (2.0 - v - m) ;
+                s /= (l <= 0.5) ? (v + m) : (2.0 - v - m);
             }
             else
             {
                 return;
             }
+
             r2 = (v - r) / vm;
             g2 = (v - g) / vm;
             b2 = (v - b) / vm;
@@ -77,16 +92,17 @@ namespace RocketUI.Utilities.Helpers
             {
                 h = (r == m ? 3.0 + g2 : 5.0 - r2);
             }
-            if (h >= 6f) h -= 6f; 
+
+            if (h >= 6f) h -= 6f;
             if (h < 0f) h += 6f;
             h /= 6.0;
         }
-        
+
         public static void HslToRgb(double h, double s, double l, out byte r, out byte g, out byte b)
         {
             double v;
             double r2, g2, b2;
-            
+
             r2 = l; // default to gray
             g2 = l;
             b2 = l;
@@ -96,9 +112,9 @@ namespace RocketUI.Utilities.Helpers
             {
                 double m;
                 double sv;
-                int sextant;
+                int    sextant;
                 double fract, vsf, mid1, mid2;
-                
+
                 m = l + l - v;
                 sv = (v - m) / v;
                 h *= 6.0;
@@ -108,7 +124,7 @@ namespace RocketUI.Utilities.Helpers
                 mid1 = m + vsf;
                 mid2 = v - vsf;
                 switch (sextant)
-                 {
+                {
                     case 0:
                         r2 = v;
                         g2 = mid1;

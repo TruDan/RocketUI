@@ -1,20 +1,27 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
+using RocketUI.Serialization.Json.Converters;
 using RocketUI.Utilities.Converters;
 
 namespace RocketUI
 {
+	[DataContract]
+	[DebuggerDisplay("{DebugDisplayString,nq}")]
 	[TypeConverter(typeof(ThicknessConverter))]
+	[JsonConverter(typeof(ThicknessJsonConverter))]
 	public struct Thickness : IEquatable<Thickness>
 	{
 		public static Thickness Zero => new Thickness(0);
 		public static Thickness One => new Thickness(1);
 		
-		public int Left { get; set; }
-		public int Top { get; set; }
-		public int Right { get; set;}
-		public int Bottom { get; set;}
+		[DataMember] public int Left   { get; set; }
+		[DataMember] public int Top    { get; set; }
+		[DataMember] public int Right  { get; set;}
+		[DataMember] public int Bottom { get; set;}
 
 		public int Vertical => Top + Bottom;
 		public int Horizontal => Left + Right;
@@ -239,7 +246,7 @@ namespace RocketUI
 
         public override string ToString()
         {
-            return $"Top: {Top} Bottom: {Bottom} Left: {Left} Right: {Right}";
+            return $"{{Top: {Top}, Bottom: {Bottom}, Left: {Left}, Right: {Right}}}";
         }
     }
 }

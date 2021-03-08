@@ -153,8 +153,9 @@ namespace RocketUI
 		[DebuggerVisible]
 		public bool IsVisible { get; set; } = true;
 
-		public Matrix LayoutTransform { get; set; } = Matrix.Identity;
-		public Matrix RenderTransform { get; set; } = Matrix.Identity;
+		[DebuggerVisible(Visible = false)] public Matrix LayoutTransform { get; set; } = Matrix.Identity;
+
+		[DebuggerVisible(Visible = false)] public Matrix RenderTransform { get; set; } = Matrix.Identity;
 
 		public void Draw(GuiSpriteBatch graphics, GameTime gameTime)
 		{

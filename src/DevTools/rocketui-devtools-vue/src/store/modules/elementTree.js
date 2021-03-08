@@ -3,8 +3,7 @@ import rocketdebugger from "@/plugins/rocketdebugger";
 const state = () => ({
     elements: [],
     rootElement: null,
-    selectedElement: null,
-    selectedElementProperties: []
+    selectedElement: null
 });
 
 const getters = {
@@ -56,7 +55,6 @@ const mutations = {
     setSelectedElement(state, elementId) {
         const element = state.elements.find(x => x.id === elementId);
         state.selectedElement = element;
-        state.selectedElementProperties = element.properties;
     },
     setChildrenOfElement(state, elementId, children) {
         const element = state.elements.find(x => x.id === elementId);

@@ -6,9 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using RocketUI.Debugger.Models;
+using RocketUI.Serialization.Json.Converters;
 using WebSocketSharp;
 using WebSocketSharp.Net.WebSockets;
 using WebSocketSharp.Server;
@@ -19,13 +22,61 @@ namespace RocketUI.Debugger
     {
         private readonly IServiceProvider _serviceProvider;
 
+        public class NoTypeConverterJsonConverter<T> : JsonConverter
+        {
+            static readonly IContractResolver resolver = new NoTypeConverterContractResolver();
+
+            class NoTypeConverterContractResolver : DefaultContractResolver
+            {
+                protected override JsonContract CreateContract(Type objectType)
+                {
+                    if (typeof(T).IsAssignableFrom(objectType))
+                    {
+                        var contract = this.CreateObjectContract(objectType);
+                        contract.Converter = null; // Also null out the converter to prevent infinite recursion.
+                        return contract;
+                    }
+                    return base.CreateContract(objectType);
+                }
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(T).IsAssignableFrom(objectType);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                return JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Deserialize(reader, objectType);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Serialize(writer, value);
+            }
+        }
+        
         private static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
         {
             Culture = CultureInfo.InvariantCulture,
             MaxDepth = 64,
             NullValueHandling = NullValueHandling.Include,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Converters = new List<JsonConverter>()
+            {
+                new StringEnumConverter(),
+                new JavaScriptDateTimeConverter(),
+                new SanitizedElementDetailPropertyJsonConverter(),
+                new ColorJsonConverter(),
+                new NoTypeConverterJsonConverter<Rectangle>(),
+                new NoTypeConverterJsonConverter<Size>(),
+                new NoTypeConverterJsonConverter<Vector2>(),
+                new NoTypeConverterJsonConverter<Vector3>(),
+                new NoTypeConverterJsonConverter<Thickness>(),
+                new NoTypeConverterJsonConverter<Point>(),
+            }
         };
 
         private static JsonSerializerSettings _deserializerSettings = new JsonSerializerSettings()
@@ -34,7 +85,21 @@ namespace RocketUI.Debugger
 //            MaxDepth = 128, // no max depth pls3
             NullValueHandling = NullValueHandling.Include,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Converters = new List<JsonConverter>()
+            {
+                new StringEnumConverter(),
+                new JavaScriptDateTimeConverter(),
+                new SanitizedElementDetailPropertyJsonConverter(),
+                new ColorJsonConverter(),
+                new NoTypeConverterJsonConverter<Rectangle>(),
+                new NoTypeConverterJsonConverter<Size>(),
+                new NoTypeConverterJsonConverter<Vector2>(),
+                new NoTypeConverterJsonConverter<Vector3>(),
+                new NoTypeConverterJsonConverter<Thickness>(),
+                new NoTypeConverterJsonConverter<Point>(),
+            }
         };
 
         private GuiManager _guiManager => _serviceProvider.GetRequiredService<GuiManager>();
@@ -144,7 +209,7 @@ namespace RocketUI.Debugger
         {
             try
             {
-                var msg      = RocketDebugSocketServer.JsonDeserialize<Message>(e.Data);
+                var msg = RocketDebugSocketServer.JsonDeserialize<Message>(e.Data);
                 try
                 {
                     var response = _server.HandleMessage(msg);
@@ -164,73 +229,113 @@ namespace RocketUI.Debugger
                     }));
                     Console.WriteLine("Exception while handling websocket message: {0}", ex.ToString());
                 }
-                
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception while parsing websocket message: {0}", ex.ToString());
             }
         }
-
     }
 
-        class SanitizedElementDetail
+    class SanitizedElementDetail
+    {
+        public Guid   Id      { get; set; }
+        public string Name    { get; set; }
+        public string Type    { get; set; }
+        public string Display { get; set; }
+
+        [JsonConverter(typeof(SanitizedElementDetailPropertyJsonConverter))]
+        public List<SanitizedElementDetailProperty> Properties { get; set; }
+
+        public List<SanitizedElementDetail> Children { get; set; }
+
+        public SanitizedElementDetail()
         {
-            public Guid                                 Id         { get; set; }
-            public string                               Name       { get; set; }
-            public string                               Type       { get; set; }
-            public string                               Display    { get; set; }
-            public List<SanitizedElementDetailProperty> Properties { get; set; }
-            public List<SanitizedElementDetail>         Children   { get; set; }
+        }
 
-            public SanitizedElementDetail()
-            {
-                
-            }
+        public SanitizedElementDetail(IGuiElement element)
+        {
+            Id = element.Id;
+            Name = element.Name;
+            Type = element.GetType().Name;
+            Display = $"<{Type}>";
+            Properties = GetProperties(element).ToList();
+            Children = GetChildren(element).ToList();
+        }
 
-            public SanitizedElementDetail(IGuiElement element)
+        private static IEnumerable<SanitizedElementDetail> GetChildren(IGuiElement element)
+        {
+            foreach (var child in element.ChildElements)
             {
-                Id = element.Id;
-                Name = element.Name;
-                Type = element.GetType().Name;
-                Display = $"<{Type}>";
-                Properties = GetProperties(element).ToList();
-                Children = GetChildren(element).ToList();
-            }
-
-            private static IEnumerable<SanitizedElementDetail> GetChildren(IGuiElement element)
-            {
-                foreach (var child in element.ChildElements)
-                {
-                    yield return new SanitizedElementDetail(child);
-                }
-            }
-            private static IEnumerable<SanitizedElementDetailProperty> GetProperties(IGuiElement element)
-            {
-                element.Properties.Initialize();
-                foreach (var prop in element.Properties.ToArray())
-                {
-                    yield return new SanitizedElementDetailProperty(prop.Key.ToString(), prop.Value);
-                }
+                yield return new SanitizedElementDetail(child);
             }
         }
 
-        class SanitizedElementDetailProperty
+        private static IEnumerable<SanitizedElementDetailProperty> GetProperties(IGuiElement element)
         {
-            public string Key   { get; set; }
-            public object Value { get; set; }
-            public object ValueType { get; set; }
-
-            public SanitizedElementDetailProperty()
+            element.Properties.Initialize();
+            foreach (var prop in element.Properties.ToArray())
             {
-                
-            }
-
-            public SanitizedElementDetailProperty(string key, object value)
-            {
-                Key = key;
-                Value = value;
-                ValueType = value?.GetType();
+                yield return new SanitizedElementDetailProperty(prop.Key.ToString(), prop.Value);
             }
         }
+    }
+
+    [JsonConverter(typeof(SanitizedElementDetailPropertyJsonConverter))]
+    class SanitizedElementDetailProperty
+    {
+        public string Key       { get; set; }
+        public object Value     { get; set; }
+        public Type   ValueType { get; set; }
+
+        public SanitizedElementDetailProperty()
+        {
+        }
+
+        public SanitizedElementDetailProperty(string key, object value)
+        {
+            Key = key;
+            Value = value;
+            ValueType = value?.GetType();
+        }
+    }
+
+    class SanitizedElementDetailPropertyJsonConverter : JsonConverter<IEnumerable<SanitizedElementDetailProperty>>
+    {
+        public override void WriteJson(JsonWriter writer, IEnumerable<SanitizedElementDetailProperty>? list,
+            JsonSerializer                        serializer)
+        {
+            if (list == null)
+            {
+                serializer.Serialize(writer, new List<SanitizedElementDetailProperty>());
+                return;
+            }
+
+            writer.WriteStartObject();
+
+            foreach (var value in list)
+            {
+                writer.WritePropertyName(value.Key, true);
+
+                writer.WriteStartObject();
+
+                writer.WritePropertyName("value");
+                serializer.Serialize(writer, value.Value);
+
+                writer.WritePropertyName("type");
+                writer.WriteValue(value.ValueType.FullName);
+
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndObject();
+        }
+
+        public override IEnumerable<SanitizedElementDetailProperty>? ReadJson(JsonReader reader, Type objectType,
+            IEnumerable<SanitizedElementDetailProperty>? existingValue, bool hasExistingValue,
+            JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

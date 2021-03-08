@@ -36,10 +36,16 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="prop in properties"
-            :key="prop.key">
-          <td>{{ prop.key }}</td>
-          <td>{{ prop.value }}</td>
+        <tr v-for="(prop, key) in element.properties"
+            :key="key">
+          <td>{{ key }}</td>
+          <td>
+            <v-container fluid>
+              <v-row>
+                <PropertyGridValueEditor :property="prop" />
+              </v-row>
+            </v-container>
+          </td>
         </tr>
         </tbody>
       </template>
@@ -49,13 +55,16 @@
 
 <script>
 import { mapState } from 'vuex';
+import PropertyGridValueEditor from "@/components/PropertyGridValueEditor";
 
 export default {
   name: "ElementPropertyGrid",
   computed: mapState({
     element: state => state.elementTree.selectedElement,
-    properties: state => state.elementTree.selectedElementProperties
   }),
+  components: {
+    PropertyGridValueEditor
+  },
   data: () => ({
 
   })

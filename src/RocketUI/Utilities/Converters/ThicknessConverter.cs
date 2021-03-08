@@ -48,6 +48,15 @@ namespace RocketUI.Utilities.Converters
 											 int.Parse(parts[3])
 											);
 					}
+					else if (parts.Length == 3)
+					{
+						return new Thickness(
+							int.Parse(parts[1]),
+							int.Parse(parts[0]),
+							int.Parse(parts[1]),
+							int.Parse(parts[2])
+						);
+					}
 					else if (parts.Length == 2)
 					{
 						return new Thickness(

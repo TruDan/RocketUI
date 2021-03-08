@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 
 namespace RocketUI
 {
+    [DataContract]
     public class Transform3D
     {
         public event EventHandler PositionChanged;
@@ -18,7 +20,7 @@ namespace RocketUI
             get => _dirty;
         }
         
-        public virtual Vector3 Scale
+        [DataMember] public virtual Vector3 Scale
         {
             get => _scale;
             set
@@ -30,7 +32,7 @@ namespace RocketUI
             }
         }
         
-        public virtual Vector3 Position
+        [DataMember] public virtual Vector3 Position
         {
             get => _position;
             set
@@ -42,7 +44,7 @@ namespace RocketUI
             }
         }
         
-        public virtual Quaternion Rotation
+        [DataMember] public virtual Quaternion Rotation
         {
             get => _rotation;
             set
