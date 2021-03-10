@@ -1,80 +1,41 @@
 <template>
-  <v-container fluid>
-  <v-row dense>
-    <v-col>
-    <template v-if="editing" :title="property.type">
-      <template v-if="property.type === 'RocketUI.Thickness'">
-        <v-row no-gutters dense>
-          <v-col>
-            <v-text-field flat label="Top" outlined dense v-model="property.value.Top"></v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field flat label="Right" outlined dense v-model="property.value.Right"></v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field flat label="Bottom" outlined dense v-model="property.value.Bottom"></v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field flat label="Left" outlined dense v-model="property.value.Left"></v-text-field>
-          </v-col>
-        </v-row>
-      </template>
-      <template v-else-if="property.type === 'RocketUI.Size'">
-        <v-row no-gutters dense>
-          <v-col>
-            <v-text-field flat label="Width" outlined dense v-model="property.value.Width"></v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field flat label="Height" outlined dense v-model="property.value.Height"></v-text-field>
-          </v-col>
-        </v-row>
-      </template>
-      <template v-else-if="property.type === 'System.Boolean'">
-        <v-switch v-model="property.value" :label="propertyName"/>
-      </template>
-      <template v-else-if="property.type === 'Microsoft.Xna.Framework.Color'">
+  <v-list-item dense>
+    <v-list-item-content>
+      <v-list-item-title>{{ propertyName }}</v-list-item-title>
+    </v-list-item-content>
+    <v-list-item-content>
+      <v-switch v-if="property.type === 'System.Boolean'" dense flat hide-details="auto" :input-value="property.value"/>
         <v-color-picker
+            v-else-if="property.type === 'Microsoft.Xna.Framework.Color'"
             disabled
             dot-size="12"
             hide-canvas
             mode="hexa"
             flat
             swatches-max-height="184"
-            v-model="property.value"
+            hide-details="auto"
+            :value="property.value"
         ></v-color-picker>
+      <template v-else-if="typeof property.value ==='object'">
+        <v-row dense no-gutters>
+          <v-col v-for="(val, subPropertyName) in property.value" v-bind:key="subPropertyName">
+            <v-text-field flat hide-details="auto" :value="val" v-bind:label="subPropertyName | capitalize"></v-text-field>
+          </v-col>
+        </v-row>
       </template>
       <template v-else>
-        <v-text-field single-line flat dense outlined v-model="property.value" :label="propertyName"/>
+        <v-text-field flat single-line hide-details="auto" :value="property.value"/>
       </template>
-    </template>
-    <template v-else-if="property.type === 'System.Boolean'">
-      <v-switch flat v-model="property.value" :label="propertyName" readonly/>
-    </template>
-    <template v-else>
-      {{property.value}}
-    </template>
-    </v-col>
-    <v-col cols="1">
-      <v-btn icon @click="toggleEdit" color="primary">
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
-    </v-col>
-  </v-row>
-  </v-container>
+    </v-list-item-content>
+  </v-list-item>
 </template>
 
 <script>
-import {VBtn, VIcon} from "vuetify";
-
 export default {
   name: 'PropertyGridValueEditor',
   data: () => ({
     editing: false
   }),
-  components: {
-    VBtn,
-    VIcon
-  },
   methods: {
     toggleEdit() {
       this.editing = !this.editing;
@@ -91,3 +52,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+
+.v-input__slot {
+  margin-bottom: 0;
+}
+</style>

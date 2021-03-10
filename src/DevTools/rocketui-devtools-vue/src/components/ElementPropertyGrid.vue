@@ -4,22 +4,22 @@
       <v-card-title>Layout</v-card-title>
       <div class="layout-grid">
         <div class="layout-box" data-label="Margin">
-          <span class="layout-text-top">10</span>
-          <span class="layout-text-right">10</span>
-          <span class="layout-text-bottom">10</span>
-          <span class="layout-text-left">10</span>
+          <span class="layout-text-top">{{ layout.margin.top }}</span>
+          <span class="layout-text-right">{{ layout.margin.right }}</span>
+          <span class="layout-text-bottom">{{ layout.margin.bottom }}</span>
+          <span class="layout-text-left">{{ layout.margin.left }}</span>
           <div class="layout-box box-orange" data-label="Border">
-            <span class="layout-text-top">10</span>
-            <span class="layout-text-right">10</span>
-            <span class="layout-text-bottom">10</span>
-            <span class="layout-text-left">10</span>
+            <span class="layout-text-top">{{ layout.border.top }}</span>
+            <span class="layout-text-right">{{ layout.border.right }}</span>
+            <span class="layout-text-bottom">{{ layout.border.bottom }}</span>
+            <span class="layout-text-left">{{ layout.border.left }}</span>
             <div class="layout-box box-green" data-label="Padding">
-              <span class="layout-text-top">10</span>
-              <span class="layout-text-right">10</span>
-              <span class="layout-text-bottom">10</span>
-              <span class="layout-text-left">10</span>
-              <div class="layout-box box-green">
-                100x400
+              <span class="layout-text-top">{{ layout.padding.top }}</span>
+              <span class="layout-text-right">{{ layout.padding.right }}</span>
+              <span class="layout-text-bottom">{{ layout.padding.bottom }}</span>
+              <span class="layout-text-left">{{ layout.padding.left }}</span>
+              <div class="layout-box">
+                {{ layout.content.width }} x {{ layout.content.height }}
               </div>
             </div>
           </div>
@@ -27,46 +27,67 @@
       </div>
     </v-card>
     <v-divider/>
-    <v-simple-table dense>
-      <template v-slot:default>
-        <thead>
-        <tr>
-          <th class="text-left">Property</th>
-          <th class="text-left">Value</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="(prop, key) in element.properties"
-            :key="key">
-          <td>{{ key }}</td>
-          <td>
-            <v-container fluid>
-              <v-row>
-                <PropertyGridValueEditor :property="prop" />
-              </v-row>
-            </v-container>
-          </td>
-        </tr>
-        </tbody>
-      </template>
-    </v-simple-table>
+    <v-card>
+      <v-card-title>Properties</v-card-title>
+      <v-card-text>
+        <v-list>
+          <template v-for="(prop, propName) in element.properties">
+            <PropertyGridValueEditor :key="propName" :property-name="propName" :property="prop"/>
+            <v-divider :key="propName + '1'"/>
+          </template>
+        </v-list>
+      </v-card-text>
+    </v-card>
   </v-sheet>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import {mapState} from 'vuex';
 import PropertyGridValueEditor from "@/components/PropertyGridValueEditor";
 
 export default {
   name: "ElementPropertyGrid",
-  computed: mapState({
-    element: state => state.elementTree.selectedElement,
-  }),
+  computed: {
+    ...mapState({
+      element: state => state.elementTree.selectedElement,
+    })
+  },
+  watch: {
+    element: (newVal) => {
+      this.layout.margin = newVal.properties.margin;
+      this.layout.padding = newVal.properties.padding;
+      //this.layout.border = newVal.properties.border;
+      this.layout.content = newVal.properties.size;
+    }
+  },
   components: {
     PropertyGridValueEditor
   },
   data: () => ({
-
+    layout: {
+      margin: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      },
+      border: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      },
+      padding: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      },
+      content: {
+        width: 0,
+        height: 0
+      }
+    }
   })
 }
 </script>
@@ -110,7 +131,7 @@ export default {
     isolation: isolate;
 
     &[data-label]::before {
-      display:block;
+      display: block;
       content: attr(data-label);
       font-size: ($size - (4*$padding));
       color: rgba(map-get($material-theme, 'text-color'), map-get($material-theme, 'secondary-text-percent'));

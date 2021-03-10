@@ -12,7 +12,7 @@ namespace RocketUI
 	[DataContract]
 	[DebuggerDisplay("{DebugDisplayString,nq}")]
 	[TypeConverter(typeof(ThicknessConverter))]
-	[JsonConverter(typeof(ThicknessJsonConverter))]
+	//[JsonConverter(typeof(ThicknessJsonConverter))]
 	public struct Thickness : IEquatable<Thickness>
 	{
 		public static Thickness Zero => new Thickness(0);

@@ -25,8 +25,10 @@ namespace RocketUI.Debugger
         public class NoTypeConverterJsonConverter<T> : JsonConverter
         {
             static readonly IContractResolver resolver = new NoTypeConverterContractResolver();
-
-            class NoTypeConverterContractResolver : DefaultContractResolver
+            
+            
+            
+            class NoTypeConverterContractResolver : CamelCasePropertyNamesContractResolver
             {
                 protected override JsonContract CreateContract(Type objectType)
                 {
@@ -47,12 +49,40 @@ namespace RocketUI.Debugger
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
-                return JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Deserialize(reader, objectType);
+                return JsonSerializer.CreateDefault(new JsonSerializerSettings()
+                {
+                    ContractResolver = resolver
+                }).Deserialize(reader, objectType);
+                
+                var prevResolver = serializer.ContractResolver;
+                try
+                {
+                    serializer.ContractResolver = resolver;
+                    return serializer.Deserialize(reader, objectType);
+                }
+                finally
+                {
+                    serializer.ContractResolver = prevResolver;
+                }
             }
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Serialize(writer, value);
+                JsonSerializer.CreateDefault(new JsonSerializerSettings()
+                {
+                    ContractResolver = resolver
+                }).Serialize(writer, value);
+                return;
+                var prevResolver = serializer.ContractResolver;
+                try
+                {
+                    serializer.ContractResolver = resolver;
+                    serializer.Serialize(writer, value);
+                }
+                finally
+                {
+                    serializer.ContractResolver = prevResolver;
+                }
             }
         }
         
@@ -120,9 +150,8 @@ namespace RocketUI.Debugger
             {
                 case "GetRoot":
                 {
-                    var root = _guiManager.FocusManager.ActiveFocusContext?.FocusedControl?.RootScreen ??
-                               _guiManager.Screens.FirstOrDefault();
-                    return new SanitizedElementDetail(root);
+                    var screens = _guiManager.Screens.ToArray();
+                    return screens.Select(root => new SanitizedElementDetail(root)).ToArray();
                 }
                     break;
 

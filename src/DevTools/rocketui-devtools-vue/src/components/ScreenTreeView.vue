@@ -1,5 +1,12 @@
 <template>
-  <v-treeview :items="rootElement" dense open-all activatable :active.sync="active">
+  <v-treeview
+      :items="rootElements"
+      dense
+      open-all
+      activatable
+      expand-icon="mdi-menu-down"
+
+      :active.sync="active">
     <template v-slot:label="{ item }">
       <pre>{{ item.display || item.name || '' }}</pre>
     </template>
@@ -22,7 +29,7 @@ export default {
   //   })
   // }
   computed: mapState({
-    rootElement: state => [state.elementTree.rootElement],
+    rootElements: state => state.elementTree.rootElements,
   }),
   watch: {
     active: function(val) {
@@ -44,6 +51,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss">
+.v-treeview--dense .v-treeview-node__root {
+  min-height: 1rem;
+}
 </style>

@@ -2,7 +2,7 @@ import rocketdebugger from "@/plugins/rocketdebugger";
 
 const state = () => ({
     elements: [],
-    rootElement: null,
+    rootElements: [],
     selectedElement: null
 });
 
@@ -36,9 +36,9 @@ const mutations = {
         state.elements = [];
         //state.elements.clear();
         state.elements.push(root);
-        state.rootElement = root;
+        state.rootElements = root;
 
-        let discoverChildren;
+        var discoverChildren;
         discoverChildren = (element) => {
             if ('children' in element) {
                 if (element.children.length > 0) {
@@ -50,7 +50,10 @@ const mutations = {
             }
         };
 
-        discoverChildren(root);
+        for(var screen of root) {
+            state.elements.push(screen);
+            discoverChildren(screen);
+        }
     },
     setSelectedElement(state, elementId) {
         const element = state.elements.find(x => x.id === elementId);

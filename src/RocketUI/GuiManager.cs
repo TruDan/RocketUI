@@ -86,6 +86,12 @@ namespace RocketUI
             
             foreach (var screen in Screens.ToArray())
             {
+                if(screen is IGuiScreen3D || screen is IGuiManaged || screen.IsSelfManaged)
+                {
+                    screen.InvalidateLayout();
+                    continue;
+                }
+                
                 screen.UpdateSize(GuiRenderer.ScaledResolution.ScaledWidth, GuiRenderer.ScaledResolution.ScaledHeight);
             }
         }
@@ -162,8 +168,10 @@ namespace RocketUI
             screen.AutoSizeMode = AutoSizeMode.None;
             screen.Anchor = Alignment.Fixed;
             
-            if(!(screen is IGuiScreen3D))
+            if(!(screen is IGuiScreen3D || screen is IGuiManaged || screen.IsSelfManaged))
                 screen.UpdateSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
+            else 
+                screen.InvalidateLayout();
             
             screen.Init(GuiRenderer);
             Screens.Add(screen);
