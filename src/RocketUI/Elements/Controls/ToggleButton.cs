@@ -13,6 +13,19 @@ namespace RocketUI
 
         public GuiTexture2D CheckedBackground;
 
+        public override Color DefaultColor
+        {
+            get
+            {
+                if (Checked && CheckedColor.HasValue) 
+                    return CheckedColor.Value;
+                return _defaultColor;
+            }
+            set => _defaultColor = value;
+        }
+
+        public virtual  Color? CheckedColor { get; set; } = Color.Yellow;
+
         public virtual Color     CheckedOutlineColor     { get; set; } = new Color(Color.White, 0.75f);
         public virtual Thickness CheckedOutlineThickness { get; set; } = Thickness.Zero;
 
@@ -39,6 +52,7 @@ namespace RocketUI
         }
 
         private ValueFormatter<bool> _formatter = DefaultDisplayFormat;
+        private Color                _defaultColor;
 
         public ValueFormatter<bool> DisplayFormat
         {
@@ -68,12 +82,11 @@ namespace RocketUI
         {
             if (Checked)
             {
-                TextElement.TextColor = Color.Yellow;
+                if (CheckedColor.HasValue)
+                    TextElement.TextColor = CheckedColor.Value;
             }
             else
-            {
-                TextElement.TextColor = Color.White;
-            }
+                TextElement.TextColor = DefaultColor;
         }
 
         protected override void OnHighlightDeactivate()

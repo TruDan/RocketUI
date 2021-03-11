@@ -22,8 +22,10 @@ namespace RocketUI
         protected TextElement TextElement { get; }
         public    Action         Action      { get; set; }
 
-        public Color DisabledColor = Color.DarkGray;
-        public Color EnabledColor  = Color.White;
+        public virtual Color? DisabledColor  { get; set; } = Color.DarkGray;
+        public virtual Color  DefaultColor   { get; set; } = Color.White;
+        public virtual Color? HighlightColor { get; set; } = Color.White;
+        public virtual Color? FocusColor     { get; set; } = Color.White;
         
         public GuiSound HighlightSound { get; set; }
         public GuiSound ClickSound { get; set; }
@@ -91,14 +93,16 @@ namespace RocketUI
         protected override void OnHighlightActivate()
         {
             base.OnHighlightActivate();
-            TextElement.TextColor = Color.Yellow;
+            if(Enabled && HighlightColor.HasValue)
+                TextElement.TextColor = HighlightColor.Value;
             HighlightSound.Play();
         }
 
         protected override void OnHighlightDeactivate()
         {
             base.OnHighlightDeactivate();
-            TextElement.TextColor = Color.White;
+            if(Enabled)
+                TextElement.TextColor = DefaultColor;
         }
 
         protected override void OnCursorMove(Point cursorPosition, Point previousCursorPosition, bool isCursorDown)
@@ -109,8 +113,22 @@ namespace RocketUI
         protected override void OnFocusActivate()
         {
             base.OnFocusActivate();
+            if (Enabled && FocusColor.HasValue)
+                TextElement.TextColor = FocusColor.Value;
             ClickSound.Play();
             Action?.Invoke();
+        }
+
+        protected override void OnFocusDeactivate()
+        {
+            base.OnFocusDeactivate();
+            if (Enabled)
+            {
+                if (Highlighted && HighlightColor.HasValue)
+                    TextElement.TextColor = HighlightColor.Value;
+                else
+                    TextElement.TextColor = DefaultColor;
+            }
         }
 
         protected override void OnCursorPressed(Point cursorPosition, MouseButton button)
@@ -128,13 +146,14 @@ namespace RocketUI
         {
             if (!Enabled)
             {
-                TextElement.TextColor = DisabledColor;
+                if(DisabledColor.HasValue)
+                    TextElement.TextColor = DisabledColor.Value;
                 // TextElement.TextOpacity = 0.3f;
             }
             else
             {
-                TextElement.TextColor = EnabledColor;
-                TextElement.TextOpacity = 1f;
+                TextElement.TextColor = DefaultColor;
+                //TextElement.TextOpacity = 1f;
             }
         }
 
