@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
 namespace RocketUI
@@ -27,6 +29,7 @@ namespace RocketUI
             // AutoSizeMode = AutoSizeMode.None;
             // Anchor = Alignment.Fixed;
             ClipToBounds = true;
+            
         }
 
         public void UpdateSize(int width, int height)
@@ -35,9 +38,10 @@ namespace RocketUI
             InvalidateLayout(true);
         }
         
-        private  object     _updateLock = new object();
-        public   GuiManager GuiManager    { get; internal set; }
-        public bool       IsSelfManaged { get; set; }
+        private object     _updateLock = new object();
+        public  GuiManager GuiManager            { get; internal set; }
+        public  bool       IsSelfManaged         { get; set; }
+        public  bool       IsAutomaticallyScaled { get; set; } = true;
 
         public void UpdateLayout()
         {

@@ -2,7 +2,8 @@
 {
     public interface IGuiScreen : IGuiElement, IGuiFocusContext
     {
-        GuiManager GuiManager { get; }
+        GuiManager GuiManager            { get; }
+        bool       IsAutomaticallyScaled { get; }
         void UpdateLayout();
 
     }

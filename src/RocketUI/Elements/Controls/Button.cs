@@ -24,7 +24,7 @@ namespace RocketUI
 
         public virtual Color? DisabledColor  { get; set; } = Color.DarkGray;
         public virtual Color  DefaultColor   { get; set; } = Color.White;
-        public virtual Color? HighlightColor { get; set; } = Color.White;
+        public virtual Color? HighlightColor { get; set; } = Color.Yellow;
         public virtual Color? FocusColor     { get; set; } = Color.White;
         
         public GuiSound HighlightSound { get; set; }

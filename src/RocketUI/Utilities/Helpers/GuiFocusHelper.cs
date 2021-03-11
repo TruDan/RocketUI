@@ -135,18 +135,21 @@ namespace RocketUI
 
 
             var cursorRay = InputManager.GetOrAddPlayerManager(PlayerIndex.One).GetCursorRay();
-            var screen    = FindScreen(cursorRay);
-            if (screen.HasValue)
+            var findResult    = FindScreen(cursorRay);
+            if (findResult.HasValue)
             {
-                var (screen3d, cursorPosition) = screen.Value;
-                //cursorPosition = GuiManager.GuiRenderer.Unproject(cursorPosition);
-
+                var (screen, cursorPosition) = findResult.Value;
+                if (screen.IsAutomaticallyScaled)
+                {
+                    cursorPosition = GuiManager.GuiRenderer.Unproject(cursorPosition);
+                }
+                
                 //if (Vector2.DistanceSquared(rawCursorPosition, _previousCursorPosition) >= 1)
                 {
                     //ActiveFocusContext = screen3d;
                     _previousCursorPosition = CursorPosition;
                     CursorPosition = cursorPosition;
-                    UpdateCursor(CursorPosition, screen3d);
+                    UpdateCursor(CursorPosition, screen);
                 }
             }
         }

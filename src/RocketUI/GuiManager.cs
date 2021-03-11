@@ -29,12 +29,12 @@ namespace RocketUI
         public event EventHandler<GuiDrawScreenEventArgs> DrawScreen;
 
         public GuiScaledResolution ScaledResolution { get; }
-        public GuiFocusHelper FocusManager { get; }
+        public GuiFocusHelper      FocusManager     { get; }
 
         public IGuiRenderer GuiRenderer { get; }
 
         internal InputManager InputManager { get; }
-        internal SpriteBatch SpriteBatch { get; private set; }
+        internal SpriteBatch  SpriteBatch  { get; private set; }
 
         public GuiSpriteBatch GuiSpriteBatch { get; private set; }
 
@@ -45,9 +45,9 @@ namespace RocketUI
         private IServiceProvider ServiceProvider { get; }
 
         public GuiManager(Game game,
-            IServiceProvider serviceProvider,
-            InputManager inputManager,
-            IGuiRenderer guiRenderer
+            IServiceProvider   serviceProvider,
+            InputManager       inputManager,
+            IGuiRenderer       guiRenderer
         ) : base(game)
         {
             ServiceProvider = serviceProvider;
@@ -57,7 +57,7 @@ namespace RocketUI
                 GuiScale = 9999
             };
             ScaledResolution.ScaleChanged += ScaledResolutionOnScaleChanged;
-            
+
             FocusManager = new GuiFocusHelper(this, InputManager, game.GraphicsDevice);
 
             GuiRenderer = guiRenderer;
@@ -66,14 +66,13 @@ namespace RocketUI
 
             GuiSpriteBatch = new GuiSpriteBatch(guiRenderer, Game.GraphicsDevice, SpriteBatch);
             //  DebugHelper = new GuiDebugHelper(this);
-
         }
 
         public void InvokeDrawScreen(Screen screen, GameTime gameTime)
         {
             DrawScreen?.Invoke(this, new GuiDrawScreenEventArgs(screen, gameTime));
         }
-        
+
         private void ScaledResolutionOnScaleChanged(object sender, UiScaleEventArgs args)
         {
             Init();
@@ -83,15 +82,15 @@ namespace RocketUI
         {
             GuiRenderer.ScaledResolution.ViewportSize = new Size(width, height);
             GuiSpriteBatch.UpdateProjection();
-            
+
             foreach (var screen in Screens.ToArray())
             {
-                if(screen is IGuiScreen3D || screen is IGuiManaged || screen.IsSelfManaged)
+                if (!screen.IsAutomaticallyScaled)
                 {
                     screen.InvalidateLayout();
                     continue;
                 }
-                
+
                 screen.UpdateSize(GuiRenderer.ScaledResolution.ScaledWidth, GuiRenderer.ScaledResolution.ScaledHeight);
             }
         }
@@ -104,12 +103,12 @@ namespace RocketUI
 
         public void Init()
         {
-         //   SpriteBatch = new SpriteBatch(graphicsDevice);
+            //   SpriteBatch = new SpriteBatch(graphicsDevice);
             GuiRenderer.Init(Game.GraphicsDevice, ServiceProvider);
             ApplyFont(GuiRenderer.Font);
             SetSize(ScaledResolution.ViewportSize.Width, ScaledResolution.ViewportSize.Height);
-      //      GuiSpriteBatch?.Dispose();
-      //      GuiSpriteBatch = new GuiSpriteBatch(GuiRenderer, graphicsDevice, SpriteBatch);
+            //      GuiSpriteBatch?.Dispose();
+            //      GuiSpriteBatch = new GuiSpriteBatch(GuiRenderer, graphicsDevice, SpriteBatch);
         }
 
         private bool _doInit = true;
@@ -167,12 +166,12 @@ namespace RocketUI
             screen.GuiManager = this;
             screen.AutoSizeMode = AutoSizeMode.None;
             screen.Anchor = Alignment.Fixed;
-            
-            if(!(screen is IGuiScreen3D || screen is IGuiManaged || screen.IsSelfManaged))
+
+            if (!(screen.IsAutomaticallyScaled))
                 screen.UpdateSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
-            else 
+            else
                 screen.InvalidateLayout();
-            
+
             screen.Init(GuiRenderer);
             Screens.Add(screen);
         }
@@ -190,11 +189,11 @@ namespace RocketUI
 
         public override void Update(GameTime gameTime)
         {
-            if(!Enabled)
+            if (!Enabled)
                 return;
-            
+
             ScaledResolution.Update();
-            
+
             var screens = Screens.ToArray();
 
             if (_doInit)
@@ -226,25 +225,26 @@ namespace RocketUI
         {
             if (!Visible)
                 return;
-            
+
             IDisposable maybeADisposable = null;
 
-            try
-            {
-                GuiSpriteBatch.Begin();
 
-                ForEachScreen(screen =>
+            ForEachScreen(screen =>
+            {
+                try
                 {
+                    GuiSpriteBatch.Begin(screen.IsAutomaticallyScaled);
+                    
                     screen.Draw(GuiSpriteBatch, gameTime);
 
                     DrawScreen?.Invoke(this, new GuiDrawScreenEventArgs(screen, gameTime));
                     //  DebugHelper.DrawScreen(screen);
-                });
-            }
-            finally
-            {
-                GuiSpriteBatch.End();
-            }
+                }
+                finally
+                {
+                    GuiSpriteBatch.End();
+                }
+            });
         }
 
 
@@ -254,7 +254,7 @@ namespace RocketUI
             {
                 if (screen == null || screen is IGuiManaged || screen.IsSelfManaged)
                     continue;
-                
+
                 action.Invoke(screen);
             }
         }
