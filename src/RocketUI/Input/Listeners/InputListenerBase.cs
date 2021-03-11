@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
 
@@ -10,6 +11,8 @@ namespace RocketUI.Input.Listeners
         public PlayerIndex PlayerIndex { get; }
 
         public int Order { get; set; } = 0;
+
+        public IReadOnlyDictionary<InputCommand, List<TButtons>> ButtonMap => new ReadOnlyDictionary<InputCommand, List<TButtons>>(_buttonMap);
 
         private readonly IDictionary<InputCommand, List<TButtons>> _buttonMap = new Dictionary<InputCommand, List<TButtons>>();
 
