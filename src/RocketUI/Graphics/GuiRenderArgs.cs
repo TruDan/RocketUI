@@ -218,21 +218,6 @@ namespace RocketUI
         
         #region IFont Proxy
         
-		public void DrawString(IFont font, string text, Vector2 position, Color color, FontStyle style = FontStyle.None)
-		{
-		    SpriteBatch.DrawString(font, text, position, color, style, 0f, Vector2.Zero, Vector2.One);
-		}
-
-        public void DrawString(IFont font, string text, Vector2 position, Color color, float scale, FontStyle style = FontStyle.None, float rotation = 0f, Vector2? origin = null)
-		{
-		    SpriteBatch.DrawString(font, text, position, color, style, rotation, origin.HasValue ? origin.Value : Vector2.Zero, new Vector2(scale));
-		}
-
-		public void DrawString(IFont font, string text, Vector2 position, Color color, Vector2 scale, FontStyle style = FontStyle.None, float rotation = 0f, Vector2? origin = null)
-		{
-		    SpriteBatch.DrawString(font, text, position, color, style, rotation, origin.HasValue ? origin.Value : Vector2.Zero, scale);
-		}
-
         public void DrawString(IFont     font,                        string    text,
                                Vector2   position,                    Color color, float scale = 1f,
                                FontStyle style      = FontStyle.None, float     rotation = 0f,

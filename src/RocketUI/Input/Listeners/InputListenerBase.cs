@@ -58,6 +58,11 @@ namespace RocketUI.Input.Listeners
             if (_buttonMap.ContainsKey(command))
                 _buttonMap.Remove(command);
         }
+
+        public void ClearMap()
+        {
+            _buttonMap.Clear();
+        }
         
         public bool IsDown(InputCommand command)
         {

@@ -307,38 +307,37 @@ namespace RocketUI
                 {
                     if (x is IGuiControl c)
                     {
-                        switch (command)
+                        if (command == InputCommand.NavigateUp)
                         {
-                            case InputCommand.NavigateUp:
-                                if (c.Position.Y > focused.Position.Y)
-                                {
-                                    return true;
-                                }
-
-                                break;
-                            case InputCommand.NavigateDown:
-                                if (c.Position.Y < focused.Position.Y)
-                                {
-                                    return true;
-                                }
-
-                                break;
-                            case InputCommand.NavigateLeft:
-                                if (c.Position.X < focused.Position.X)
-                                {
-                                    return true;
-                                }
-
-                                break;
-                            case InputCommand.NavigateRight:
-                                if (c.Position.X > focused.Position.X)
-                                {
-                                    return true;
-                                }
-
-                                break;
-                            default:
-                                return false;
+                            if (c.Position.Y > focused.Position.Y)
+                            {
+                                return true;
+                            }
+                        }
+                        else if (command == InputCommand.NavigateDown)
+                        {
+                            if (c.Position.Y < focused.Position.Y)
+                            {
+                                return true;
+                            }
+                        }
+                        else if (command == InputCommand.NavigateLeft)
+                        {
+                            if (c.Position.X < focused.Position.X)
+                            {
+                                return true;
+                            }
+                        }
+                        else if (command == InputCommand.NavigateRight)
+                        {
+                            if (c.Position.X > focused.Position.X)
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            return false;
                         }
                     }
 

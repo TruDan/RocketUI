@@ -6,6 +6,7 @@ namespace RocketUI
     [ContentProperty(nameof(Styles))]
     public class StyleSheet
     {
-        public List<Style> Styles { get; set; }
+        public ResourceDictionary Resources { get; set; }
+        public List<Style>   Styles    { get; set; }
     }
 }

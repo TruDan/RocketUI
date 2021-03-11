@@ -8,8 +8,8 @@ namespace RocketUI
         ButtonHighlight,
         ButtonClick
     }
-    
-    public struct GuiTextures
+        
+    public struct GuiTextures : IResource
     {
         public const string DefaultNamespace = "RocketUI";
         
@@ -54,22 +54,21 @@ namespace RocketUI
         public static readonly GuiTextures BatWhite = new GuiTextures(DefaultNamespace, nameof(BatWhite)); 
         
         public static readonly GuiTextures DotShadow = new GuiTextures(DefaultNamespace, nameof(DotShadow)); 
-        public static readonly GuiTextures DotBlue = new GuiTextures(DefaultNamespace, nameof(DotBlue)); 
-        public static readonly GuiTextures DotGreen = new GuiTextures(DefaultNamespace, nameof(DotGreen)); 
+        public static readonly GuiTextures DotBlue   = new GuiTextures(DefaultNamespace, nameof(DotBlue)); 
+        public static readonly GuiTextures DotGreen  = new GuiTextures(DefaultNamespace, nameof(DotGreen)); 
         public static readonly GuiTextures DotOrange = new GuiTextures(DefaultNamespace, nameof(DotOrange)); 
         public static readonly GuiTextures DotYellow = new GuiTextures(DefaultNamespace, nameof(DotYellow)); 
-        public static readonly GuiTextures DotWhite = new GuiTextures(DefaultNamespace, nameof(DotWhite));
-
-
-        public string Namespace;
-        public string Key;
+        public static readonly GuiTextures DotWhite  = new GuiTextures(DefaultNamespace, nameof(DotWhite));
         
+        private readonly       string      _namespace;
+        private readonly       string      _key;
+
         public bool   HasValue => !string.IsNullOrEmpty(Key);
 
         public GuiTextures(string @namespace, string key)
         {
-            Namespace = @namespace;
-            Key = key;
+            _namespace = @namespace;
+            _key = key;
         }
 
         public static implicit operator string(GuiTextures guiTextures)
@@ -79,7 +78,7 @@ namespace RocketUI
 
         public override string ToString()
         {
-            return $"{Namespace}:{Key}";
+            return $"{_namespace}:{_key}";
         }
 
         public static GuiTextures Parse(string text)
@@ -92,5 +91,9 @@ namespace RocketUI
 
             throw new FormatException("Invalid GuiTextures format, expected 'namespace:key'");
         }
+
+        public string Namespace => _namespace;
+
+        public string Key => _key;
     }
 }
