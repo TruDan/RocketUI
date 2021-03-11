@@ -62,9 +62,6 @@ namespace RocketUI.Utilities.Helpers
 
 		public override void Update(GameTime gameTime)
 		{
-			if(!Enabled)
-				return;
-			
 			base.Update(gameTime);
 
 			_previousKeyboard = _currentKeyboard;
