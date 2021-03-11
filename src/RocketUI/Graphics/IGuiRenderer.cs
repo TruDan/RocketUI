@@ -21,5 +21,10 @@ namespace RocketUI
 
         Vector2 Project(Vector2 point);
         Vector2 Unproject(Vector2 screen);
+
+        GraphicsContext CreateGuiSpriteBatchContext(GraphicsDevice graphics) => GraphicsContext.CreateContext(graphics, BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullNone, SamplerState.LinearClamp);
+
+        void OnBeginDraw() {}
+        void OnEndDraw() {}
     }
 }

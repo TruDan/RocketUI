@@ -60,7 +60,7 @@ namespace RocketUI
             Effect.Projection = Matrix.Identity;
             
 //            Context = GraphicsContext.CreateContext(_graphicsDevice, BlendState.NonPremultiplied, DepthStencilState.None, RasterizerState, SamplerState.PointClamp);
-            Context = GraphicsContext.CreateContext(_graphicsDevice, BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullNone, SamplerState.LinearClamp);
+            Context = renderer.CreateGuiSpriteBatchContext(_graphicsDevice);
 
             Font = _renderer.Font;
             ScaledResolution = _renderer.ScaledResolution;
