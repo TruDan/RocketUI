@@ -105,15 +105,13 @@ namespace RocketUI
         {
             if(!IsStyleDirty) return;
             
-            var styles = GuiRenderer.ResolveStyles(this.GetType(), ClassNames.ToArray()) ?? new IStyle[0];
+            _styles = GuiRenderer.ResolveStyles(this.GetType(), ClassNames.ToArray()) ?? new IStyle[0];
             Style.Inherited = _styles;
             ApplyStyles();
         }
 
         public void ApplyStyles()
-        {
-            var styles = _styles.ToArray();
-            
+        {            
             Style.ApplyStyle(this);
         }
 
