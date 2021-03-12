@@ -40,8 +40,20 @@ namespace RocketUI
         
         private object     _updateLock = new object();
         public  GuiManager GuiManager            { get; internal set; }
-        public  bool       IsSelfManaged         { get; set; }
+        public  bool       IsSelfUpdating         { get; set; }
+        public  bool       IsSelfDrawing         { get; set; }
+        public  bool       IsSelfManaged
+        {
+            get => IsSelfDrawing && IsSelfUpdating;
+            set
+            {
+                IsSelfUpdating = true;
+                IsSelfDrawing = true;
+            }
+        }
+
         public  bool       IsAutomaticallyScaled { get; set; } = true;
+        public  bool       SizeToWindow { get; set; } = true;
 
         public void UpdateLayout()
         {

@@ -85,7 +85,7 @@ namespace RocketUI
 
             foreach (var screen in Screens.ToArray())
             {
-                if (!screen.IsAutomaticallyScaled)
+                if (!screen.SizeToWindow)
                 {
                     screen.InvalidateLayout();
                     continue;
@@ -167,7 +167,7 @@ namespace RocketUI
             screen.AutoSizeMode = AutoSizeMode.None;
             screen.Anchor = Alignment.Fixed;
 
-            if (!(screen.IsAutomaticallyScaled))
+            if (screen.SizeToWindow)
                 screen.UpdateSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
             else
                 screen.InvalidateLayout();
@@ -210,7 +210,7 @@ namespace RocketUI
 
             foreach (var screen in screens)
             {
-                if (screen == null || screen is IGuiManaged || screen.IsSelfManaged)
+                if (screen == null || screen.IsSelfUpdating)
                     continue;
 
                 screen.Update(gameTime);
@@ -229,8 +229,10 @@ namespace RocketUI
             IDisposable maybeADisposable = null;
 
 
-            ForEachScreen(screen =>
+            foreach (var screen in Screens.ToArray())
             {
+                if (screen == null || screen.IsSelfDrawing)
+                    continue;
                 try
                 {
                     GuiSpriteBatch.Begin(screen.IsAutomaticallyScaled);
@@ -244,19 +246,7 @@ namespace RocketUI
                 {
                     GuiSpriteBatch.End();
                 }
-            });
-        }
-
-
-        private void ForEachScreen(Action<Screen> action)
-        {
-            foreach (var screen in Screens.ToArray())
-            {
-                if (screen == null || screen is IGuiManaged || screen.IsSelfManaged)
-                    continue;
-
-                action.Invoke(screen);
-            }
+            };
         }
     }
 }
