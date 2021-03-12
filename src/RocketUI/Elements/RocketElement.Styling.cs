@@ -106,7 +106,6 @@ namespace RocketUI
             if(!IsStyleDirty) return;
             
             var styles = GuiRenderer.ResolveStyles(this.GetType(), ClassNames.ToArray()) ?? new IStyle[0];
-            _styles = styles.Concat(new[] { Style }).ToArray();
             Style.Inherited = _styles;
             ApplyStyles();
         }
@@ -172,6 +171,7 @@ namespace RocketUI
                     style.ApplyStyle(element);
                 }
             }
+            
             _overridesStyle.ApplyStyle(element);
         }
     }
