@@ -8,5 +8,15 @@ namespace RocketUI
     {
         public ResourceDictionary Resources { get; set; }
         public List<Style>   Styles    { get; set; }
+
+        public StyleSheet()
+        {
+            
+        }
+
+        public void CompileStyles()
+        {
+            
+        }
     }
 }

@@ -205,6 +205,9 @@ namespace RocketUI
 			{
 				_guiRenderer = renderer;
 				OnInit(renderer);
+				
+				InvalidateStyle();
+				UpdateStyle();
 			}
 
 			ForEachChild(c => c.Init(renderer, force));
@@ -222,6 +225,7 @@ namespace RocketUI
 		{
 			if (_initialised)
 			{
+				UpdateStyle();
 				OnUpdate(gameTime);
 			}
 

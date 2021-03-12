@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using RocketUI.Attributes;
 using RocketUI.Serialization;
@@ -113,6 +114,15 @@ namespace RocketUI
         void InvalidateLayout(IGuiElement sender, bool invalidateChildren = true);
 
 
+
+        #endregion
+
+        #region Styling
+
+        ElementStyle Style { get; }
+        
+        void InvalidateStyle(bool        invalidateChildren              = true);
+        void InvalidateStyle(IGuiElement sender, bool invalidateChildren = true);
 
         #endregion
     }

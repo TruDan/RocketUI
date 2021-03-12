@@ -8,5 +8,16 @@ namespace RocketUI
         public string Property { get; set; }
         
         public object Value { get; set; }
+
+        public Setter()
+        {
+            
+        }
+
+        public Setter(string property, object value)
+        {
+            Property = property;
+            Value = value;
+        }
     }
 }

@@ -10,9 +10,7 @@ namespace RocketUI.Utilities.Extensions
             InputListenerFactory<T> inputListenerFactory) where T : class, IInputListener
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IInputListenerFactory, DefaultInputListenerFactory<T>>(
-                    provider => new DefaultInputListenerFactory<T>(inputListenerFactory)
-                    ));
+                ServiceDescriptor.Singleton<IInputListenerFactory, DefaultInputListenerFactory<T>>(provider => new DefaultInputListenerFactory<T>(inputListenerFactory)                    ));
             return services;
         }
     }

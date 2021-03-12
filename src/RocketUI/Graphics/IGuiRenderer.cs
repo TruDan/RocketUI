@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,6 +25,8 @@ namespace RocketUI
 
         GraphicsContext CreateGuiSpriteBatchContext(GraphicsDevice graphics) => GraphicsContext.CreateContext(graphics, BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullNone, SamplerState.LinearClamp);
 
+        IStyle[] ResolveStyles(Type elementType, string[] classNames);
+        
         void OnBeginDraw() {}
         void OnEndDraw() {}
     }
