@@ -26,10 +26,10 @@ namespace RocketUI
         public virtual Color  DefaultColor   { get; set; } = Color.White;
         public virtual Color? HighlightColor { get; set; } = Color.Yellow;
         public virtual Color? FocusColor     { get; set; } = Color.White;
-        
-        public GuiSound HighlightSound { get; set; }
-        public GuiSound ClickSound { get; set; }
 
+        public GuiSound HighlightSound;
+        public GuiSound ClickSound;
+        
         public Button(Action action = null) : this(string.Empty, action)
         {
         }
