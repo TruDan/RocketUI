@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using RocketUI.Audio;
 
 namespace RocketUI
 {
@@ -13,7 +14,7 @@ namespace RocketUI
 
         IFont Font { get; set; }
 
-        SoundEffectInstance GetSoundEffect(GuiSoundEffects soundEffects);
+        ISoundEffect GetSoundEffect(GuiSoundEffects soundEffects);
         TextureSlice2D GetTexture(GuiTextures                     guiTexture);
         TextureSlice2D GetTexture(string                          texturePath);
         Texture2D GetTexture2D(GuiTextures                        guiTexture);

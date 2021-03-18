@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using RocketUI.Audio;
 using RocketUI.Utilities.Converters;
 
 namespace RocketUI
@@ -9,7 +10,7 @@ namespace RocketUI
     public struct GuiSound
     {
         public GuiSoundEffects? GuiSoundEffect { get; set; }
-        public SoundEffectInstance     SoundEffect { get; set; }
+        public ISoundEffect     SoundEffect { get; set; }
 
         public bool HasValue => GuiSoundEffect.HasValue && GuiSoundEffect.Value != GuiSoundEffects.None;
 
