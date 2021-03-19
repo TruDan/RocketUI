@@ -49,7 +49,9 @@ namespace RocketUI
 		
 		[JsonIgnore]
 		public object Tag  { get; set; }
-		
+
+		public object DataContext { get; set; }
+
 		private IGuiScreen       _screen;
 		private IGuiElement      _parentElement;
 		private IGuiFocusContext _focusContext;

@@ -1,30 +1,53 @@
 <template>
+  <v-container>
   <v-icon v-bind:class="status">mdi-flash-circle</v-icon>
+  <span>{{ statusText }}</span>
+  </v-container>
 </template>
 
 <script>
+import rocketdebugger from "@/plugins/rocketdebugger";
+
 export default {
   name: "RocketWSStatus",
 
-  data: () => {
-    const status = () => {
-      switch (window.$rocketws.getStatus()) {
+  data: () => ({
+    status: '',
+    statusText: '',
+    rawStatus: WebSocket.CLOSED
+  }),
+  watch: {
+    rawStatus: function() {
+      switch (rocketdebugger.getStatus()) {
         case WebSocket.CONNECTING:
-          return 'ws-green ws-pending';
+          this.status = 'ws-green ws-pending';
+          this.statusText = "Connecting...";
+          break;
         case WebSocket.OPEN:
-          return 'ws-green';
+          this.status = 'ws-green';
+          this.statusText = "Connected";
+          break;
         case WebSocket.CLOSING:
-          return 'ws-red ws-pending';
+          this.status = 'ws-red ws-pending';
+          this.statusText = "Disconnecting...";
+          break;
         case WebSocket.CLOSED:
-          return 'ws-red';
+          this.status = 'ws-red';
+          this.statusText = "Disconnected.";
+          break;
         default:
-          return 'ws-red ws-pending';
+          this.status = 'ws-red ws-pending';
+          this.statusText = "";
       }
-    };
-
-    return {
-      status: status().split(' ')
     }
+  },
+  methods: {
+    setState(state) {
+      this.rawStatus = state;
+    }
+  },
+  created() {
+    rocketdebugger.addEventListener('onStateChanged', this.setState.bind(this));
   }
 }
 </script>

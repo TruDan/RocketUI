@@ -14,6 +14,7 @@ namespace RocketUI
         string        Name       { get; set; }
         PropertyStore Properties { get; }
         object        Tag        { get; set; }
+        object        DataContext        { get; set; }
 
         IGuiScreen RootScreen { get; }
         IGuiElement ParentElement { get; set; }

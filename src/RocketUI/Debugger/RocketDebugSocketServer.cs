@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,10 +26,7 @@ namespace RocketUI.Debugger
 
         public class NoTypeConverterJsonConverter<T> : JsonConverter
         {
-            static readonly IContractResolver resolver = new NoTypeConverterContractResolver();
-            
-            
-            
+            static readonly IContractResolver resolver = new NoTypeConverterContractResolver(); 
             class NoTypeConverterContractResolver : CamelCasePropertyNamesContractResolver
             {
                 protected override JsonContract CreateContract(Type objectType)
@@ -171,6 +170,45 @@ namespace RocketUI.Debugger
                 }
                     break;
 
+                case "SelectElement":
+                {
+                    var elementId = Guid.Parse(msg.Arguments[0]);
+                    var element   = FindElementById(elementId);
+                    _guiManager.DebugHelper.Enabled = true;
+                    _guiManager.DebugHelper.HighlightedElement = element;
+                    break;
+                }
+
+                case "SetPropertyValue":
+                {
+                    var elementId = Guid.Parse(msg.Arguments[0]);
+                    var element   = FindElementById(elementId);
+                    var t         = element.GetType().GetMember(msg.Arguments[1], BindingFlags.Instance | BindingFlags.Public);
+                    if (t.Length == 0)
+                        return false;
+
+                    foreach (var member in t)
+                    {
+                        if (member is PropertyInfo propertyInfo)
+                        {
+                            var value = TypeDescriptor.GetConverter(propertyInfo.PropertyType).ConvertFromString(msg.Arguments[2]);
+                            propertyInfo.SetValue(element, value);
+                            return true;
+                        }
+                        else if (member is FieldInfo fieldInfo)
+                        {
+                            var value = TypeDescriptor.GetConverter(fieldInfo.FieldType)
+                                .ConvertToString(msg.Arguments[2]);
+                            fieldInfo.SetValue(element, value);
+                            return true;
+                        }
+                    }
+
+                    return false;
+                    
+                    break;
+                }
+                
                 default:
 
                     break;

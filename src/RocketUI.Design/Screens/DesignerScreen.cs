@@ -8,7 +8,7 @@ namespace RocketUI.Design.Screens
         private readonly StackContainer _toolbar;
         private readonly Container      _screenContainer;
 
-        private GuiDebugHelper _debugHelper => RocketDesignerGame.Instance.GuiDebugHelper;
+        private GuiDebugHelper _debugHelper => RocketDesignerGame.Instance.GuiManager.DebugHelper;
 
         public DesignerScreen()
         {

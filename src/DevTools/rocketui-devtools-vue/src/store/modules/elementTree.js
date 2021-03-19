@@ -14,13 +14,12 @@ const actions = {
     getRootElement({ commit }) {
         rocketdebugger.send('GetRoot', 128).then(root => {
             commit('setRoot', root);
-
         });
     },
 
     selectElement({commit}, elementId) {
-        console.log(elementId);
         commit('setSelectedElement', elementId);
+        rocketdebugger.send('SelectElement', elementId);
 
         // rocketdebugger.send('GetChildren', elementId).then(children => {
         //     commit('setChildrenOfElement', elementId, children);
@@ -28,6 +27,12 @@ const actions = {
         // rocketdebugger.send('GetProperties', elementId).then(props => {
         //     commit('setSelectedElementProperties', elementId, props);
         // });
+    },
+    setPropertyValue({commit}, elementId, propertyName, propertyValue) {
+        rocketdebugger.send('SetPropertyValue', elementId, propertyName, propertyValue).then(success => {
+            commit('setPropertyValue', elementId, propertyName, propertyValue);
+            console.log("SetPropertyValue ", success, elementId, propertyName, propertyValue);
+        });
     }
 };
 
@@ -67,6 +72,10 @@ const mutations = {
     setSelectedElementProperties(state, elementId, props){
         const element = state.elements.find(x => x.id === elementId);
         element.properties = props;
+    },
+    setPropertyValue(state, elementId, propertyName, propertyValue) {
+        const element = state.elem.find(x => x.id === elementId);
+        element.properties[propertyName] = propertyValue;
     }
 };
 

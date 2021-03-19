@@ -7,13 +7,14 @@ using RocketUI.Utilities.Converters;
 
 namespace RocketUI
 {
-    public struct GuiSound
+    public class GuiSound
     {
         public GuiSoundEffects? GuiSoundEffect { get; set; }
         public ISoundEffect     SoundEffect { get; set; }
 
         public bool HasValue => GuiSoundEffect.HasValue && GuiSoundEffect.Value != GuiSoundEffects.None;
 
+        public GuiSound() { }
         public GuiSound(GuiSoundEffects guiSoundEffects) : this()
         {
             GuiSoundEffect = guiSoundEffects;
@@ -43,7 +44,7 @@ namespace RocketUI
     }
     
     [TypeConverter(typeof(GuiTexture2DTypeConverter))]
-    public struct GuiTexture2D : ITexture2D
+    public class GuiTexture2D : ITexture2D
     {
         public Color?            Color           { get; set; }
         public GuiTextures?      TextureResource { get; set; }
@@ -55,6 +56,7 @@ namespace RocketUI
 
         public bool HasValue => Texture != null || Color.HasValue || TextureResource.HasValue || !string.IsNullOrEmpty(TexturePath);
 
+        public GuiTexture2D() { }
         public GuiTexture2D(ITexture2D texture) : this()
         {
             Texture = texture;

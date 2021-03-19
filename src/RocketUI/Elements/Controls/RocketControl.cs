@@ -18,9 +18,40 @@ namespace RocketUI
         public event EventHandler<GuiCursorEventArgs> CursorLeave;
 
 
-        public GuiTexture2D DisabledBackground;
-        public GuiTexture2D HighlightedBackground;
-        public GuiTexture2D FocusedBackground;
+        private GuiTexture2D _disabledBackground;
+        private GuiTexture2D _highlightedBackground;
+        private GuiTexture2D _focusedBackground;
+        public GuiTexture2D DisabledBackground
+        {
+            get
+            {
+                if (_disabledBackground == null)
+                    _disabledBackground = new GuiTexture2D();
+                return _disabledBackground;
+            }
+            set => _disabledBackground = value;
+        }
+
+        public GuiTexture2D HighlightedBackground
+        {
+            get
+            {
+                if (_highlightedBackground == null)
+                    _highlightedBackground = new GuiTexture2D();
+                return _highlightedBackground;
+            }
+            set => _highlightedBackground = value;
+        }
+
+        public GuiTexture2D FocusedBackground {
+            get
+            {
+                if (_focusedBackground == null)
+                    _focusedBackground = new GuiTexture2D();
+                return _focusedBackground;
+            }
+            set => _focusedBackground = value;
+        }
         
         public virtual Color     HighlightOutlineColor { get; set; } = new Color(Color.Gray, 0.75f);
         public virtual Thickness HighlightOutlineThickness { get; set; } = Thickness.Zero;

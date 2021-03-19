@@ -179,7 +179,6 @@ namespace RocketUI
             }
             else if (repeatMode == TextureRepeatMode.NoScaleCenterSlice)
             {
-
                 var halfWidth = bounds.Width / 2f;
                 var halfHeight = bounds.Height / 2f;
                 int xOffset = bounds.X + (int)Math.Max(0, (bounds.Width - texture.Width) / 2f);

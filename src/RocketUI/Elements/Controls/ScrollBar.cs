@@ -32,13 +32,34 @@ namespace RocketUI
 
         private Button _track;
 
-        public GuiTexture2D ThumbBackground;
-        public GuiTexture2D ThumbHighlightBackground;
+        public GuiTexture2D ThumbBackground
+        {
+            get
+            {
+                if (_thumbBackground == null)
+                    _thumbBackground = new GuiTexture2D();
+                return _thumbBackground;
+            }
+            set => _thumbBackground = value;
+        }
 
-        private Orientation _orientation = Orientation.Vertical;
-        private int _maxScrollOffset = 0;
-        private int _scrollOffsetValue;
-        private int _scrollBarSize = 5;
+        public GuiTexture2D ThumbHighlightBackground
+        {
+            get
+            {
+                if (_thumbHighlightBackground == null)
+                    _thumbHighlightBackground = new GuiTexture2D();
+                return _thumbHighlightBackground;
+            }
+            set => _thumbHighlightBackground = value;
+        }
+
+        private Orientation  _orientation     = Orientation.Vertical;
+        private int          _maxScrollOffset = 0;
+        private int          _scrollOffsetValue;
+        private int          _scrollBarSize = 5;
+        private GuiTexture2D _thumbBackground;
+        private GuiTexture2D _thumbHighlightBackground;
 
         public int ScrollBarSize
         {

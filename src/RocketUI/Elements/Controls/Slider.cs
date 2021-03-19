@@ -36,9 +36,38 @@ namespace RocketUI
 
         public double StepInterval { get; set; } = 1.0d;
 
-        public GuiTexture2D ThumbBackground;
-        public GuiTexture2D ThumbHighlightBackground;
-        public GuiTexture2D ThumbDisabledBackground;
+        public GuiTexture2D ThumbBackground
+        {
+            get
+            {
+                if (_thumbBackground == null)
+                    _thumbBackground = new GuiTexture2D();
+                return _thumbBackground;
+            }
+            set => _thumbBackground = value;
+        }
+
+        public GuiTexture2D ThumbHighlightBackground
+        {
+            get
+            {
+                if (_thumbHighlightBackground == null)
+                    _thumbHighlightBackground = new GuiTexture2D();
+                return _thumbHighlightBackground;
+            }
+            set => _thumbHighlightBackground = value;
+        }
+
+        public GuiTexture2D ThumbDisabledBackground
+        {
+            get
+            {
+                if (_thumbDisabledBackground == null)
+                    _thumbDisabledBackground = new GuiTexture2D();
+                return _thumbDisabledBackground;
+            }
+            set => _thumbDisabledBackground = value;
+        }
 
         public int ThumbWidth
         {
@@ -208,7 +237,11 @@ namespace RocketUI
             base.OnCursorUp(cursorPosition);
         }
 
-        private bool _cursorDown = false;
+        private bool         _cursorDown = false;
+        private GuiTexture2D _thumbBackground;
+        private GuiTexture2D _thumbDisabledBackground;
+        private GuiTexture2D _thumbHighlightBackground;
+
         protected override void OnCursorLeave(Point cursorPosition)
         {
             _cursorDown = false;

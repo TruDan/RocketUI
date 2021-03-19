@@ -21,7 +21,6 @@ namespace RocketUI.Design
         public                  IGuiRenderer   GuiRenderer    { get; private set; }
         public                  GuiManager     GuiManager     { get; private set; }
         public                  InputManager   InputManager   { get; private set; }
-        public                  GuiDebugHelper GuiDebugHelper { get; private set; }
 
         public GraphicsDeviceManager GraphicsDeviceManager => _graphics;
 
@@ -111,9 +110,6 @@ namespace RocketUI.Design
             Components.Add(GuiManager);
             GuiManager.Init();
             
-            GuiDebugHelper = new GuiDebugHelper(this, GuiManager);
-            Components.Add(GuiDebugHelper);
-            //GuiDebugHelper.Enabled = true;
 
             GuiManager.AddScreen(new BackgroundScreen()
             {

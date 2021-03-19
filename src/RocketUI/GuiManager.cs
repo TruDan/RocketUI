@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using RocketUI.Input;
+using RocketUI.Utilities.Helpers;
 using SharpVR;
 
 namespace RocketUI
@@ -24,7 +25,7 @@ namespace RocketUI
 
     public class GuiManager : DrawableGameComponent
     {
-        // public GuiDebugHelper DebugHelper { get; }
+        public GuiDebugHelper DebugHelper { get; }
 
         public event EventHandler<GuiDrawScreenEventArgs> DrawScreen;
 
@@ -66,6 +67,7 @@ namespace RocketUI
 
             GuiSpriteBatch = new GuiSpriteBatch(guiRenderer, Game.GraphicsDevice, SpriteBatch);
             //  DebugHelper = new GuiDebugHelper(this);
+            DebugHelper = new GuiDebugHelper(game, this);
         }
 
         public void InvokeDrawScreen(Screen screen, GameTime gameTime)
@@ -236,7 +238,7 @@ namespace RocketUI
                 try
                 {
                     GuiSpriteBatch.Begin(screen.IsAutomaticallyScaled);
-                    
+
                     screen.Draw(GuiSpriteBatch, gameTime);
 
                     DrawScreen?.Invoke(this, new GuiDrawScreenEventArgs(screen, gameTime));
@@ -246,7 +248,9 @@ namespace RocketUI
                 {
                     GuiSpriteBatch.End();
                 }
-            };
+            }
+
+            ;
         }
     }
 }

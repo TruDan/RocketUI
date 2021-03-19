@@ -25,9 +25,9 @@ namespace RocketUI
         public GraphicsContext Context { get; }
 
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly IGuiRenderer _renderer;
-        private Texture2D _colorTexture;
-        public Matrix RenderMatrix = Matrix.Identity;
+        private readonly IGuiRenderer   _renderer;
+        private          Texture2D      _colorTexture;
+        public           Matrix         RenderMatrix = Matrix.Identity;
 
         private bool _beginSpriteBatchAfterContext;
         private bool _hasBegun;
@@ -43,22 +43,22 @@ namespace RocketUI
                 TextureEnabled = true,
                 VertexColorEnabled = true
             };
-            
+
             var cameraPosition = new Vector3(0, 0, 13);
             cameraPosition = Vector3.Transform(cameraPosition, Matrix.CreateScale(1));
 
             //var view        = Matrix.CreateLookAt(cameraPosition, new Vector3(0, 0, 0), Vector3.Up);
             //var projection  = Matrix.CreatePerspectiveFieldOfView(1, _graphicsDevice.Viewport.AspectRatio, 1.0f, 1000.0f);
 
-            
+
             //Effect.World       = Matrix.CreateWorld(Vector3.Zero, Vector3.Forward, Vector3.Up);
             //Effect.View        = view;
             //Effect.Projection = projection;
-            
+
             Effect.World = Matrix.Identity;
             Effect.View = Matrix.Identity;
             Effect.Projection = Matrix.Identity;
-            
+
 //            Context = GraphicsContext.CreateContext(_graphicsDevice, BlendState.NonPremultiplied, DepthStencilState.None, RasterizerState, SamplerState.PointClamp);
             Context = renderer.CreateGuiSpriteBatchContext(_graphicsDevice);
 
@@ -85,7 +85,7 @@ namespace RocketUI
 
             var loc1P = new Point((int) Math.Floor(loc1.X), (int) Math.Floor(loc1.Y));
             var loc2P = new Point((int) Math.Ceiling(loc2.X), (int) Math.Ceiling(loc2.Y));
-            var size = loc2P - loc1P;
+            var size  = loc2P - loc1P;
 
             return new Rectangle(loc1P, size);
         }
@@ -103,7 +103,9 @@ namespace RocketUI
         {
             if (_hasBegun) return;
 
-            SpriteBatch.Begin(SpriteSortMode.Deferred, Context.BlendState, Context.SamplerState, Context.DepthStencilState, Context.RasterizerState, Effect, withScale ? ScaledResolution.TransformMatrix * RenderMatrix : ScaledResolution.TransformMatrix);
+            SpriteBatch.Begin(SpriteSortMode.Deferred, Context.BlendState, Context.SamplerState,
+                Context.DepthStencilState, Context.RasterizerState, Effect,
+                withScale ? ScaledResolution.TransformMatrix * RenderMatrix : ScaledResolution.TransformMatrix);
 
             _hasBegun = true;
         }
@@ -120,26 +122,25 @@ namespace RocketUI
         #region Sub-Contexts
 
         public GraphicsContext BranchContext(BlendState blendState = null, DepthStencilState depthStencilState = null,
-            RasterizerState rasterizerState = null, SamplerState samplerState = null)
+            RasterizerState                             rasterizerState = null, SamplerState samplerState = null)
         {
             _beginSpriteBatchAfterContext = _hasBegun;
             End();
 
-            var context = GraphicsContext.CreateContext(_graphicsDevice, blendState, depthStencilState, rasterizerState, samplerState);
+            var context = GraphicsContext.CreateContext(_graphicsDevice, blendState, depthStencilState, rasterizerState,
+                samplerState);
             context.Disposed += OnGraphicsContextDisposed;
 
             return context;
         }
+
         public IDisposable BeginWorld(Matrix world)
         {
             var previousWorld = Effect.World;
 
             Effect.World = world;
-            
-            return new ContextDisposable(() =>
-            {
-                Effect.World = previousWorld;
-            });
+
+            return new ContextDisposable(() => { Effect.World = previousWorld; });
         }
 
         public IDisposable BeginProjection(Matrix projection)
@@ -147,13 +148,10 @@ namespace RocketUI
             var previousProjection = Effect.Projection;
 
             Effect.Projection = projection;
-            
-            return new ContextDisposable(() =>
-            {
-                Effect.Projection = previousProjection;
-            });
+
+            return new ContextDisposable(() => { Effect.Projection = previousProjection; });
         }
-        
+
         public IDisposable BeginViewProjection(Matrix view, Matrix projection)
         {
             var previousView       = Effect.View;
@@ -161,14 +159,14 @@ namespace RocketUI
 
             Effect.View = view;
             Effect.Projection = projection;
-            
+
             return new ContextDisposable(() =>
             {
                 Effect.View = previousView;
                 Effect.Projection = previousProjection;
             });
         }
-        
+
         public IDisposable BeginTransform(Matrix transformMatrix, bool mergeTransform = true)
         {
             var previousRenderMatrix = RenderMatrix;
@@ -183,7 +181,7 @@ namespace RocketUI
         public IDisposable BeginClipBounds(Rectangle scissorRectangle, bool mergeBounds = false)
         {
             return new ContextDisposable(() => { });
-            //if (scissorRectangle == Rectangle.Empty) return new ContextDisposable(() => {});
+//            if (scissorRectangle == Rectangle.Empty) return new ContextDisposable(() => {});
 
             var currentScissorRectangle = Context.ScissorRectangle;
 
@@ -242,7 +240,7 @@ namespace RocketUI
         public void DrawLine(Vector2 from, Vector2 to, Color color, int thickness = 1)
         {
             var length = Vector2.Distance(from, to);
-            var angle = (float) Math.Atan2(to.Y - from.Y, to.X - from.X);
+            var angle  = (float) Math.Atan2(to.Y - from.Y, to.X - from.X);
 
             DrawLine(from, length, angle, color, thickness);
         }
@@ -312,19 +310,23 @@ namespace RocketUI
         }
 
         public void FillRectangle(Rectangle rectangle, ITexture2D texture,
-            TextureRepeatMode repeatMode = TextureRepeatMode.Stretch)
+            TextureRepeatMode               repeatMode = TextureRepeatMode.Stretch)
         {
             FillRectangle(rectangle, texture, repeatMode, null, Color.White);
         }
 
         public void FillRectangle(Rectangle rectangle, ITexture2D texture, TextureRepeatMode repeatMode, Vector2? scale,
-            Color? colorMask)
+            Color?                          colorMask)
         {
             if (texture?.Texture == null) return;
 
             var mask = colorMask.HasValue ? colorMask.Value : Color.White;
 
-            if (repeatMode == TextureRepeatMode.NoScaleCenterSlice)
+            if (texture is NinePatchTexture2D ninePatchTexture)
+            {
+                DrawTextureNinePatch(rectangle, ninePatchTexture, mask);
+            }
+            else if (repeatMode == TextureRepeatMode.NoScaleCenterSlice)
             {
                 DrawTextureCenterSliced(rectangle, texture, mask);
             }
@@ -335,10 +337,6 @@ namespace RocketUI
             else if (repeatMode == TextureRepeatMode.ScaleToFit)
             {
                 DrawTextureScaledToFit(rectangle, texture, mask);
-            }
-            else if (texture is NinePatchTexture2D ninePatchTexture)
-            {
-                DrawTextureNinePatch(rectangle, ninePatchTexture, mask);
             }
             else if (scale.HasValue)
             {
@@ -355,30 +353,30 @@ namespace RocketUI
 
         #region Drawing - Text
 
-        public void DrawString(Vector2 position, string text, Color color, FontStyle style, float scale = 1f,
-            float rotation = 0f, Vector2? rotationOrigin = null, float opacity = 1f)
+        public void DrawString(Vector2 position,      string   text, Color color, FontStyle style, float scale = 1f,
+            float                      rotation = 0f, Vector2? rotationOrigin = null, float opacity = 1f)
         {
             Font?.DrawString(SpriteBatch, text, position, color, style, new Vector2(scale), opacity, rotation,
                 rotationOrigin);
         }
 
-        public void DrawString(Vector2 position, string text, Color color, FontStyle style, Vector2? scale = null,
-            float rotation = 0f, Vector2? rotationOrigin = null, float opacity = 1f)
+        public void DrawString(Vector2 position,      string text, Color color, FontStyle style, Vector2? scale = null,
+            float                      rotation = 0f, Vector2? rotationOrigin = null, float opacity = 1f)
         {
             Font?.DrawString(SpriteBatch, text, position, color, style, scale, opacity, rotation, rotationOrigin);
         }
 
         public void DrawString(Vector2 position, string text, IFont font, Color color, FontStyle style,
-            float scale = 1f,
-            float rotation = 0f, Vector2? rotationOrigin = null, float opacity = 1f)
+            float                      scale    = 1f,
+            float                      rotation = 0f, Vector2? rotationOrigin = null, float opacity = 1f)
         {
             font?.DrawString(SpriteBatch, text, position, color, style, new Vector2(scale), opacity, rotation,
                 rotationOrigin);
         }
 
         public void DrawString(Vector2 position, string text, IFont font, Color color, FontStyle style,
-            Vector2? scale = null,
-            float rotation = 0f, Vector2? rotationOrigin = null, float opacity = 1f)
+            Vector2?                   scale    = null,
+            float                      rotation = 0f, Vector2? rotationOrigin = null, float opacity = 1f)
         {
             font?.DrawString(SpriteBatch, text, position, color, style, scale, opacity, rotation, rotationOrigin);
         }
@@ -396,7 +394,7 @@ namespace RocketUI
             }
 
             var sourceRegions = ninePatchTexture.SourceRegions;
-            var destRegions = ninePatchTexture.ProjectRegions(rectangle);
+            var destRegions   = ninePatchTexture.ProjectRegions(rectangle);
 
             for (var i = 0; i < sourceRegions.Length; i++)
             {
@@ -422,11 +420,11 @@ namespace RocketUI
 
         private void DrawTextureScaledToFit(Rectangle rectangle, ITexture2D texture, Color mask)
         {
-            var widthRatio = rectangle.Width / (float) texture.Width;
+            var widthRatio  = rectangle.Width / (float) texture.Width;
             var heightRatio = rectangle.Height / (float) texture.Height;
 
             var resultRatio = Math.Min(heightRatio, widthRatio);
-            var scaledSize = new Vector2(texture.Width, texture.Height) * resultRatio;
+            var scaledSize  = new Vector2(texture.Width, texture.Height) * resultRatio;
 
             var xOffset = (rectangle.Width - scaledSize.X) / 2f;
             var yOffset = (rectangle.Height - scaledSize.Y) / 2f;
@@ -438,25 +436,25 @@ namespace RocketUI
 
         private void DrawTextureCenterSliced(Rectangle rectangle, ITexture2D texture, Color mask)
         {
-            var halfWidth = rectangle.Width / 2f;
+            var halfWidth  = rectangle.Width / 2f;
             var halfHeight = rectangle.Height / 2f;
-            int xOffset = rectangle.X + (int) Math.Max(0, (rectangle.Width - texture.Width) / 2f);
-            int yOffset = rectangle.Y + (int) Math.Max(0, (rectangle.Height - texture.Height) / 2f);
+            int xOffset    = rectangle.X + (int) Math.Max(0, (rectangle.Width - texture.Width) / 2f);
+            int yOffset    = rectangle.Y + (int) Math.Max(0, (rectangle.Height - texture.Height) / 2f);
 
-            int dstLeftWidth = (int) Math.Floor(halfWidth);
-            int dstRightWidth = (int) Math.Ceiling(halfWidth);
-            int dstLeftHeight = (int) Math.Floor(halfHeight);
+            int dstLeftWidth   = (int) Math.Floor(halfWidth);
+            int dstRightWidth  = (int) Math.Ceiling(halfWidth);
+            int dstLeftHeight  = (int) Math.Floor(halfHeight);
             int dstRightHeight = (int) Math.Ceiling(halfHeight);
 
-            var srcHalfWidth = Math.Min(texture.Width / 2f, halfWidth);
+            var srcHalfWidth  = Math.Min(texture.Width / 2f, halfWidth);
             var srcHalfHeight = Math.Min(texture.Height / 2f, halfHeight);
 
             var srcX = texture.ClipBounds.X;
             var srcY = texture.ClipBounds.Y;
 
-            int srcLeftWidth = (int) Math.Floor(srcHalfWidth);
-            int srcRightWidth = (int) Math.Ceiling(srcHalfWidth);
-            int srcLeftHeight = (int) Math.Floor(srcHalfHeight);
+            int srcLeftWidth   = (int) Math.Floor(srcHalfWidth);
+            int srcRightWidth  = (int) Math.Ceiling(srcHalfWidth);
+            int srcLeftHeight  = (int) Math.Floor(srcHalfHeight);
             int srcRightHeight = (int) Math.Ceiling(srcHalfHeight);
 
             // MinY MinX
@@ -506,7 +504,7 @@ namespace RocketUI
         {
             _colorTexture?.Dispose();
             _colorTexture = null;
-            
+
             SpriteBatch?.Dispose();
             SpriteBatch = null;
         }
@@ -516,7 +514,8 @@ namespace RocketUI
         public void UpdateProjection()
         {
             Effect.View = Matrix.CreateLookAt(Vector3.Backward, Vector3.Zero, Vector3.Up);
-            Effect.Projection = Matrix.CreateOrthographicOffCenter(0, _renderer.ScaledResolution.ScaledWidth, _renderer.ScaledResolution.ScaledHeight, 0, 0.1f, 1000.0f);
+            Effect.Projection = Matrix.CreateOrthographicOffCenter(0, _renderer.ScaledResolution.ScaledWidth,
+                _renderer.ScaledResolution.ScaledHeight, 0, 0.1f, 1000.0f);
         }
     }
 

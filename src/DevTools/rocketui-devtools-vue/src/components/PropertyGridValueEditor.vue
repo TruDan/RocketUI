@@ -5,21 +5,22 @@
     </v-list-item-content>
     <v-list-item-content>
       <v-switch v-if="property.type === 'System.Boolean'" dense flat hide-details="auto" :input-value="property.value"/>
-        <v-color-picker
-            v-else-if="property.type === 'Microsoft.Xna.Framework.Color'"
-            disabled
-            dot-size="12"
-            hide-canvas
-            mode="hexa"
-            flat
-            swatches-max-height="184"
-            hide-details="auto"
-            :value="property.value"
-        ></v-color-picker>
+      <v-color-picker
+          v-else-if="property.type === 'Microsoft.Xna.Framework.Color'"
+          disabled
+          dot-size="12"
+          hide-canvas
+          mode="hexa"
+          flat
+          swatches-max-height="184"
+          hide-details="auto"
+          :value="property.value"
+      ></v-color-picker>
       <template v-else-if="typeof property.value ==='object'">
         <v-row dense no-gutters>
           <v-col v-for="(val, subPropertyName) in property.value" v-bind:key="subPropertyName">
-            <v-text-field flat hide-details="auto" :value="val" v-bind:label="subPropertyName | capitalize"></v-text-field>
+            <v-text-field flat hide-details="auto" :value="val"
+                          v-bind:label="subPropertyName | capitalize"></v-text-field>
           </v-col>
         </v-row>
       </template>
@@ -31,17 +32,32 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex';
+
 export default {
   name: 'PropertyGridValueEditor',
+
   data: () => ({
-    editing: false
+    editing: false,
+    isDirty: false
   }),
   methods: {
     toggleEdit() {
       this.editing = !this.editing;
+    },
+    ...mapActions('elementTree', [
+      'setPropertyValue'
+    ]),
+    saveChanges() {
+      if (this.isDirty) {
+        this.setPropertyValue(this.elementId, this.propertyName, this.property.value)
+      }
     }
   },
   props: {
+    elementId: {
+      type: String
+    },
     propertyName: {
       type: String
     },

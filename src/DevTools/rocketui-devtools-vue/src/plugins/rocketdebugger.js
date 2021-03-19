@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 
-class RocketDebugger {
+class RocketDebugger extends EventTarget {
 
     static instance;
 
@@ -20,6 +20,7 @@ class RocketDebugger {
     #messageId = 0;
 
     constructor(options) {
+        super();
         RocketDebugger.instance = this;
 
         this.options = Object.assign({}, RocketDebugger.defaultOptions, options);
@@ -48,6 +49,7 @@ class RocketDebugger {
     }
 
     createSocket() {
+        this.dispatchEvent(new Event('onStateChanged', { state: WebSocket.CONNECTING }));
         this.#socket = new WebSocket(this.options.url);
         this.#socket.addEventListener('close', this.onSocketClose.bind(this));
         this.#socket.addEventListener('open', this.onSocketOpen.bind(this));
@@ -57,6 +59,7 @@ class RocketDebugger {
 
     // eslint-disable-next-line no-unused-vars
     onSocketOpen(event) {
+        this.dispatchEvent(new Event('onStateChanged', { state: WebSocket.OPEN }));
         console.log('RocketWS', 'Connected.');
         if (this.#messageSendQueue.length > 0) {
             for (let i = 0; i < this.#messageSendQueue.length; i++) {
@@ -72,6 +75,7 @@ class RocketDebugger {
     }
 
     onSocketError(event) {
+        this.dispatchEvent(new Event('onStateChanged', { state: WebSocket.CLOSED }));
         console.error('RocketWS', 'Error', event);
     }
 

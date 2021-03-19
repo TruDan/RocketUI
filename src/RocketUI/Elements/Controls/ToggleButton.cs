@@ -11,7 +11,16 @@ namespace RocketUI
         public event EventHandler<bool> ValueChanged;
         private bool                    _value;
 
-        public GuiTexture2D CheckedBackground;
+        public GuiTexture2D CheckedBackground
+        {
+            get
+            {
+                if (_checkedBackground == null)
+                    _checkedBackground = new GuiTexture2D();
+                return _checkedBackground;
+            }
+            set => _checkedBackground = value;
+        }
 
         public override Color DefaultColor
         {
@@ -53,6 +62,7 @@ namespace RocketUI
 
         private ValueFormatter<bool> _formatter = DefaultDisplayFormat;
         private Color                _defaultColor;
+        private GuiTexture2D         _checkedBackground;
 
         public ValueFormatter<bool> DisplayFormat
         {
