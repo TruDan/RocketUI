@@ -178,9 +178,16 @@ namespace RocketUI
                     
             if (ParentTransform != null)
                 _world *= ParentTransform.World;
-            if (_world.Decompose(out _scale, out _rotation, out _position))
+            try
             {
-                
+                if (_world.Decompose(out _scale, out _rotation, out _position))
+                {
+
+                }
+            }
+            catch (Exception ex)
+            {                
+                _dirty = true;
             }
         }
     }

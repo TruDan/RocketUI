@@ -30,7 +30,7 @@
         <PackageReference Include="WebSocketSharp.Standard" Version="1.0.3" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="SharpVR.MonoGame" Version="1.0.2" />
+      <PackageReference Include="SharpVR.MonoGame" Version="1.0.12" />
     </ItemGroup>
 
 </Project>
