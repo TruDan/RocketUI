@@ -165,10 +165,10 @@ namespace RocketUI
                     transform = transformable.Transform;
                 }
 
-                var normal   = Vector3.Transform(Vector3.Backward, transform.RelativeRotation);
+                var normal   = Vector3.Transform(Vector3.Backward, transform.Rotation);
                 normal.Normalize();
 
-                var plane        = new Plane(transform.RelativePosition, normal);
+                var plane        = new Plane(transform.LocalPosition, normal);
                 var intersection = cursorRay.Intersects(plane);
                 if (intersection.HasValue)
                 {

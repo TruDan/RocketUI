@@ -9,12 +9,9 @@ namespace RocketUI
     {
         public event EventHandler Changed;
 
-        private Vector3     _relativeScale    = Vector3.One;
-        private Vector3     _relativePosition = Vector3.Zero;
-        private Quaternion  _relativeRotation = Quaternion.Identity;
-        private Vector3     _scale            = Vector3.One;
-        private Vector3     _position         = Vector3.Zero;
-        private Quaternion  _rotation         = Quaternion.Identity;
+        private Vector3     _localScale    = Vector3.One;
+        private Vector3     _localPosition = Vector3.Zero;
+        private Quaternion  _localRotation = Quaternion.Identity;
         private Matrix      _world            = Matrix.Identity;
         private Transform3D _parentTransform;
         private bool        _dirty;
@@ -26,57 +23,54 @@ namespace RocketUI
 
         public virtual Transform3D ParentTransform
         {
-            get
-            {
-                return _parentTransform;
-            }
+            get { return _parentTransform; }
             set
             {
                 if (_parentTransform != null)
                     _parentTransform.Changed -= OnParentChanged;
-                
+
                 _parentTransform = value;
-                
+
                 if (_parentTransform != null)
                     _parentTransform.Changed += OnParentChanged;
             }
         }
 
         [DataMember]
-        public virtual Vector3 RelativeScale
+        public virtual Vector3 LocalScale
         {
-            get => _relativeScale;
+            get => _localScale;
             set
             {
-                if (_relativeScale == value)
+                if (_localScale == value)
                     return;
-                _relativeScale = value;
+                _localScale = value;
                 OnChanged();
             }
         }
 
         [DataMember]
-        public virtual Vector3 RelativePosition
+        public virtual Vector3 LocalPosition
         {
-            get => _relativePosition;
+            get => _localPosition;
             set
             {
-                if (_relativePosition == value)
+                if (_localPosition == value)
                     return;
-                _relativePosition = value;
+                _localPosition = value;
                 OnChanged();
             }
         }
 
         [DataMember]
-        public virtual Quaternion RelativeRotation
+        public virtual Quaternion LocalRotation
         {
-            get => _relativeRotation;
+            get => _localRotation;
             set
             {
-                if (_relativeRotation == value)
+                if (_localRotation == value)
                     return;
-                _relativeRotation = value;
+                _localRotation = value;
                 OnChanged();
             }
         }
@@ -85,20 +79,23 @@ namespace RocketUI
         public virtual Vector3 Scale
         {
             get
-            {                
+            {
                 if (_dirty)
                     UpdateAbsolutes();
-                return _position;
+                var result = _localScale;
+                if (_parentTransform != null)
+                    result *= _parentTransform.Scale;
+                return result;
             }
             set
             {
                 if (ParentTransform == null)
                 {
-                    RelativeScale = value;
+                    LocalScale = value;
                 }
                 else
                 {
-                    RelativeScale = value / ParentTransform.Scale;
+                    LocalScale = value / ParentTransform.Scale;
                 }
             }
         }
@@ -107,20 +104,19 @@ namespace RocketUI
         {
             get
             {
-                
                 if (_dirty)
                     UpdateAbsolutes();
-                return _position;
+                return World.Translation;
             }
             set
             {
                 if (ParentTransform == null)
                 {
-                    RelativePosition = value;
+                    LocalPosition = value;
                 }
                 else
                 {
-                    RelativePosition = value - ParentTransform.Position;
+                    LocalPosition = Vector3.Transform(value, Matrix.Invert(ParentTransform.World));
                 }
             }
         }
@@ -128,24 +124,31 @@ namespace RocketUI
         public virtual Quaternion Rotation
         {
             get
-            {                
+            {
                 if (_dirty)
                     UpdateAbsolutes();
-                return _rotation;
+                if(_parentTransform != null)
+                    return Quaternion.Multiply(_localRotation, _parentTransform.Rotation);
+                return _localRotation;
             }
             set
             {
                 if (ParentTransform == null)
                 {
-                    RelativeRotation = value;
+                    LocalRotation = value;
                 }
                 else
                 {
-                    RelativeRotation = value / ParentTransform.Rotation;
+                    var result = value;
+                    if (_parentTransform != null)
+                    {
+                        result *= Quaternion.Inverse(_parentTransform.Rotation);
+                    }
+                    LocalRotation = result;
                 }
             }
         }
-        
+
         public virtual Matrix World
         {
             get
@@ -160,35 +163,26 @@ namespace RocketUI
         protected virtual void OnChanged()
         {
             _dirty = true;
+            UpdateAbsolutes();
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnParentChanged(object sender, EventArgs args)
         {
             _dirty = true;
+            UpdateAbsolutes();
         }
-        
+
         private void UpdateAbsolutes()
         {
             _dirty = false;
             _world = Matrix.Identity
-                     * Matrix.CreateScale(_relativeScale)
-                     * Matrix.CreateFromQuaternion(_relativeRotation)
-                     * Matrix.CreateTranslation(_relativePosition);
-                    
+                     * Matrix.CreateScale(_localScale)
+                     * Matrix.CreateFromQuaternion(_localRotation)
+                     * Matrix.CreateTranslation(_localPosition);
+
             if (ParentTransform != null)
                 _world *= ParentTransform.World;
-            try
-            {
-                if (_world.Decompose(out _scale, out _rotation, out _position))
-                {
-
-                }
-            }
-            catch (Exception ex)
-            {                
-                _dirty = true;
-            }
         }
     }
 }
