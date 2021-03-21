@@ -2,7 +2,7 @@
 
 namespace RocketUI
 {
-    public class SelectionList : StackContainer
+    public class SelectionList : ScrollableStackContainer
     {
         public event EventHandler<SelectionListItem> SelectedItemChanged;
 

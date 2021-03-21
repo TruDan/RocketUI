@@ -31,7 +31,6 @@ namespace RocketUI
             }
             set => _disabledBackground = value;
         }
-
         public GuiTexture2D HighlightedBackground
         {
             get
@@ -42,7 +41,6 @@ namespace RocketUI
             }
             set => _highlightedBackground = value;
         }
-
         public GuiTexture2D FocusedBackground {
             get
             {

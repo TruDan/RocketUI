@@ -32,6 +32,15 @@ namespace RocketUI.Input.Listeners
             RegisterMap(InputCommand.Navigate, VRButtons.LeftSteamVRTrigger);
             RegisterMap(InputCommand.Navigate, VRButtons.RightSteamVRTrigger);
             
+            RegisterMap(InputCommand.NavigateDown, VRButtons.LeftDPadDown);
+            RegisterMap(InputCommand.NavigateDown, VRButtons.RightDPadDown);
+            RegisterMap(InputCommand.NavigateUp, VRButtons.LeftDPadUp);
+            RegisterMap(InputCommand.NavigateUp, VRButtons.RightDPadUp);
+            RegisterMap(InputCommand.NavigateLeft, VRButtons.LeftDPadLeft);
+            RegisterMap(InputCommand.NavigateLeft, VRButtons.RightDPadLeft);
+            RegisterMap(InputCommand.NavigateRight, VRButtons.LeftDPadRight);
+            RegisterMap(InputCommand.NavigateRight, VRButtons.RightDPadRight);
+            
             _vrContext = VrContext.Get();
             ActiveHand = Hand.Right;
             ControllerOffset = Quaternion.CreateFromYawPitchRoll(0f, -((float)Math.PI/2f), 0f);
