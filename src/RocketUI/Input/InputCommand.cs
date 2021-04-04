@@ -32,6 +32,11 @@ namespace RocketUI.Input
 		public static readonly InputCommand NavigateRight = new (DefaultNamespace, nameof(NavigateRight));
 		public static readonly InputCommand Navigate = new (DefaultNamespace, nameof(Navigate));
 		public static readonly InputCommand NavigateBack = new (DefaultNamespace, nameof(NavigateBack));
+		public static readonly InputCommand ScrollUp = new(DefaultNamespace, nameof(ScrollUp));
+		public static readonly InputCommand ScrollDown = new(DefaultNamespace, nameof(ScrollDown));
+		public static readonly InputCommand ScrollLeft = new(DefaultNamespace, nameof(ScrollLeft));
+		public static readonly InputCommand ScrollRight = new(DefaultNamespace, nameof(ScrollRight));
+		
 		
 		private readonly string _namespace;
 		private readonly string _key;

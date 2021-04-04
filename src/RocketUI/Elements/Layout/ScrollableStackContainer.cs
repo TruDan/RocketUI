@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using RocketUI.Attributes;
+using RocketUI.Input;
 
 namespace RocketUI
 {
@@ -31,8 +32,10 @@ namespace RocketUI
 			}
 		}
 
-		protected ScrollBar VerticalScrollBar;
-		protected ScrollBar HorizontalScrollBar;
+		protected ScrollBar     VerticalScrollBar;
+		protected ScrollBar     HorizontalScrollBar;
+		protected RocketControl ScrollContainer;
+		
 		private Vector2 _scrollOffset = Vector2.Zero;
 
 
@@ -52,11 +55,29 @@ namespace RocketUI
 				Height      = 10,
 				MaxHeight   = 10
 			});
+			AddChild(ScrollContainer = new RocketControl()
+			{
+				Anchor = Alignment.Fill
+			});
 
 			VerticalScrollBar.ScrollOffsetValueChanged   += VerticalScrollBarOnScrollOffsetValueChanged;
 			HorizontalScrollBar.ScrollOffsetValueChanged += HorizontalScrollBarOnScrollOffsetValueChanged;
 
 			ClipToBounds = true;
+		}
+
+		protected override void OnInit(IGuiRenderer renderer)
+		{
+			base.OnInit(renderer);
+			
+			RegisterInputCommandListener(InputCommand.ScrollUp, InputBindingTrigger.Continuous, () => ScrollContainer.Highlighted && VerticalScrollBar.IsVisible, () => VerticalScrollBar.Decrease());
+			RegisterInputCommandListener(InputCommand.ScrollDown, InputBindingTrigger.Continuous, () => ScrollContainer.Highlighted && VerticalScrollBar.IsVisible, () => VerticalScrollBar.Increase());
+			RegisterInputCommandListener(InputCommand.ScrollLeft, InputBindingTrigger.Continuous, () => ScrollContainer.Highlighted && HorizontalScrollBar.IsVisible, () => HorizontalScrollBar.Decrease());
+			RegisterInputCommandListener(InputCommand.ScrollRight, InputBindingTrigger.Continuous, () => ScrollContainer.Highlighted && HorizontalScrollBar.IsVisible, () => HorizontalScrollBar.Increase());
+		}
+
+		private void ScrollUp()
+		{
 		}
 
 		private void HorizontalScrollBarOnScrollOffsetValueChanged(object sender, ScrollOffsetValueChangedEventArgs e)
@@ -177,7 +198,7 @@ namespace RocketUI
 			
 			HorizontalScrollBar.IsVisible = _hasHorizontalScroll;
 			
-			if (_mouseInBounds)
+			if (_mouseInBounds && false)
 			{
 				if (_hasVerticalScroll && _mouseState.ScrollWheelValue != _scrollWheelValue)
 				{

@@ -17,7 +17,6 @@ namespace RocketUI
 
     public class ScrollBar : RocketControl
     {
-
         public event EventHandler<ScrollOffsetValueChangedEventArgs> ScrollOffsetValueChanged;
 
         public Orientation Orientation
@@ -70,7 +69,6 @@ namespace RocketUI
 
                 var prevValue = _maxScrollOffset;
                 _scrollBarSize = value;
-                
             }
         }
 
@@ -89,10 +87,10 @@ namespace RocketUI
 
                 OnScrollOffsetValueChanged(prevValue, _scrollOffsetValue);
 
-             /*   Log.Info(
-                    $"ScrollOffsetValue.Change {{ScrollOffsetValue=({prevValue} => {_scrollOffsetValue}), ScrollButtonStep={ScrollButtonStep}, MaxScrollOffset={MaxScrollOffset}}}");
-                Debug.WriteLine(
-                    $"ScrollOffsetValue.Change {{ScrollOffsetValue=({prevValue} => {_scrollOffsetValue}), ScrollButtonStep={ScrollButtonStep}, MaxScrollOffset={MaxScrollOffset}}}");*/
+                /*   Log.Info(
+                       $"ScrollOffsetValue.Change {{ScrollOffsetValue=({prevValue} => {_scrollOffsetValue}), ScrollButtonStep={ScrollButtonStep}, MaxScrollOffset={MaxScrollOffset}}}");
+                   Debug.WriteLine(
+                       $"ScrollOffsetValue.Change {{ScrollOffsetValue=({prevValue} => {_scrollOffsetValue}), ScrollButtonStep={ScrollButtonStep}, MaxScrollOffset={MaxScrollOffset}}}");*/
             }
         }
 
@@ -138,7 +136,7 @@ namespace RocketUI
 
                 CanFocus = false,
                 CanHighlight = false,
-                
+
                 HighlightOutlineColor = Color.Yellow,
                 HighlightOutlineThickness = new Thickness(2),
 
@@ -159,7 +157,7 @@ namespace RocketUI
         protected override void OnCursorMove(Point cursorPosition, Point previousCursorPosition, bool isCursorDown)
         {
             base.OnCursorMove(cursorPosition, previousCursorPosition, isCursorDown);
-            
+
             if (isCursorDown)
                 SetValueFromCursor(cursorPosition);
         }
@@ -167,7 +165,7 @@ namespace RocketUI
         protected override void OnCursorPressed(Point cursorPosition, MouseButton button)
         {
             base.OnCursorPressed(cursorPosition, button);
-            
+
             SetValueFromCursor(cursorPosition);
         }
 
@@ -211,13 +209,13 @@ namespace RocketUI
         private void UpdateTrack()
         {
             var containerSize = Orientation == Orientation.Vertical ? Size.Height : Size.Width;
-            var trackSize = containerSize;
-            var maxOffset = MaxScrollOffset;
+            var trackSize     = containerSize;
+            var maxOffset     = MaxScrollOffset;
 
             var contentSize = containerSize + maxOffset;
 
             if (containerSize == 0 || contentSize == 0) return;
-            
+
             var visibleSizeAsPercentage = (containerSize / (double) contentSize);
             //var visibleSizeAsPercentage = 1d;
             if (visibleSizeAsPercentage >= 1.0d)
@@ -237,9 +235,9 @@ namespace RocketUI
             }
             else
             {
-                var size = (int) Math.Floor(visibleSizeAsPercentage * trackSize);
+                var size              = (int) Math.Floor(visibleSizeAsPercentage * trackSize);
                 var positionOffsetPct = (_scrollOffsetValue / (double) maxOffset);
-                var positionOffset = (int)((containerSize - size) * positionOffsetPct);
+                var positionOffset    = (int) ((containerSize - size) * positionOffsetPct);
 
                 positionOffset = MathHelpers.Clamp(positionOffset, 0, containerSize - size);
 
@@ -258,6 +256,20 @@ namespace RocketUI
 
                 _track.Enabled = true;
             }
+        }
+
+        public void Increase() => Increase(ScrollButtonStep);
+
+        public void Increase(int step)
+        {
+            ScrollOffsetValue += Math.Abs(step);
+        }
+
+        public void Decrease() => Decrease(ScrollButtonStep);
+
+        public void Decrease(int step)
+        {
+            ScrollOffsetValue -= Math.Abs(step);
         }
     }
 }

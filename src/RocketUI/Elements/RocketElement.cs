@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Portable.Xaml.Markup;
 using RocketUI.Attributes;
+using RocketUI.Input;
 using RocketUI.Serialization;
 
 namespace RocketUI
@@ -187,6 +188,8 @@ namespace RocketUI
 
 		[JsonIgnore]
 		protected IGuiRenderer GuiRenderer => _guiRenderer;
+		protected GuiManager GuiManager => RootScreen.GuiManager;
+		protected InputManager InputManager => RootScreen.GuiManager.InputManager;
 
 		public RocketElement()
 		{
@@ -467,6 +470,11 @@ namespace RocketUI
 
 		protected virtual void OnParentElementChanged(IGuiElement previousParent, IGuiElement newParent)
 		{
+			if (newParent == null)
+			{
+				UnregisterAllListeners();
+			}
+			
 			ForEachChild(e => e.ParentElement = this);
 		}
 
@@ -476,11 +484,39 @@ namespace RocketUI
 
 		#endregion
 
+
+		private List<InputActionBinding> _listeners = new List<InputActionBinding>();
+
+		protected void RegisterInputCommandListener(InputCommand command, Action action) =>
+			RegisterInputCommandListener(command, InputBindingTrigger.Discrete, InputActionBinding.AlwaysTrue, action);
+
+		protected void RegisterInputCommandListener(InputCommand command, InputActionPredicate predicate, Action action) =>
+			RegisterInputCommandListener(command, InputBindingTrigger.Discrete, predicate, action);
+		protected void RegisterInputCommandListener(InputCommand command, InputBindingTrigger trigger, Action action) =>
+			RegisterInputCommandListener(command, trigger, InputActionBinding.AlwaysTrue, action);
+		protected void RegisterInputCommandListener(InputCommand command, InputBindingTrigger trigger, InputActionPredicate predicate, Action action)
+		{
+			var binding = InputManager.RegisterListener(command, trigger, predicate, action);
+			_listeners.Add(binding);
+		}
+
+		private void UnregisterAllListeners()
+		{
+			if (RootScreen == null) return;
+			foreach (var listener in _listeners.ToArray())
+			{
+				InputManager.UnregisterListener(listener);
+			}
+		}
+		
+
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
 			}
+
+			UnregisterAllListeners();
 		}
 
 		public void Dispose()

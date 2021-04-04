@@ -34,7 +34,7 @@ namespace RocketUI
 
         public IGuiRenderer GuiRenderer { get; }
 
-        internal InputManager InputManager { get; }
+        public InputManager InputManager { get; }
         internal SpriteBatch  SpriteBatch  { get; private set; }
 
         public GuiSpriteBatch GuiSpriteBatch { get; private set; }

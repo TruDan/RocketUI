@@ -37,6 +37,9 @@ namespace RocketUI.Input
 
     public class InputManager : GameComponent
     {
+        public event EventHandler<PlayerInputManagerAdded> InputManagerAdded;
+        public event EventHandler<InputBindingEventArgs>   InputCommandTriggered;
+
         private readonly IServiceProvider _serviceProvider;
 
         private Dictionary<PlayerIndex, PlayerInputManager> PlayerInputManagers { get; } =
@@ -44,14 +47,13 @@ namespace RocketUI.Input
 
         public int PlayerCount => PlayerInputManagers.Count;
 
-        public EventHandler<PlayerInputManagerAdded> InputManagerAdded;
+        public List<InputActionBinding> Bindings { get; } = new List<InputActionBinding>();
 
         public InputManager(Game game, IServiceProvider serviceProvider) : base(game)
         {
             _serviceProvider = serviceProvider;
             UpdateOrder = -10;
             //var playerOne = GetOrAddPlayerManager(PlayerIndex.One);
-
         }
 
         public PlayerInputManager GetOrAddPlayerManager(PlayerIndex playerIndex)
@@ -59,7 +61,7 @@ namespace RocketUI.Input
             if (!PlayerInputManagers.TryGetValue(playerIndex, out var playerInputManager))
             {
                 playerInputManager = new PlayerInputManager(playerIndex);
-                
+
                 var listeners = _serviceProvider.GetService<IEnumerable<IInputListenerFactory>>();
                 if (listeners != null)
                 {
@@ -70,7 +72,7 @@ namespace RocketUI.Input
                             playerInputManager.AddListener(listener);
                     }
                 }
-                
+
                 PlayerInputManagers.Add(playerIndex, playerInputManager);
 
                 InputManagerAdded?.Invoke(this, new PlayerInputManagerAdded(playerIndex, playerInputManager));
@@ -86,10 +88,55 @@ namespace RocketUI.Input
             //if (!Game.IsActive)
             //    return;
 
-            foreach (var playerInputManager in PlayerInputManagers.Values.ToArray())
+            var playerInputManagers = PlayerInputManagers.Values.ToArray();
+            foreach (var playerInputManager in playerInputManagers)
             {
                 playerInputManager.Update(gameTime);
             }
+
+            CheckTriggeredBindings(playerInputManagers);
+        }
+
+        private void CheckTriggeredBindings(PlayerInputManager[] playerInputManagers)
+        {
+            foreach (var binding in Bindings)
+            {
+                foreach (var playerInputManager in playerInputManagers)
+                {
+                    if ((binding.Trigger == InputBindingTrigger.Continuous &&
+                         playerInputManager.IsDown(binding.InputCommand))
+                        || (binding.Trigger == InputBindingTrigger.Discrete &&
+                            playerInputManager.IsBeginPress(binding.InputCommand)))
+                    {
+                        if (binding.Predicate())
+                        {
+                            // triggered
+                            HandleBindingTriggered(playerInputManager, binding);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void HandleBindingTriggered(PlayerInputManager playerInputManager, InputActionBinding binding)
+        {
+            binding.Action?.Invoke();
+            InputCommandTriggered?.Invoke(this, new InputBindingEventArgs(playerInputManager, binding));
+        }
+
+
+        public InputActionBinding RegisterListener(InputCommand command, InputBindingTrigger trigger,
+            InputActionPredicate                                predicate,
+            Action                                              action)
+        {
+            var binding = new InputActionBinding(command, trigger, predicate, action);
+            Bindings.Add(binding);
+            return binding;
+        }
+
+        public void UnregisterListener(InputActionBinding binding)
+        {
+            Bindings.Remove(binding);
         }
 
         public bool Any(Func<PlayerInputManager, bool> playerInputManagerFunc)

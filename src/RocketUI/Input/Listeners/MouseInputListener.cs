@@ -10,6 +10,8 @@ namespace RocketUI.Input.Listeners
             RegisterMap(InputCommand.LeftClick, MouseButton.Left);
             RegisterMap(InputCommand.RightClick, MouseButton.Right);
             RegisterMap(InputCommand.MiddleClick, MouseButton.Middle);
+            RegisterMap(InputCommand.ScrollUp, MouseButton.ScrollUp);
+            RegisterMap(InputCommand.ScrollDown, MouseButton.ScrollDown);
             //RegisterMap(InputCommand.HotBarSelectPrevious, MouseButton.ScrollDown);
            // RegisterMap(InputCommand.HotBarSelectNext, MouseButton.ScrollUp);
         }
