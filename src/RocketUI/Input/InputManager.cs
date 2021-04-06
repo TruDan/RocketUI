@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,12 +43,13 @@ namespace RocketUI.Input
 
         private readonly IServiceProvider _serviceProvider;
 
-        private Dictionary<PlayerIndex, PlayerInputManager> PlayerInputManagers { get; } =
-            new Dictionary<PlayerIndex, PlayerInputManager>();
+        private ConcurrentDictionary<PlayerIndex, PlayerInputManager> PlayerInputManagers { get; } =
+            new ConcurrentDictionary<PlayerIndex, PlayerInputManager>();
 
         public int PlayerCount => PlayerInputManagers.Count;
 
-        public List<InputActionBinding> Bindings { get; } = new List<InputActionBinding>();
+        private object _bindingsLock = new object();
+        private List<InputActionBinding> Bindings { get; } = new List<InputActionBinding>();
 
         public InputManager(Game game, IServiceProvider serviceProvider) : base(game)
         {
@@ -73,7 +75,7 @@ namespace RocketUI.Input
                     }
                 }
 
-                PlayerInputManagers.Add(playerIndex, playerInputManager);
+                PlayerInputManagers.TryAdd(playerIndex, playerInputManager);
 
                 InputManagerAdded?.Invoke(this, new PlayerInputManagerAdded(playerIndex, playerInputManager));
             }
@@ -99,19 +101,22 @@ namespace RocketUI.Input
 
         private void CheckTriggeredBindings(PlayerInputManager[] playerInputManagers)
         {
-            foreach (var binding in Bindings)
+            lock (_bindingsLock)
             {
-                foreach (var playerInputManager in playerInputManagers)
+                foreach (var binding in Bindings)
                 {
-                    if ((binding.Trigger == InputBindingTrigger.Continuous &&
-                         playerInputManager.IsDown(binding.InputCommand))
-                        || (binding.Trigger == InputBindingTrigger.Discrete &&
-                            playerInputManager.IsBeginPress(binding.InputCommand)))
+                    foreach (var playerInputManager in playerInputManagers)
                     {
-                        if (binding.Predicate())
+                        if ((binding.Trigger == InputBindingTrigger.Continuous
+                             && playerInputManager.IsDown(binding.InputCommand))
+                            || (binding.Trigger == InputBindingTrigger.Discrete
+                                && playerInputManager.IsBeginPress(binding.InputCommand)))
                         {
-                            // triggered
-                            HandleBindingTriggered(playerInputManager, binding);
+                            if (binding.Predicate())
+                            {
+                                // triggered
+                                HandleBindingTriggered(playerInputManager, binding);
+                            }
                         }
                     }
                 }
@@ -130,13 +135,21 @@ namespace RocketUI.Input
             Action                                              action)
         {
             var binding = new InputActionBinding(command, trigger, predicate, action);
-            Bindings.Add(binding);
+
+            lock (_bindingsLock)
+            {
+                Bindings.Add(binding);
+            }
+
             return binding;
         }
 
         public void UnregisterListener(InputActionBinding binding)
         {
-            Bindings.Remove(binding);
+            lock (_bindingsLock)
+            {
+                Bindings.Remove(binding);
+            }
         }
 
         public bool Any(Func<PlayerInputManager, bool> playerInputManagerFunc)
