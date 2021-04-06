@@ -17,7 +17,7 @@ namespace RocketUI
 
             if (Texture != null)
             {
-                graphics.FillRectangle(RenderBounds, Texture, RepeatMode);
+                graphics.FillRectangle(new Rectangle(RenderPosition.ToPoint(), Size), Texture, RepeatMode);
             }
         }
     }

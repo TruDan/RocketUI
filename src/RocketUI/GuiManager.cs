@@ -221,15 +221,10 @@ namespace RocketUI
             // DebugHelper.Update(gameTime);
         }
 
-        private BasicEffect _basicEffect;
-
         public override void Draw(GameTime gameTime)
         {
             if (!Visible)
                 return;
-
-            IDisposable maybeADisposable = null;
-
 
             foreach (var screen in Screens.ToArray())
             {
@@ -249,8 +244,6 @@ namespace RocketUI
                     GuiSpriteBatch.End();
                 }
             }
-
-            ;
         }
     }
 }

@@ -7,15 +7,6 @@ namespace RocketUI
 {
     public class GuiSpriteBatch : IDisposable
     {
-        private static readonly RasterizerState RasterizerState = GetDefaultRasterizerState();
-
-        private static RasterizerState GetDefaultRasterizerState()
-        {
-            var rast = CopyRasterizerState(RasterizerState.CullNone);
-            rast.ScissorTestEnable = true;
-            return rast;
-        }
-
         public IFont Font { get; set; }
 
         //public GraphicsContext Graphics { get; }
@@ -180,8 +171,8 @@ namespace RocketUI
 
         public IDisposable BeginClipBounds(Rectangle scissorRectangle, bool mergeBounds = false)
         {
-            return new ContextDisposable(() => { });
-//            if (scissorRectangle == Rectangle.Empty) return new ContextDisposable(() => {});
+           //  return new ContextDisposable(() => { });
+            if (scissorRectangle == Rectangle.Empty) return new ContextDisposable(() => {});
 
             var currentScissorRectangle = Context.ScissorRectangle;
 
@@ -215,22 +206,6 @@ namespace RocketUI
             {
                 Begin();
             }
-        }
-
-        private static RasterizerState CopyRasterizerState(RasterizerState rasterizerState)
-        {
-            return new RasterizerState()
-            {
-                CullMode = rasterizerState.CullMode,
-                DepthBias = rasterizerState.DepthBias,
-                DepthClipEnable = rasterizerState.DepthClipEnable,
-                FillMode = rasterizerState.FillMode,
-                MultiSampleAntiAlias = rasterizerState.MultiSampleAntiAlias,
-                Name = rasterizerState.Name,
-                ScissorTestEnable = rasterizerState.ScissorTestEnable,
-                SlopeScaleDepthBias = rasterizerState.SlopeScaleDepthBias,
-                Tag = rasterizerState.Tag
-            };
         }
 
         #endregion
