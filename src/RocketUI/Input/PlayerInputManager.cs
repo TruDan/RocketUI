@@ -152,7 +152,7 @@ namespace RocketUI.Input
 
         public bool IsUp(params InputCommand[] commands)
         {
-            lock (_bindingsLock)
+            lock (_listenersLock)
             {
                 return InputListeners.Any(l => commands.Any(l.IsUp));
             }
@@ -160,7 +160,7 @@ namespace RocketUI.Input
 
         public bool IsDown(params InputCommand[] commands)
         {
-            lock (_bindingsLock)
+            lock (_listenersLock)
             {
                 return InputListeners.Any(l => commands.Any(l.IsDown));
             }
@@ -168,7 +168,7 @@ namespace RocketUI.Input
 
         public bool IsBeginPress(params InputCommand[] commands)
         {
-            lock (_bindingsLock)
+            lock (_listenersLock)
             {
                 return InputListeners.Any(l => commands.Any(l.IsBeginPress));
             }
@@ -176,7 +176,7 @@ namespace RocketUI.Input
 
         public bool IsPressed(params InputCommand[] commands)
         {
-            lock (_bindingsLock)
+            lock (_listenersLock)
             {
                 return InputListeners.Any(l => commands.Any(l.IsPressed));
             }
