@@ -171,7 +171,7 @@ namespace RocketUI
 
         public IDisposable BeginClipBounds(Rectangle scissorRectangle, bool mergeBounds = false)
         {
-           //  return new ContextDisposable(() => { });
+             return new ContextDisposable(() => { });
             if (scissorRectangle == Rectangle.Empty) return new ContextDisposable(() => {});
 
             var currentScissorRectangle = Context.ScissorRectangle;
