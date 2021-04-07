@@ -349,19 +349,20 @@ namespace RocketUI
 
 		public bool TryFindParent(GuiElementPredicate predicate, out IGuiElement parentElement)
 		{
-			if (ParentElement == null)
+			var parent = ParentElement;
+			if (parent == null)
 			{
 				parentElement = null;
 				return false;
 			}
 
-			if (predicate(ParentElement))
+			if (predicate(parent))
 			{
-				parentElement = ParentElement;
+				parentElement = parent;
 				return true;
 			}
 
-			return ParentElement.TryFindParent(predicate, out parentElement);
+			return parent.TryFindParent(predicate, out parentElement);
 		}
 
 		public bool TryFindParentOfType<TGuiElement>(GuiElementPredicate<TGuiElement> predicate,
