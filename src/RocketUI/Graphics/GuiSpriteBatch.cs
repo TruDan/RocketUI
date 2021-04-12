@@ -50,13 +50,37 @@ namespace RocketUI
             Effect.View = Matrix.Identity;
             Effect.Projection = Matrix.Identity;
 
-//            Context = GraphicsContext.CreateContext(_graphicsDevice, BlendState.NonPremultiplied, DepthStencilState.None, RasterizerState, SamplerState.PointClamp);
+            //Context = GraphicsContext.CreateContext(_graphicsDevice, BlendState.NonPremultiplied, DepthStencilState.None, GetDefaultRasterizerState(), SamplerState.PointClamp);
             Context = renderer.CreateGuiSpriteBatchContext(_graphicsDevice);
 
             Font = _renderer.Font;
             ScaledResolution = _renderer.ScaledResolution;
         }
+        
+        private static RasterizerState CopyRasterizerState(RasterizerState rasterizerState)
+        {
+            return new RasterizerState()
+            {
+                CullMode = rasterizerState.CullMode,
+                DepthBias = rasterizerState.DepthBias,
+                DepthClipEnable = rasterizerState.DepthClipEnable,
+                FillMode = rasterizerState.FillMode,
+                MultiSampleAntiAlias = rasterizerState.MultiSampleAntiAlias,
+                Name = rasterizerState.Name,
+                ScissorTestEnable = rasterizerState.ScissorTestEnable,
+                SlopeScaleDepthBias = rasterizerState.SlopeScaleDepthBias,
+                Tag = rasterizerState.Tag
+            };
+        }
 
+
+        public static RasterizerState GetDefaultRasterizerState()
+        {
+            var rast = CopyRasterizerState(RasterizerState.CullNone);
+            rast.ScissorTestEnable = true;
+            return rast;
+        }
+        
         public Vector2 Project(Vector2 point)
         {
             return Vector2.Transform(point, ScaledResolution.TransformMatrix);
@@ -171,21 +195,22 @@ namespace RocketUI
 
         public IDisposable BeginClipBounds(Rectangle scissorRectangle, bool mergeBounds = false)
         {
-             return new ContextDisposable(() => { });
-            if (scissorRectangle == Rectangle.Empty) return new ContextDisposable(() => {});
+           //  return new ContextDisposable(() => { });
+       //     if (scissorRectangle == Rectangle.Empty) return new ContextDisposable(() => {});
 
             var currentScissorRectangle = Context.ScissorRectangle;
 
             var rect = Project(scissorRectangle);
             if (mergeBounds)
                 rect = Rectangle.Intersect(currentScissorRectangle, rect);
-
+            
             if (_hasBegun)
             {
                 End();
                 Begin();
             }
 
+            
             Context.ScissorRectangle = rect;
 
             return new ContextDisposable(() =>
@@ -195,7 +220,6 @@ namespace RocketUI
                     End();
                     Begin();
                 }
-
                 Context.ScissorRectangle = currentScissorRectangle;
             });
         }

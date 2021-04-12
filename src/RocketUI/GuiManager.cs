@@ -82,7 +82,7 @@ namespace RocketUI
 
         public void SetSize(int width, int height)
         {
-            GuiRenderer.ScaledResolution.ViewportSize = new Size(width, height);
+            ScaledResolution.ViewportSize = new Size(width, height);
             GuiSpriteBatch.UpdateProjection();
 
             foreach (var screen in Screens.ToArray())
@@ -93,7 +93,7 @@ namespace RocketUI
                     continue;
                 }
 
-                screen.UpdateSize(GuiRenderer.ScaledResolution.ScaledWidth, GuiRenderer.ScaledResolution.ScaledHeight);
+                screen.UpdateSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
             }
         }
 
@@ -105,12 +105,14 @@ namespace RocketUI
 
         public void Init()
         {
-            //   SpriteBatch = new SpriteBatch(graphicsDevice);
+            SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
             GuiRenderer.Init(Game.GraphicsDevice, ServiceProvider);
             ApplyFont(GuiRenderer.Font);
+            
+            GuiSpriteBatch?.Dispose();
+            GuiSpriteBatch = new GuiSpriteBatch(GuiRenderer, Game.GraphicsDevice, SpriteBatch);
+                  
             SetSize(ScaledResolution.ViewportSize.Width, ScaledResolution.ViewportSize.Height);
-            //      GuiSpriteBatch?.Dispose();
-            //      GuiSpriteBatch = new GuiSpriteBatch(GuiRenderer, graphicsDevice, SpriteBatch);
         }
 
         private bool _doInit = true;
