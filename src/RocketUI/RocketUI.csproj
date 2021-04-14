@@ -20,12 +20,12 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
         <PackageReference Include="JetBrains.ExternalAnnotations" Version="10.2.91" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Portable.Xaml" Version="0.26.0" />
         <PackageReference Include="WebSocketSharp.Standard" Version="1.0.3" />
     </ItemGroup>
