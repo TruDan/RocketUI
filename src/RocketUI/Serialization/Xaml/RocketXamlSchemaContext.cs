@@ -17,7 +17,7 @@ namespace RocketUI.Serialization.Xaml
 
         public bool DesignMode { get; set; }
 
-		private static readonly Assembly RocketAssembly = typeof(Platform).GetTypeInfo().Assembly;
+		private static readonly Assembly RocketAssembly = typeof(RocketUI.Platform).GetTypeInfo().Assembly;
 
 
 		protected override XamlType GetXamlType(string xamlNamespace, string name, params XamlType[] typeArguments)
