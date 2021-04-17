@@ -42,9 +42,10 @@ namespace RocketUI.Input
         public InputType   InputType   { get; private set; }
 
         private List<IInputListener> InputListeners { get; } = new List<IInputListener>();
+        private object _listenersLock = new object();
 
-        public List<InputActionBinding> Bindings { get; } = new List<InputActionBinding>();
-
+        private List<InputActionBinding> Bindings { get; } = new List<InputActionBinding>();
+        private object _bindingsLock = new object();
 
         private bool _isVr = false;
 
@@ -56,7 +57,10 @@ namespace RocketUI.Input
 
         public void AddListener(IInputListener listener)
         {
-            InputListeners.Add(listener);
+            lock (_listenersLock)
+            {
+                InputListeners.Add(listener);
+            }
 
             InputListenerAdded?.Invoke(this, new InputListenerEventArgs(listener));
         }
@@ -64,8 +68,13 @@ namespace RocketUI.Input
         public bool TryGetListener<TType>(out TType value) where TType : IInputListener
         {
             value = default;
+            IInputListener? first;
 
-            var first = InputListeners.FirstOrDefault(x => typeof(TType) == x.GetType());
+            lock (_listenersLock)
+            {
+                first = InputListeners.FirstOrDefault(x => typeof(TType) == x.GetType());
+            }
+
             if (first != default)
             {
                 value = (TType) first;
@@ -77,7 +86,14 @@ namespace RocketUI.Input
 
         public void Update(GameTime gameTime)
         {
-            foreach (var inputListener in InputListeners.ToArray())
+            IInputListener[] listeners;
+
+            lock (_listenersLock)
+            {
+                listeners = InputListeners.ToArray();
+            }
+
+            foreach (var inputListener in listeners)
             {
                 inputListener.Update(gameTime);
             }
@@ -87,7 +103,14 @@ namespace RocketUI.Input
 
         private void CheckTriggeredBindings()
         {
-            foreach (var binding in Bindings)
+            InputActionBinding[] bindings;
+
+            lock (_bindingsLock)
+            {
+                bindings = Bindings.ToArray();
+            }
+
+            foreach (var binding in bindings)
             {
                 if ((binding.Trigger == InputBindingTrigger.Continuous && IsDown(binding.InputCommand))
                     || (binding.Trigger == InputBindingTrigger.Discrete && IsBeginPress(binding.InputCommand)))
@@ -111,44 +134,71 @@ namespace RocketUI.Input
             InputActionPredicate                                predicate,
             Action                                              action)
         {
-            var binding = new InputActionBinding(command, trigger, predicate, action);
-            Bindings.Add(binding);
-            return binding;
+            lock (_bindingsLock)
+            {
+                var binding = new InputActionBinding(command, trigger, predicate, action);
+                Bindings.Add(binding);
+
+                return binding;
+            }
         }
         public void UnregisterListener(InputActionBinding binding)
         {
-            Bindings.Remove(binding);
+            lock (_bindingsLock)
+            {
+                Bindings.Remove(binding);
+            }
         }
 
         public bool IsUp(params InputCommand[] commands)
         {
-            return InputListeners.Any(l => commands.Any(l.IsUp));
+            lock (_listenersLock)
+            {
+                return InputListeners.Any(l => commands.Any(l.IsUp));
+            }
         }
 
         public bool IsDown(params InputCommand[] commands)
         {
-            return InputListeners.Any(l => commands.Any(l.IsDown));
+            lock (_listenersLock)
+            {
+                return InputListeners.Any(l => commands.Any(l.IsDown));
+            }
         }
 
         public bool IsBeginPress(params InputCommand[] commands)
         {
-            return InputListeners.Any(l => commands.Any(l.IsBeginPress));
+            lock (_listenersLock)
+            {
+                return InputListeners.Any(l => commands.Any(l.IsBeginPress));
+            }
         }
 
         public bool IsPressed(params InputCommand[] commands)
         {
-            return InputListeners.Any(l => commands.Any(l.IsPressed));
+            lock (_listenersLock)
+            {
+                return InputListeners.Any(l => commands.Any(l.IsPressed));
+            }
         }
 
         public Ray GetCursorRay()
         {
-            foreach (var inputListener in InputListeners.OrderBy(x => x.Order).OfType<ICursorInputListener>())
+            IInputListener[] inputListeners;
+
+            lock (_listenersLock)
+            {
+                inputListeners = InputListeners.ToArray();
+            }
+            
+            foreach (var inputListener in inputListeners.OrderBy(x => x.Order).OfType<ICursorInputListener>())
             {
                 var cursorRay = inputListener.GetCursorRay();
                 return cursorRay;
             }
 
             return new Ray();
+            
         }
     }
 }

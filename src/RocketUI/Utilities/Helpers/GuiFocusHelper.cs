@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using RocketUI.Events;
 using RocketUI.Input;
 using RocketUI.Input.Listeners;
 
@@ -42,6 +43,8 @@ namespace RocketUI
                 _focusedElement?.InvokeFocusDeactivate();
                 _focusedElement = value;
                 _focusedElement?.InvokeFocusActivate();
+                
+                FocusChanged?.Invoke(this, new GuiFocusChangedEventArgs(value));
             }
         }
 
@@ -60,6 +63,7 @@ namespace RocketUI
             }
         }
 
+        public EventHandler<GuiFocusChangedEventArgs> FocusChanged;
 
         public GuiFocusHelper(GuiManager guiManager, InputManager inputManager, GraphicsDevice graphicsDevice)
         {

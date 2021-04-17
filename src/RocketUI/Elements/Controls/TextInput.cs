@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using RocketUI.Input;
 using RocketUI.Utilities.Helpers;
+using RocketUI.Utilities.IO;
 
 namespace RocketUI
 {
@@ -119,24 +120,25 @@ namespace RocketUI
 					}
 					else if (isCtrl)
 					{
-						if (keys.Contains(Keys.C))
+						var clipboardAvailable = Clipboard.IsClipboardAvailable();
+						if (keys.Contains(Keys.C) && clipboardAvailable)
 						{
 							// Clipboard Copy
 							if (TextBuilder.SelectedText.Length > 0)
 							{
 								// TODO: FIX?
-								//Clipboard.SetText(TextBuilder.SelectedText);
+								Clipboard.SetText(TextBuilder.SelectedText);
 							}
 						}
-						else if (keys.Contains(Keys.V))
+						else if (keys.Contains(Keys.V) && clipboardAvailable)
 						{
 							// Clipboard Paste
 							// TODO: FIX?
-							// var clipboardText = Clipboard.GetText();
-							// if (!string.IsNullOrEmpty(clipboardText))
-							// {
-							// 	TextBuilder.Append(clipboardText.StripIllegalCharacters(TextElement.Font));
-							// }
+							 var clipboardText = Clipboard.GetText();
+							 if (!string.IsNullOrEmpty(clipboardText))
+							 {
+								 TextBuilder.Append(clipboardText);
+							 }
 						}
 						else if (keys.Contains(Keys.A))
 						{

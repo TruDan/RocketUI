@@ -198,34 +198,22 @@ namespace RocketUI
 			
 			HorizontalScrollBar.IsVisible = _hasHorizontalScroll;
 			
-			if (_mouseInBounds && false)
+			if (_mouseInBounds)
 			{
 				if (_hasVerticalScroll && _mouseState.ScrollWheelValue != _scrollWheelValue)
 				{
-					if (_mouseState.ScrollWheelValue > _scrollWheelValue)
-					{
-						VerticalScrollBar.ScrollOffsetValue -= Math.Abs((_mouseState.ScrollWheelValue - _scrollWheelValue) / 5);
-					}
-					else if (_mouseState.ScrollWheelValue < _scrollWheelValue)
-					{
-						VerticalScrollBar.ScrollOffsetValue += Math.Abs((_mouseState.ScrollWheelValue - _scrollWheelValue) / 5);
-					}
+					var scrollDelta = (_scrollWheelValue - _mouseState.ScrollWheelValue);
+					
+					VerticalScrollBar.ScrollOffsetValue += scrollDelta;
 
 					_scrollWheelValue = _mouseState.ScrollWheelValue;
 				}
 
 				if (_hasHorizontalScroll && _mouseState.HorizontalScrollWheelValue != _horizontalScrollWheelValue)
 				{
-					if (_mouseState.HorizontalScrollWheelValue > _horizontalScrollWheelValue)
-					{
-						HorizontalScrollBar.ScrollOffsetValue -= Math.Abs((_mouseState.HorizontalScrollWheelValue - _horizontalScrollWheelValue) / 5);
-					}
-					else if (_mouseState.HorizontalScrollWheelValue < _horizontalScrollWheelValue)
-					{
-						HorizontalScrollBar.ScrollOffsetValue += Math.Abs((_mouseState.HorizontalScrollWheelValue - _horizontalScrollWheelValue) / 5);
-					}
-
-					_horizontalScrollWheelValue = _mouseState.HorizontalScrollWheelValue;
+					var scrollDelta = (_horizontalScrollWheelValue - _mouseState.HorizontalScrollWheelValue);
+					
+					VerticalScrollBar.ScrollOffsetValue += scrollDelta;
 				}
 			}
 
