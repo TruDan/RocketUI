@@ -7,6 +7,7 @@
         <Platforms>AnyCPU;x64;x86</Platforms>
         <LangVersion>latest</LangVersion>
         <Version>1.0.0</Version>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
