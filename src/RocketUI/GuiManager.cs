@@ -232,6 +232,7 @@ namespace RocketUI
             {
                 if (screen == null || screen.IsSelfDrawing)
                     continue;
+                
                 try
                 {
                     GuiSpriteBatch.Begin(screen.IsAutomaticallyScaled);

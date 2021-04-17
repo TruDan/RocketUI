@@ -32,7 +32,10 @@
       <v-card-text>
         <v-list>
           <template v-for="(prop, propName) in element.properties">
-            <PropertyGridValueEditor :key="propName" :element-id="element.id" :property-name="propName" :property="prop"/>
+            <PropertyGridValueEditor :key="propName"
+                                     :element-id="element.id"
+                                     :property-name="propName"
+                                     :property="prop"/>
             <v-divider :key="propName + '1'"/>
           </template>
         </v-list>
