@@ -29,6 +29,7 @@ const actions = {
         // });
     },
     setPropertyValue({commit}, elementId, propertyName, propertyValue) {
+        console.log("SetPropertyValue ", elementId, propertyName, propertyValue);
         rocketdebugger.send('SetPropertyValue', elementId, propertyName, propertyValue).then(success => {
             commit('setPropertyValue', elementId, propertyName, propertyValue);
             console.log("SetPropertyValue ", success, elementId, propertyName, propertyValue);
@@ -74,7 +75,7 @@ const mutations = {
         element.properties = props;
     },
     setPropertyValue(state, elementId, propertyName, propertyValue) {
-        const element = state.elem.find(x => x.id === elementId);
+        const element = state.elements.find(x => x.id === elementId);
         element.properties[propertyName] = propertyValue;
     }
 };
