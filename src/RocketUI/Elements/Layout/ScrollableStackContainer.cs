@@ -93,7 +93,7 @@ namespace RocketUI
 
 		private Matrix _childRenderTransform = Matrix.Identity;
 
-		private void OnScrollOffsetChanged(Vector2 oldValue, Vector2 newValue)
+		protected virtual void OnScrollOffsetChanged(Vector2 oldValue, Vector2 newValue)
 		{
 			//var prevTransform = _childRenderTransform;
 
