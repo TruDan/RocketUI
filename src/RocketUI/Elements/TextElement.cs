@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Portable.Xaml.Markup;
 using RocketUI.Attributes;
@@ -22,6 +24,7 @@ namespace RocketUI
         private Vector2? _rotationOrigin;
         private IFont    _font;
 
+        [DebuggerVisible]
         public TextAlignment TextAlignment
         {
             get => _textAlignment;
@@ -207,7 +210,7 @@ namespace RocketUI
                     var position = renderPosition;
                     if ((TextAlignment & TextAlignment.Center) != 0)
                     {
-                        position.X = RenderBounds.Left + (size.X / 2f);
+                        position.X = RenderBounds.Center.X - (size.X / 2f);
                     }
                     else if ((TextAlignment & TextAlignment.Right) != 0)
                     {
@@ -262,43 +265,6 @@ namespace RocketUI
 
             var textSize = GetSize(text, scale);
 
-            /*if (_wrap && textSize.X > MaxWidth)
-            {
-                StringBuilder sb    = new StringBuilder();
-                var           split = text.Split(' ');
-
-                int startIndex = 0;
-                int length     = split.Length - 1;
-                var sizeX      = textSize.X;
-
-                string line = "";
-                while (sizeX > MaxWidth)
-                {
-                    length--;
-                    
-                    line = string.Join(' ', split, startIndex, length);
-                    var ts   = GetSize(line, scale);
-                    
-                    sizeX = ts.X;
-                }
-
-                sb.AppendLine(line);
-                var lineLength = line.Length;
-
-                while (true)
-                {
-                    string l = "";
-                }
-                
-                //var middle = string.Join(' ', split, 0, split.Length / 2);
-                //textSize = GetSize(middle, scale);
-
-                for (int i = 0; i < split.Length; i++)
-                {
-                    
-                }
-            }*/
-
             size = new Size((int) Math.Ceiling(textSize.X), (int) Math.Ceiling(textSize.Y));
             minSize = size;
             maxSize = size;
@@ -326,6 +292,42 @@ namespace RocketUI
             else
             {
                 //var scale = new Vector2(Scale, Scale);
+
+                if (_wrap)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    var scale = new Vector2(Scale, Scale);
+                    var textSize = GetSize(text, scale);
+
+                    var maxWidth = (MaxWidth - (Margin.Horizontal + Padding.Horizontal));
+                    if (textSize.X > maxWidth)
+                    {
+                        var lineWidth = textSize.X;
+                        var splitText = new LinkedList<string>(text.Split(' '));
+                        do
+                        {
+                            var str = splitText.First.Value + " ";
+                            var stringWidth = GetSize(str, scale);
+
+                            if (lineWidth + stringWidth.X < maxWidth)
+                            {
+                                sb.Append(str);
+                                lineWidth += stringWidth.X;
+                            }
+                            else
+                            {
+                                sb.AppendLine();
+                                sb.Append(str);
+
+                                lineWidth = stringWidth.X;
+                            }
+                            
+                            splitText.RemoveFirst();
+                        } while (splitText.Count > 0);
+
+                        text = sb.ToString();
+                    }
+                }
 
                 _renderText = text;
 

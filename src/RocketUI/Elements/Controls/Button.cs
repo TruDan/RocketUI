@@ -7,6 +7,12 @@ namespace RocketUI
 {
     public class Button : RocketControl, IGuiButton
     {
+        public TextAlignment TextAlignment
+        {
+            get => TextElement.TextAlignment;
+            set => TextElement.TextAlignment = value;
+        }
+        
         public string Text
         {
             get => TextElement.Text;
