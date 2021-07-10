@@ -223,7 +223,7 @@ namespace RocketUI
                         var s = size.ToPoint();
 
                         graphics.SpriteBatch.FillRectangle(
-                            new Rectangle(p, s),
+                            new Rectangle(p.X - 2, p.Y - 2, s.X + 4, s.Y + 2),
                             BackgroundOverlay.Color.Value);
                     }
 
