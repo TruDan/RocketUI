@@ -225,7 +225,7 @@ namespace RocketUI
         public static IDisposable PushRenderTarget(this GraphicsDevice graphicsDevice, RenderTarget2D renderTarget, Viewport viewport)
         {
             var currentRenderTargets = graphicsDevice.GetRenderTargets();
-            graphicsDevice.SetRenderTargets(renderTarget);
+            graphicsDevice.SetRenderTarget(renderTarget);
 
             var currentViewport = graphicsDevice.Viewport;
             graphicsDevice.Viewport = viewport;
@@ -240,7 +240,7 @@ namespace RocketUI
         public static IDisposable PushRenderTarget(this GraphicsDevice graphicsDevice, RenderTarget2D renderTarget)
         {
             var current = graphicsDevice.GetRenderTargets();
-            graphicsDevice.SetRenderTargets(renderTarget);
+            graphicsDevice.SetRenderTarget(renderTarget);
             return new ContextDisposable(() => graphicsDevice.SetRenderTargets(current));
         }
     }

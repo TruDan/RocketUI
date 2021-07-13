@@ -8,11 +8,6 @@ using RocketUI.Utilities.Extensions;
 
 namespace RocketUI
 {
-    public class TextClickedEvent : EventArgs
-    {
-        public Uri ClickedText;
-    }
-
     [ContentProperty(nameof(Text))]
     public class TextElement : RocketElement //GuiControl
     {
@@ -120,19 +115,6 @@ namespace RocketUI
 
         private string _renderText = String.Empty;
 
-        public EventHandler<TextClickedEvent> OnLinkClicked;
-
-        //public void AddClickable()
-
-        /*public class ClickableElement
-        {
-            public Rectangle Area { get; set; } 
-            public Action<GuiTextElement, string> ClickAction { get; set; }
-            public string Text { get; set; }
-        }*/
-
-        //private List<ClickableElement> ClickableElements = new List<ClickableElement>();
-
         private bool          _wrap = false;
         private TextAlignment _textAlignment;
 
@@ -188,22 +170,18 @@ namespace RocketUI
 
             if (!string.IsNullOrWhiteSpace(text))
             {
-                //base.OnDraw(graphics, gameTime);
-
-                /*var size = Font.MeasureString(text, Scale);
-                while (size.X > RenderBounds.Width && text.Length >= 1)
-                {
-                    text = text.Substring(0, text.Length - 1);
-                    size = Font.MeasureString(text, Scale);
-                }*/
-
-                // graphics.FillRectangle(new Rectangle(RenderPosition.ToPoint(), Size.ToPoint()), BackgroundOverlay);
-                //if (HasBackground && BackgroundOverlay.HasValue && BackgroundOverlay.Color.HasValue)
-                // {
-                //   graphics.SpriteBatch.FillRectangle(new Rectangle(RenderPosition.ToPoint(), Size /*GetSize(text, _scale).ToPoint()*/), BackgroundOverlay.Color.Value);
-                // }
                 var renderPosition = RenderPosition;
 
+                if (HasBackground && BackgroundOverlay.HasValue && BackgroundOverlay.Color.HasValue)
+                {
+                    var p = renderPosition.ToPoint();
+                    var s = Size.ToPoint();
+
+                    graphics.SpriteBatch.FillRectangle(
+                        new Rectangle(p.X - 2, p.Y - 2, s.X + 4, s.Y + 2),
+                        BackgroundOverlay.Color.Value);
+                }
+                
                 foreach (var line in text.Split('\n'))
                 {
                     var size     = Font.MeasureString(line, _scale);
@@ -215,16 +193,6 @@ namespace RocketUI
                     else if ((TextAlignment & TextAlignment.Right) != 0)
                     {
                         position.X = RenderBounds.Right - size.X;
-                    }
-
-                    if (HasBackground && BackgroundOverlay.HasValue && BackgroundOverlay.Color.HasValue)
-                    {
-                        var p = position.ToPoint();
-                        var s = size.ToPoint();
-
-                        graphics.SpriteBatch.FillRectangle(
-                            new Rectangle(p.X - 2, p.Y - 2, s.X + 4, s.Y + 2),
-                            BackgroundOverlay.Color.Value);
                     }
 
                     Font.DrawString(
@@ -269,30 +237,19 @@ namespace RocketUI
             minSize = size;
             maxSize = size;
         }
-
-        //private static Regex LinkParser = new Regex(@"\b(?:https?://|www\.)\S+\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        
         protected virtual void OnTextUpdated()
         {
             string text = _text;
-            //if (Font != null && !string.IsNullOrWhiteSpace(text))
+
             if (string.IsNullOrWhiteSpace(text))
             {
                 _renderText = string.Empty;
                 Width = 0;
                 Height = 0;
-
-                if (!HasFixedSize)
-                {
-                    // InvalidateLayout();
-                }
-                else
-                {
-                }
             }
             else
             {
-                //var scale = new Vector2(Scale, Scale);
-
                 if (_wrap)
                 {
                     StringBuilder sb = new StringBuilder();
@@ -332,22 +289,9 @@ namespace RocketUI
                 _renderText = text;
 
                 GetPreferredSize(out var size, out var minSize, out var maxSize);
-                Width = Math.Max(Math.Min(size.Width, maxSize.Width), minSize.Width); // size.Width;
-                Height = Math.Max(Math.Min(size.Height, maxSize.Height), minSize.Height); // size.Height;
+                Width = Math.Max(Math.Min(size.Width, maxSize.Width), minSize.Width);
+                Height = Math.Max(Math.Min(size.Height, maxSize.Height), minSize.Height);
             }
         }
-
-        //protected override void OnCursorPressed(Point cursorPosition, MouseButton button)
-        //	{
-        //	base.OnCursorPressed(cursorPosition, button);
-        /*	foreach (var c in ClickableElements.ToArray())
-            {
-                if (c.Area.Contains(cursorPosition))
-                {
-                    OnLinkClicked?.Invoke(this, new GuiTextClickedEvent() { ClickedText = new Uri(c.Text) });
-                    //c.ClickAction?.Invoke(this, c.Text);
-                }
-            }*/
-        //}
     }
 }
