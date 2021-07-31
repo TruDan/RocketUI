@@ -26,7 +26,7 @@ namespace RocketUI
                     proposedValue = MathHelpers.RoundToNearestInterval(proposedValue, StepInterval);
                 }
 
-                if (proposedValue != _value)
+                if (Math.Abs(proposedValue - _value) > 0d)
                 {
                     _value = proposedValue;
                     ValueChanged?.Invoke(this, _value);
@@ -81,9 +81,6 @@ namespace RocketUI
         private double _thumbOffsetX;
         private int _thumbWidth = 10;
 
-        [Obsolete("Use DisplayFormat property instead.", true)]
-        public Func<double, string> ValueFormatter { get; set; } = null;
-        
         private Color _foregroundColor = Color.White;
         private Color _originalForegroundColor = Color.White;
         

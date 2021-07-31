@@ -24,7 +24,7 @@ namespace RocketUI.Utilities.Helpers
 
         public static double RoundToNearestInterval(double value, double interval)
         {	
-            var scale = (1f / interval);
+            var scale = (1d / interval);
             return Math.Round(value * scale) / scale;
         }
 
