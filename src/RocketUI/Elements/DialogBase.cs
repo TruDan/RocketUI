@@ -17,6 +17,12 @@ namespace RocketUI
                 Anchor = Alignment.MiddleCenter
             });
         }
+
+        public virtual void OnShow()
+        {
+            
+        }
+        
         public virtual void OnClose()
         {
             

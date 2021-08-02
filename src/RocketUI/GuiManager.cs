@@ -41,7 +41,33 @@ namespace RocketUI
 
         public List<Screen> Screens { get; } = new List<Screen>();
 
-        public DialogBase ActiveDialog { get; private set; }
+        public DialogBase ActiveDialog
+        {
+            get => _activeDialog;
+            private set
+            {
+                var oldValue = _activeDialog;
+
+                if (oldValue != null)
+                {
+                    Game.IsMouseVisible = value != null;
+                    Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+                    
+                    RemoveScreen(oldValue);
+                    oldValue.OnClose();
+                }
+
+                _activeDialog = value;
+
+                if (value == null)
+                    return;
+                
+                Game.IsMouseVisible = true;
+                Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+                AddScreen(value);
+                value?.OnShow();
+            }
+        }
 
         private IServiceProvider ServiceProvider { get; }
 
@@ -116,6 +142,7 @@ namespace RocketUI
         }
 
         private bool _doInit = true;
+        private DialogBase _activeDialog;
 
         public void ApplyFont(IFont font)
         {
@@ -127,28 +154,13 @@ namespace RocketUI
 
         public void ShowDialog(DialogBase dialog)
         {
-            ActiveDialog?.OnClose();
-
-            if (ActiveDialog != null) RemoveScreen(ActiveDialog);
             ActiveDialog = dialog;
-            AddScreen(ActiveDialog);
-
-            Game.IsMouseVisible = true;
         }
 
         public void HideDialog(DialogBase dialog)
         {
             if (ActiveDialog == dialog)
-            {
-                dialog?.OnClose();
-
-                Game.IsMouseVisible = false;
-                Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
-
-                RemoveScreen(ActiveDialog);
-
                 ActiveDialog = null;
-            }
         }
 
         public void HideDialog<TGuiDialog>() where TGuiDialog : DialogBase
