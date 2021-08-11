@@ -101,35 +101,25 @@ namespace RocketUI.Input
 
         private void CheckTriggeredBindings(PlayerInputManager[] playerInputManagers)
         {
+            InputActionBinding[] bindings;
+
             lock (_bindingsLock)
             {
-                foreach (var binding in Bindings)
+                bindings = Bindings.ToArray();
+            }
+
+            foreach (var playerInputManager in playerInputManagers)
+            {
+                foreach (var binding in bindings)
                 {
-                    foreach (var playerInputManager in playerInputManagers)
+                    if (playerInputManager.CheckBinding(binding))
                     {
-                        if ((binding.Trigger == InputBindingTrigger.Continuous
-                             && playerInputManager.IsDown(binding.InputCommand))
-                            || (binding.Trigger == InputBindingTrigger.Discrete
-                                && playerInputManager.IsBeginPress(binding.InputCommand)))
-                        {
-                            if (binding.Predicate())
-                            {
-                                // triggered
-                                HandleBindingTriggered(playerInputManager, binding);
-                            }
-                        }
+                        InputCommandTriggered?.Invoke(this, new InputBindingEventArgs(playerInputManager, binding));
                     }
                 }
             }
         }
-
-        private void HandleBindingTriggered(PlayerInputManager playerInputManager, InputActionBinding binding)
-        {
-            binding.Action?.Invoke();
-            InputCommandTriggered?.Invoke(this, new InputBindingEventArgs(playerInputManager, binding));
-        }
-
-
+        
         public InputActionBinding RegisterListener(InputCommand command, InputBindingTrigger trigger,
             InputActionPredicate                                predicate,
             Action                                              action)

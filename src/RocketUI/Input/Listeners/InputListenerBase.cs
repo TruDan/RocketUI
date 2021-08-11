@@ -86,7 +86,7 @@ namespace RocketUI.Input.Listeners
         {
             return (TryGetButtons(command, out var buttons) && buttons.Any(button => IsButtonUp(CurrentState, button) && IsButtonDown(PreviousState, button)));
         }
-        
+
         private bool TryGetButtons(InputCommand command, out TButtons[] buttons)
         {
             if (_buttonMap.TryGetValue(command, out var btns))

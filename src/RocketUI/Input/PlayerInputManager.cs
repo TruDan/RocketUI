@@ -112,16 +112,29 @@ namespace RocketUI.Input
 
             foreach (var binding in bindings)
             {
-                if ((binding.Trigger == InputBindingTrigger.Continuous && IsDown(binding.InputCommand))
-                    || (binding.Trigger == InputBindingTrigger.Discrete && IsBeginPress(binding.InputCommand)))
-                {
-                    if (binding.Predicate())
-                    {
-                        // triggered
-                        HandleBindingTriggered(binding);
-                    }
-                }
+                CheckBinding(binding);
             }
+        }
+
+        internal bool CheckBinding(InputActionBinding binding)
+        {
+            if (binding.Trigger == InputBindingTrigger.Continuous && !IsDown(binding.InputCommand))
+                return false;
+                        
+            if (binding.Trigger == InputBindingTrigger.Discrete && !IsBeginPress(binding.InputCommand))
+                return false;
+                
+            if (binding.Trigger == InputBindingTrigger.Tap && !IsPressed(binding.InputCommand))
+                return false;
+
+            if (binding.Predicate())
+            {
+                // triggered
+                HandleBindingTriggered(binding);
+                return true;
+            }
+
+            return false;
         }
 
         private void HandleBindingTriggered(InputActionBinding binding)
@@ -142,6 +155,12 @@ namespace RocketUI.Input
                 return binding;
             }
         }
+
+        public InputActionBinding RegisterListener(InputCommand command, InputBindingTrigger trigger, Action action)
+        {
+            return RegisterListener(command, trigger, InputActionBinding.AlwaysTrue, action);
+        }
+        
         public void UnregisterListener(InputActionBinding binding)
         {
             lock (_bindingsLock)
