@@ -154,7 +154,18 @@ namespace RocketUI
 		public virtual Rectangle RenderBounds { get; set; }
 
 		[DebuggerVisible]
-		public bool IsVisible { get; set; } = true;
+		public bool IsVisible
+		{
+			get => _isVisible;
+			set
+			{
+				if (value != _isVisible)
+				{
+					_isVisible = value;
+					InvalidateLayout();
+				}
+			}
+		}
 
 		[DebuggerVisible(Visible = false)] public Matrix LayoutTransform { get; set; } = Matrix.Identity;
 
@@ -487,6 +498,7 @@ namespace RocketUI
 
 
 		private List<InputActionBinding> _listeners = new List<InputActionBinding>();
+		private bool _isVisible = true;
 
 		protected void RegisterInputCommandListener(InputCommand command, Action action) =>
 			RegisterInputCommandListener(command, InputBindingTrigger.Discrete, InputActionBinding.AlwaysTrue, action);

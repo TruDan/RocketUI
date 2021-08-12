@@ -239,6 +239,14 @@ namespace RocketUI
 			}
 		}
 
+		/// <inheritdoc />
+		protected override bool ShouldPositionChild(RocketElement child)
+		{
+			if (!child.IsVisible) return false;
+			
+			return base.ShouldPositionChild(child);
+		}
+
 		private void UpdateLayoutAlignments()
 		{
 			ForEachChild(UpdateLayoutAlignment);
