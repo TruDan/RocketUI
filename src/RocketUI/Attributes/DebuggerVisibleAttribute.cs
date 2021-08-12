@@ -15,4 +15,13 @@ namespace RocketUI.Attributes
 
 
     }
+
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    public class DebuggerIgnoreAttribute : DebuggerVisibleAttribute
+    {
+        public DebuggerIgnoreAttribute() : base()
+        {
+            Visible = false;
+        }
+    }
 }

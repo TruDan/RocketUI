@@ -1,62 +1,68 @@
 <template>
   <multipane class="panes" layout="vertical">
     <div class="pane">
-      <ScreenTreeView />
+      <element-toolbar />
+      <ScreenTreeView/>
     </div>
-    <multipane-resizer />
+    <multipane-resizer/>
     <div class="pane">
       <v-card>
-        <ElementPropertyGrid />
+        <ElementPropertyGrid/>
       </v-card>
     </div>
   </multipane>
 </template>
 
 <script>
-import { Multipane, MultipaneResizer } from 'vue-multipane';
+import {Multipane, MultipaneResizer} from 'vue-multipane';
 import ScreenTreeView from "@/components/ScreenTreeView";
 import ElementPropertyGrid from "@/components/ElementPropertyGrid";
+import ElementToolbar from "@/components/ElementToolbar";
 
-  export default {
-    name: 'DevToolsMain',
+export default {
+  name: 'DevToolsMain',
 
-    components: {
-      ElementPropertyGrid,
-      ScreenTreeView,
-      Multipane,
-      MultipaneResizer,
-    },
+  components: {
+    ElementToolbar,
+    ElementPropertyGrid,
+    ScreenTreeView,
+    Multipane,
+    MultipaneResizer,
+  },
 
-    data: () => ({}),
-  }
+  data: () => ({}),
+}
 </script>
 
 <style lang="scss">
-@import 'src/sass/main';
-
 .panes {
   display: table;
   height: 100%;
-  width:100%;
+  width: 100%;
   flex-flow: row nowrap;
   justify-content: stretch;
   align-items: stretch;
 }
+
 .panes > .pane {
-  display:table-cell;
+  display: table-cell;
   text-align: left;
   overflow: hidden;
   min-width: 200px;
   background: #1A1A1A;
 }
+
 .panes > .pane:first-child {
- // flex: 1;
+  // flex: 1;
 }
+
 .panes > .pane ~ .pane {
 }
+
 .panes > .multipane-resizer {
   display: table-cell;
-  margin: 0; left: 0;
+  margin: 0;
+  left: 0;
   position: relative;
   background: map-get($material-theme, 'surface');
 

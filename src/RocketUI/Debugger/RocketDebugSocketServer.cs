@@ -26,7 +26,8 @@ namespace RocketUI.Debugger
 
         public class NoTypeConverterJsonConverter<T> : JsonConverter
         {
-            static readonly IContractResolver resolver = new NoTypeConverterContractResolver(); 
+            static readonly IContractResolver resolver = new NoTypeConverterContractResolver();
+
             class NoTypeConverterContractResolver : CamelCasePropertyNamesContractResolver
             {
                 protected override JsonContract CreateContract(Type objectType)
@@ -37,6 +38,7 @@ namespace RocketUI.Debugger
                         contract.Converter = null; // Also null out the converter to prevent infinite recursion.
                         return contract;
                     }
+
                     return base.CreateContract(objectType);
                 }
             }
@@ -46,13 +48,14 @@ namespace RocketUI.Debugger
                 return typeof(T).IsAssignableFrom(objectType);
             }
 
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+                JsonSerializer                         serializer)
             {
                 return JsonSerializer.CreateDefault(new JsonSerializerSettings()
                 {
                     ContractResolver = resolver
                 }).Deserialize(reader, objectType);
-                
+
                 var prevResolver = serializer.ContractResolver;
                 try
                 {
@@ -84,7 +87,7 @@ namespace RocketUI.Debugger
                 }
             }
         }
-        
+
         private static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
         {
             Culture = CultureInfo.InvariantCulture,
@@ -95,7 +98,7 @@ namespace RocketUI.Debugger
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Converters = new List<JsonConverter>()
             {
-                new StringEnumConverter(),
+                //new StringEnumConverter(),
                 new JavaScriptDateTimeConverter(),
                 new SanitizedElementDetailPropertyJsonConverter(),
                 new ColorJsonConverter(),
@@ -118,7 +121,7 @@ namespace RocketUI.Debugger
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Converters = new List<JsonConverter>()
             {
-                new StringEnumConverter(),
+                //new StringEnumConverter(),
                 new JavaScriptDateTimeConverter(),
                 new SanitizedElementDetailPropertyJsonConverter(),
                 new ColorJsonConverter(),
@@ -182,8 +185,8 @@ namespace RocketUI.Debugger
                 case "SetPropertyValue":
                 {
                     var elementId = Guid.Parse(msg.Arguments[0]);
-                    var element   = FindElementById(elementId);
-                    var t         = element.GetType().GetMember(msg.Arguments[1], BindingFlags.Instance | BindingFlags.Public);
+                    var element = FindElementById(elementId);
+                    var t = element.GetType().GetMember(msg.Arguments[1], BindingFlags.Instance | BindingFlags.Public);
                     if (t.Length == 0)
                         return false;
 
@@ -191,7 +194,8 @@ namespace RocketUI.Debugger
                     {
                         if (member is PropertyInfo propertyInfo)
                         {
-                            var value = TypeDescriptor.GetConverter(propertyInfo.PropertyType).ConvertFromString(msg.Arguments[2]);
+                            var value = TypeDescriptor.GetConverter(propertyInfo.PropertyType)
+                                .ConvertFromString(msg.Arguments[2]);
                             propertyInfo.SetValue(element, value);
                             return true;
                         }
@@ -205,10 +209,10 @@ namespace RocketUI.Debugger
                     }
 
                     return false;
-                    
+
                     break;
                 }
-                
+
                 default:
 
                     break;
@@ -247,7 +251,7 @@ namespace RocketUI.Debugger
 
         public void Dispose()
         {
-            ((IDisposable) _webSocket)?.Dispose();
+            ((IDisposable)_webSocket)?.Dispose();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -312,7 +316,10 @@ namespace RocketUI.Debugger
         public string Display { get; set; }
 
         [JsonConverter(typeof(SanitizedElementDetailPropertyJsonConverter))]
-        public List<SanitizedElementDetailProperty> Properties { get; set; }
+        public SanitizedElementDetailProperty[] Properties { get; set; }
+        
+        [JsonConverter(typeof(SanitizedElementDetailPropertyTypeJsonConverter))]
+        public SanitizedElementDetailPropertyType[] Schema { get; set; }
 
         public List<SanitizedElementDetail> Children { get; set; }
 
@@ -326,7 +333,11 @@ namespace RocketUI.Debugger
             Name = element.Name;
             Type = element.GetType().Name;
             Display = $"<{Type}>";
-            Properties = GetProperties(element).ToList();
+            GetProperties(element, out var propertyValues, out var propertyTypes);
+            Properties = propertyValues;
+            Schema = propertyTypes;
+            
+            
             Children = GetChildren(element).ToList();
         }
 
@@ -338,12 +349,24 @@ namespace RocketUI.Debugger
             }
         }
 
-        private static IEnumerable<SanitizedElementDetailProperty> GetProperties(IGuiElement element)
+        private static void GetProperties(IGuiElement element,
+            out SanitizedElementDetailProperty[]      propertyValues,
+            out SanitizedElementDetailPropertyType[]  propertyTypes)
         {
             element.Properties.Initialize();
-            foreach (var prop in element.Properties.ToArray())
+
+            var elementType = element.GetType();
+            var props       = element.Properties.ToArray();
+            propertyValues = new SanitizedElementDetailProperty[props.Length];
+            propertyTypes = new SanitizedElementDetailPropertyType[props.Length];
+
+            
+            for (var i = 0; i < props.Length; i++)
             {
-                yield return new SanitizedElementDetailProperty(prop.Key.ToString(), prop.Value);
+                var prop = props[i];
+                
+                propertyTypes[i] = new SanitizedElementDetailPropertyType(elementType.GetProperty(prop.Key.ToString()));
+                propertyValues[i] = new SanitizedElementDetailProperty(prop.Key.ToString(), prop.Value);
             }
         }
     }
@@ -353,7 +376,6 @@ namespace RocketUI.Debugger
     {
         public string Key       { get; set; }
         public object Value     { get; set; }
-        public Type   ValueType { get; set; }
 
         public SanitizedElementDetailProperty()
         {
@@ -363,7 +385,6 @@ namespace RocketUI.Debugger
         {
             Key = key;
             Value = value;
-            ValueType = value?.GetType();
         }
     }
 
@@ -372,27 +393,15 @@ namespace RocketUI.Debugger
         public override void WriteJson(JsonWriter writer, IEnumerable<SanitizedElementDetailProperty>? list,
             JsonSerializer                        serializer)
         {
-            if (list == null)
-            {
-                serializer.Serialize(writer, new List<SanitizedElementDetailProperty>());
-                return;
-            }
-
             writer.WriteStartObject();
 
-            foreach (var value in list)
+            if (list != null)
             {
-                writer.WritePropertyName(value.Key, true);
-
-                writer.WriteStartObject();
-
-                writer.WritePropertyName("value");
-                serializer.Serialize(writer, value.Value);
-
-                writer.WritePropertyName("type");
-                writer.WriteValue(value.ValueType.FullName);
-
-                writer.WriteEndObject();
+                foreach (var value in list)
+                {
+                    writer.WritePropertyName(value.Key, true);
+                    serializer.Serialize(writer, value.Value);
+                }
             }
 
             writer.WriteEndObject();
@@ -400,6 +409,95 @@ namespace RocketUI.Debugger
 
         public override IEnumerable<SanitizedElementDetailProperty>? ReadJson(JsonReader reader, Type objectType,
             IEnumerable<SanitizedElementDetailProperty>? existingValue, bool hasExistingValue,
+            JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [JsonConverter(typeof(SanitizedElementDetailPropertyTypeJsonConverter))]
+    class SanitizedElementDetailPropertyType
+    {
+        public string Key { get; set; }
+
+        public bool CanEdit   { get; set; }
+        public bool IsFlags   { get; set; }
+        public Type ValueType { get; set; }
+
+        public KeyValuePair<string, object>[] Values { get; set; } = Array.Empty<KeyValuePair<string, object>>();
+        public SanitizedElementDetailPropertyType()
+        {
+        }
+
+        public SanitizedElementDetailPropertyType(PropertyInfo propertyInfo)
+        {
+            Key = propertyInfo.Name;
+            CanEdit = propertyInfo.CanWrite;
+            ValueType = propertyInfo.PropertyType;
+            
+            if (ValueType.IsEnum)
+            {
+                IsFlags = ValueType.GetCustomAttribute<FlagsAttribute>() != null;
+                PopulateEnumValues();
+            }
+        }
+
+        private void PopulateEnumValues()
+        {
+            var values = Enum.GetValues(ValueType);
+            Values = new KeyValuePair<string, object>[values.Length];
+            
+            for (var i = 0; i < values.Length; i++)
+            {
+                var value = values.GetValue(i);
+                var name  = Enum.GetName(ValueType, value);
+                Values[i] = new KeyValuePair<string, object>(name, value);
+            }
+        }
+    }
+    
+    class SanitizedElementDetailPropertyTypeJsonConverter : JsonConverter<IEnumerable<SanitizedElementDetailPropertyType>>
+    {
+        public override void WriteJson(JsonWriter writer, IEnumerable<SanitizedElementDetailPropertyType>? list,
+            JsonSerializer                        serializer)
+        {
+            writer.WriteStartObject();
+
+            if (list != null)
+            {
+                foreach (var value in list)
+                {
+                    writer.WritePropertyName(value.Key, true);
+                    
+                    writer.WriteStartObject();
+                    
+                    writer.WritePropertyName("type");
+                    writer.WriteValue(value.ValueType.FullName);
+                    
+                    writer.WritePropertyName("editable");
+                    writer.WriteValue(value.CanEdit);
+
+                    if (value.IsFlags)
+                    {
+                        writer.WritePropertyName("isFlags");
+                        writer.WriteValue(true);
+                    }
+                    
+                    if (value.Values.Any())
+                    {
+                        writer.WritePropertyName("enumValues");
+                        serializer.Serialize(writer, value.Values);
+                    }
+
+                    writer.WriteEndObject();
+                }
+            }
+
+            writer.WriteEndObject();
+        }
+
+        public override IEnumerable<SanitizedElementDetailPropertyType>? ReadJson(JsonReader reader, Type objectType,
+            IEnumerable<SanitizedElementDetailPropertyType>? existingValue, bool hasExistingValue,
             JsonSerializer serializer)
         {
             throw new NotImplementedException();

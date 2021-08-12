@@ -18,7 +18,7 @@ namespace RocketUI
         [JsonIgnore]
         public override IGuiScreen RootScreen
         {
-            get => ParentElement is IGuiScreen parentScreen ? parentScreen : this;
+            get => ParentElement?.RootScreen ?? this;
         }
 
         public IGuiControl FocusedControl { get; private set; }

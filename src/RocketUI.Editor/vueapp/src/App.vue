@@ -1,11 +1,12 @@
-g<template>
+<template>
   <v-app class="app">
+
     <v-system-bar app dark>
-      <RocketWSStatus />
+      <RocketWSStatus/>
     </v-system-bar>
 
     <v-main class="main">
-      <DevToolsMain />
+      <DevToolsMain/>
     </v-main>
 
   </v-app>

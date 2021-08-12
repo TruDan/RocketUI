@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Configurations>Debug;Release;Dev</Configurations>
+        <Platforms>x64;AnyCPU</Platforms>
+        <PlatformTarget>x64</PlatformTarget>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+<!--        <PublishSingleFile>true</PublishSingleFile>-->
+        <AssemblyName>RocketUI.Editor</AssemblyName>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Chromely" Version="5.1.88" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    </ItemGroup>
+
+
+    <!-- region chromely -->
+    <ItemGroup>
+        <Compile Remove="vueapp\node_modules\**" />
+        <EmbeddedResource Remove="vueapp\node_modules\**" />
+        <None Remove="vueapp\node_modules\**" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <None Update="Chromely.External.Controllers.dll" CopyToOutputDirectory="Always" />
+    </ItemGroup>
+
+    <Target Name="DependsOn" DependsOnTargets="ValidateChromelyApp">
+        <Message Text="Target : DependsOn" />
+    </Target>
+
+    <Target Name="ValidateChromelyApp" BeforeTargets="Build">
+        <Message Importance="High" Text="Checking if Node.js is installed.." />
+        <Exec Command="node --version" ContinueOnError="false">
+            <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+        </Exec>
+        <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+        <Message Condition="'$(ErrorCode)' == '0'" Importance="High" Text="Node.js is installed!" />
+
+        <Message Importance="High" Text="Checking if node_modules exists.." />
+        <Message Importance="High" Text="Running npm install, node_modules not found! (this could take a while)" Condition="!Exists('$(ProjectDir)vueapp\node_modules')" />
+        <Exec Command="npm install --silent" Condition="!Exists('$(ProjectDir)vueapp\node_modules')" WorkingDirectory="vueapp" ContinueOnError="false" />
+    </Target>
+
+    <Target Name="DebugChromelyApp" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' ">
+        <Message Importance="High" Text="Building Vue App.." />
+        <Exec Command="npm run build" WorkingDirectory="vueapp" ContinueOnError="false" ConsoleToMSBuild="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
+        </Exec>
+
+        <Message Importance="High" Text="Copying Vue App to debug folder.." />
+        <Exec Command="xcopy &quot;$(ProjectDir)vueapp\dist&quot; &quot;$(TargetDir)dist&quot;   /i /s /r /y /c" />
+    </Target>
+
+    <Target Name="ReleaseChromelyApp" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Release' ">
+        <Exec Command="npm run build" WorkingDirectory="vueapp" ContinueOnError="true" ConsoleToMSBuild="false">
+            <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
+        </Exec>
+    </Target>    
+    <!-- endregion chromely -->
+    
+</Project>

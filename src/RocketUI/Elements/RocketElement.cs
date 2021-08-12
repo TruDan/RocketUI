@@ -57,7 +57,7 @@ namespace RocketUI
 		private IGuiElement      _parentElement;
 		private IGuiFocusContext _focusContext;
 
-		//[DebuggerVisible(Visible = false)]
+		//[DebuggerIgnore]
 		//public IGuiScreen Screen
 		//{
 		//	get => _screen;
@@ -71,13 +71,13 @@ namespace RocketUI
 		//	}
 		//}
 
-		[DebuggerVisible(Visible = false), JsonIgnore]
+		[DebuggerIgnore, JsonIgnore]
 		public virtual IGuiScreen RootScreen
 		{
 			get => ParentElement?.RootScreen;
 		}
 
-		[DebuggerVisible(Visible = false), JsonIgnore]
+		[DebuggerIgnore, JsonIgnore]
 		public IGuiElement ParentElement
 		{
 			get => _parentElement;
@@ -95,7 +95,7 @@ namespace RocketUI
 		}
 
 
-		[DebuggerVisible(Visible = false), JsonIgnore]
+		[DebuggerIgnore, JsonIgnore]
 		public virtual IGuiFocusContext FocusContext
 		{
 			get { return _focusContext ?? ParentElement?.FocusContext ?? RootScreen; }
@@ -103,7 +103,7 @@ namespace RocketUI
 		}
 
 
-		[DebuggerVisible(Visible = false), JsonIgnore]
+		[DebuggerIgnore, JsonIgnore]
 		public IGuiElement[] ChildElements
 		{
 			get
@@ -119,7 +119,7 @@ namespace RocketUI
 
 		private ObservableCollection<IGuiElement> _children;
 		
-		[DebuggerVisible(Visible = false), JsonIgnore] 
+		[DebuggerIgnore, JsonIgnore] 
 		public ObservableCollection<IGuiElement> Children
 		{
 			get
@@ -133,12 +133,12 @@ namespace RocketUI
 			}
 		}
 
-		[DebuggerVisible(Visible = false), JsonIgnore]
+		[DebuggerIgnore, JsonIgnore]
 		public bool HasChildren => Children.Count > 0;
 
 		public int ChildCount => Children.Count;
 
-		[DebuggerVisible(Visible = false), JsonIgnore]
+		[DebuggerIgnore, JsonIgnore]
 		internal IReadOnlyList<IGuiElement> AllChildren =>
 			ChildElements.OfType<RocketElement>().SelectMany(c => new[] {c}.Union(c.AllChildren)).ToList();
 
@@ -167,9 +167,9 @@ namespace RocketUI
 			}
 		}
 
-		[DebuggerVisible(Visible = false)] public Matrix LayoutTransform { get; set; } = Matrix.Identity;
+		[DebuggerIgnore] public Matrix LayoutTransform { get; set; } = Matrix.Identity;
 
-		[DebuggerVisible(Visible = false)] public Matrix RenderTransform { get; set; } = Matrix.Identity;
+		[DebuggerIgnore] public Matrix RenderTransform { get; set; } = Matrix.Identity;
 
 		public void Draw(GuiSpriteBatch graphics, GameTime gameTime)
 		{

@@ -3,7 +3,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify';
 import rocketws from './plugins/rocketdebugger';
 
-import './sass/main.scss'
+import './styles/main.scss';
 import store from './store'
 
 Vue.config.productionTip = false

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
   <v-icon v-bind:class="status">mdi-flash-circle</v-icon>
   <span>{{ statusText }}</span>
   </v-container>
@@ -53,11 +53,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
-@import 'src/sass/main';
-
-@debug $colors;
-
 .ws-green {
   color: var(--v-success-base) !important;
 }

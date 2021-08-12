@@ -36,7 +36,8 @@ namespace RocketUI.Serialization
 			typeof(Point),
 			typeof(Thickness),
 			typeof(RocketUI.Alignment),
-			typeof(RocketUI.Orientation)
+			typeof(RocketUI.Orientation),
+			typeof(Color)
 		};
 		
 		/// <summary>

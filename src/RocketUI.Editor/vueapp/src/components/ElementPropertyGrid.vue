@@ -4,22 +4,22 @@
       <v-card-title>Layout</v-card-title>
       <div class="layout-grid">
         <div class="layout-box" data-label="Margin">
-          <span class="layout-text-top">{{ layout.margin.top }}</span>
-          <span class="layout-text-right">{{ layout.margin.right }}</span>
-          <span class="layout-text-bottom">{{ layout.margin.bottom }}</span>
-          <span class="layout-text-left">{{ layout.margin.left }}</span>
+          <span class="layout-text-top">{{ layoutMargin.top }}</span>
+          <span class="layout-text-right">{{ layoutMargin.right }}</span>
+          <span class="layout-text-bottom">{{ layoutMargin.bottom }}</span>
+          <span class="layout-text-left">{{ layoutMargin.left }}</span>
           <div class="layout-box box-orange" data-label="Border">
-            <span class="layout-text-top">{{ layout.border.top }}</span>
-            <span class="layout-text-right">{{ layout.border.right }}</span>
-            <span class="layout-text-bottom">{{ layout.border.bottom }}</span>
-            <span class="layout-text-left">{{ layout.border.left }}</span>
+            <span class="layout-text-top">{{ layoutBorder.top }}</span>
+            <span class="layout-text-right">{{ layoutBorder.right }}</span>
+            <span class="layout-text-bottom">{{ layoutBorder.bottom }}</span>
+            <span class="layout-text-left">{{ layoutBorder.left }}</span>
             <div class="layout-box box-green" data-label="Padding">
-              <span class="layout-text-top">{{ layout.padding.top }}</span>
-              <span class="layout-text-right">{{ layout.padding.right }}</span>
-              <span class="layout-text-bottom">{{ layout.padding.bottom }}</span>
-              <span class="layout-text-left">{{ layout.padding.left }}</span>
+              <span class="layout-text-top">{{ layoutPadding.top }}</span>
+              <span class="layout-text-right">{{ layoutPadding.right }}</span>
+              <span class="layout-text-bottom">{{ layoutPadding.bottom }}</span>
+              <span class="layout-text-left">{{ layoutPadding.left }}</span>
               <div class="layout-box">
-                {{ layout.content.width }} x {{ layout.content.height }}
+                {{ layoutContent.width }} x {{ layoutContent.height }}
               </div>
             </div>
           </div>
@@ -32,10 +32,13 @@
       <v-card-text>
         <v-list>
           <template v-for="(prop, propName) in element.properties">
-            <PropertyGridValueEditor :key="propName"
-                                     :element-id="element.id"
-                                     :property-name="propName"
-                                     :property="prop"/>
+            <property-grid-value-editor :key="propName"
+                                     :label="propName"
+                                     :name="propName"
+                                     :schema="element.schema[propName]"
+                                     :value="prop"
+                                     @change="v => onPropertyValueChange(propName, v)"
+            />
             <v-divider :key="propName + '1'"/>
           </template>
         </v-list>
@@ -45,61 +48,48 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapActions, mapState} from 'vuex';
 import PropertyGridValueEditor from "@/components/PropertyGridValueEditor";
 
 export default {
   name: "ElementPropertyGrid",
   computed: {
-    ...mapState({
-      element: state => state.elementTree.selectedElement,
-    })
-  },
-  watch: {
-    element: (newVal) => {
-      this.layout.margin = newVal.properties.margin;
-      this.layout.padding = newVal.properties.padding;
-      //this.layout.border = newVal.properties.border;
-      this.layout.content = newVal.properties.size;
+    ...mapState('elementTree', {
+      element: state => state.selectedElement,
+    }),
+
+    layoutMargin() {
+      if (!this.element || !this.element.properties.Margin) return {top: 0, left: 0, right: 0, bottom: 0};
+      return this.element.properties.Margin;
+    },
+    layoutPadding() {
+      if (!this.element || !this.element.properties.Padding) return {top: 0, left: 0, right: 0, bottom: 0};
+      return this.element.properties.Padding;
+    },
+    layoutBorder() {
+      if (!this.element || !this.element.properties.Border) return {top: 0, left: 0, right: 0, bottom: 0};
+      return this.element.properties.Border;
+    },
+    layoutContent() {
+      if (!this.element || !this.element.properties.ContentSize) return {width: 0, height: 0};
+      return this.element.properties.ContentSize;
     }
   },
   components: {
     PropertyGridValueEditor
   },
-  data: () => ({
-    layout: {
-      margin: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-      },
-      border: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-      },
-      padding: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-      },
-      content: {
-        width: 0,
-        height: 0
-      }
+  methods: {
+    ...mapActions('elementTree', [
+      'setPropertyValue'
+    ]),
+    onPropertyValueChange(k, newValue) {
+      this.setPropertyValue(this.element.id, k, newValue);
     }
-  })
+  }
 }
 </script>
 
 <style scoped lang="scss">
-@import 'src/sass/main';
-
-@debug $material-theme;
-
 .layout-wrap {
   display: flex;
   align-items: center;

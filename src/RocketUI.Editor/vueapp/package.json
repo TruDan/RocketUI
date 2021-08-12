@@ -1,0 +1,54 @@
+{
+  "name": "vueapp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "watch": "npm-watch",
+    "autobarrel": "create-index --recursive --ignoreUnsafe --extensions js jsx vue ts tsx --outputFile index.js ./src/**/*"
+  },
+  "watch": {
+    "autobarrel": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "js,jsx,ts,tsx,vue",
+      "ignore": [
+        "**/index.js",
+        "dist",
+        "node_modules",
+        "src/assets",
+        "src/styles",
+        "src/locales"
+      ]
+    }
+  },
+  "dependencies": {
+    "core-js": "^3.15.2",
+    "vue": "^2.6.14",
+    "vue-multipane": "^0.9.5",
+    "vuetify": "^2.5.6",
+    "v-clipboard": "^2.2.3",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@trudan97/create-index": "^1.0.2",
+    "@vue/babel-helper-vue-jsx-merge-props": "^1.2.1",
+    "@vue/babel-preset-jsx": "^1.2.4",
+    "@vue/cli-plugin-babel": "~4.5.13",
+    "@vue/cli-plugin-eslint": "~4.5.13",
+    "@vue/cli-plugin-vuex": "~4.5.13",
+    "@vue/cli-service": "~4.5.13",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.30.0",
+    "eslint-plugin-vue": "^7.13.0",
+    "npm-watch": "^0.10.0",
+    "sass": "<1.33",
+    "sass-loader": "^10.1.1",
+    "vue-cli-plugin-vuetify": "~2.4.1",
+    "vue-template-compiler": "^2.6.14",
+    "vuetify-loader": "^1.7.2"
+  }
+}
