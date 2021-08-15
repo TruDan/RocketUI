@@ -1,23 +1,22 @@
 <template>
-  <multipane class="panes" layout="vertical">
-    <div class="pane">
-      <element-toolbar />
+  <splitpanes>
+    <pane>
+      <element-toolbar/>
       <ScreenTreeView/>
-    </div>
-    <multipane-resizer/>
-    <div class="pane">
+    </pane>
+    <pane>
       <v-card>
         <ElementPropertyGrid/>
       </v-card>
-    </div>
-  </multipane>
+    </pane>
+  </splitpanes>
 </template>
 
 <script>
-import {Multipane, MultipaneResizer} from 'vue-multipane';
 import ScreenTreeView from "@/components/ScreenTreeView";
 import ElementPropertyGrid from "@/components/ElementPropertyGrid";
 import ElementToolbar from "@/components/ElementToolbar";
+import {Pane, Splitpanes} from "splitpanes/src/components/splitpanes";
 
 export default {
   name: 'DevToolsMain',
@@ -26,8 +25,8 @@ export default {
     ElementToolbar,
     ElementPropertyGrid,
     ScreenTreeView,
-    Multipane,
-    MultipaneResizer,
+    Splitpanes,
+    Pane
   },
 
   data: () => ({}),
@@ -36,35 +35,14 @@ export default {
 
 <style lang="scss">
 .panes {
-  display: table;
   height: 100%;
-  width: 100%;
-  flex-flow: row nowrap;
-  justify-content: stretch;
-  align-items: stretch;
 }
-
-.panes > .pane {
-  display: table-cell;
-  text-align: left;
-  overflow: hidden;
-  min-width: 200px;
-  background: #1A1A1A;
-}
-
-.panes > .pane:first-child {
-  // flex: 1;
-}
-
-.panes > .pane ~ .pane {
-}
-
 .panes > .multipane-resizer {
   display: table-cell;
   margin: 0;
   left: 0;
   position: relative;
-  background: map-get($material-theme, 'surface');
+  background: map-get($material-dark, 'surface');
 
   &:before {
     display: block;
@@ -85,5 +63,8 @@ export default {
       border-color: #999;
     }
   }
+}
+.splitpanes__pane {
+  max-height: calc(100vh - 24px);
 }
 </style>

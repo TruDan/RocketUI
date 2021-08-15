@@ -1,6 +1,6 @@
 <template>
   <v-app class="app">
-
+    <error-list/>
     <v-system-bar app dark>
       <RocketWSStatus/>
     </v-system-bar>
@@ -15,11 +15,13 @@
 <script>
 import DevToolsMain from './components/DevToolsMain';
 import RocketWSStatus from "@/components/RocketWSStatus";
+import ErrorList from "@/components/ErrorList";
 
 export default {
   name: 'App',
 
   components: {
+    ErrorList,
     RocketWSStatus,
     DevToolsMain,
   },
@@ -33,9 +35,11 @@ export default {
 <style lang="scss">
 .app {
   min-height: 100vh;
+  max-height: 100vh;
+  height: 100vh;
 }
 
 .main > div {
-  display: flex;
+  display: block;
 }
 </style>

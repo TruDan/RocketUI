@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using RocketUI.Debugger.Exceptions;
 using RocketUI.Debugger.Models;
 using RocketUI.Serialization.Json.Converters;
 using WebSocketSharp;
@@ -121,7 +122,7 @@ namespace RocketUI.Debugger
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Converters = new List<JsonConverter>()
             {
-                //new StringEnumConverter(),
+                new StringEnumConverter(),
                 new JavaScriptDateTimeConverter(),
                 new SanitizedElementDetailPropertyJsonConverter(),
                 new ColorJsonConverter(),
@@ -185,30 +186,21 @@ namespace RocketUI.Debugger
                 case "SetPropertyValue":
                 {
                     var elementId = Guid.Parse(msg.Arguments[0]);
-                    var element = FindElementById(elementId);
-                    var t = element.GetType().GetMember(msg.Arguments[1], BindingFlags.Instance | BindingFlags.Public);
-                    if (t.Length == 0)
-                        return false;
+                    var element   = FindElementById(elementId);
+                    var propertyInfo = element.GetType()
+                        .GetProperty(msg.Arguments[1], BindingFlags.Instance | BindingFlags.Public);
+                    if (propertyInfo == null)
+                        throw new PropertyNotFoundException(elementId, msg.Arguments[1]);
 
-                    foreach (var member in t)
-                    {
-                        if (member is PropertyInfo propertyInfo)
-                        {
-                            var value = TypeDescriptor.GetConverter(propertyInfo.PropertyType)
-                                .ConvertFromString(msg.Arguments[2]);
-                            propertyInfo.SetValue(element, value);
-                            return true;
-                        }
-                        else if (member is FieldInfo fieldInfo)
-                        {
-                            var value = TypeDescriptor.GetConverter(fieldInfo.FieldType)
-                                .ConvertToString(msg.Arguments[2]);
-                            fieldInfo.SetValue(element, value);
-                            return true;
-                        }
-                    }
+                    if (!propertyInfo.CanWrite)
+                        throw new PropertyNotEditableException(elementId, msg.Arguments[1]);
+                    
+                    var value = TypeDescriptor.GetConverter(propertyInfo.PropertyType)
+                        .ConvertFromString(msg.Arguments[2]);
+                    
+                    propertyInfo.SetValue(element, value);
 
-                    return false;
+                    return true;
 
                     break;
                 }
@@ -236,7 +228,7 @@ namespace RocketUI.Debugger
                 }
             }
 
-            return null;
+            throw new ElementNotFoundException(id);
         }
 
         internal static string JsonSerialize<T>(T obj)
@@ -284,20 +276,12 @@ namespace RocketUI.Debugger
                 try
                 {
                     var response = _server.HandleMessage(msg);
-                    var json = RocketDebugSocketServer.JsonSerialize(new Response()
-                    {
-                        Id = msg.Id,
-                        Data = response
-                    });
+                    var json = RocketDebugSocketServer.JsonSerialize(new Response(msg.Id, response));
                     Send(json);
                 }
                 catch (Exception ex)
                 {
-                    Send(RocketDebugSocketServer.JsonSerialize(new Response()
-                    {
-                        Id = msg.Id,
-                        Data = ex.Message
-                    }));
+                    Send(RocketDebugSocketServer.JsonSerialize(new ErrorResponse(msg.Id, ex)));
                     Console.WriteLine("Exception while handling websocket message: {0}", ex.ToString());
                 }
             }
@@ -317,7 +301,7 @@ namespace RocketUI.Debugger
 
         [JsonConverter(typeof(SanitizedElementDetailPropertyJsonConverter))]
         public SanitizedElementDetailProperty[] Properties { get; set; }
-        
+
         [JsonConverter(typeof(SanitizedElementDetailPropertyTypeJsonConverter))]
         public SanitizedElementDetailPropertyType[] Schema { get; set; }
 
@@ -336,8 +320,8 @@ namespace RocketUI.Debugger
             GetProperties(element, out var propertyValues, out var propertyTypes);
             Properties = propertyValues;
             Schema = propertyTypes;
-            
-            
+
+
             Children = GetChildren(element).ToList();
         }
 
@@ -360,11 +344,11 @@ namespace RocketUI.Debugger
             propertyValues = new SanitizedElementDetailProperty[props.Length];
             propertyTypes = new SanitizedElementDetailPropertyType[props.Length];
 
-            
+
             for (var i = 0; i < props.Length; i++)
             {
                 var prop = props[i];
-                
+
                 propertyTypes[i] = new SanitizedElementDetailPropertyType(elementType.GetProperty(prop.Key.ToString()));
                 propertyValues[i] = new SanitizedElementDetailProperty(prop.Key.ToString(), prop.Value);
             }
@@ -374,8 +358,8 @@ namespace RocketUI.Debugger
     [JsonConverter(typeof(SanitizedElementDetailPropertyJsonConverter))]
     class SanitizedElementDetailProperty
     {
-        public string Key       { get; set; }
-        public object Value     { get; set; }
+        public string Key   { get; set; }
+        public object Value { get; set; }
 
         public SanitizedElementDetailProperty()
         {
@@ -425,6 +409,7 @@ namespace RocketUI.Debugger
         public Type ValueType { get; set; }
 
         public KeyValuePair<string, object>[] Values { get; set; } = Array.Empty<KeyValuePair<string, object>>();
+
         public SanitizedElementDetailPropertyType()
         {
         }
@@ -434,7 +419,7 @@ namespace RocketUI.Debugger
             Key = propertyInfo.Name;
             CanEdit = propertyInfo.CanWrite;
             ValueType = propertyInfo.PropertyType;
-            
+
             if (ValueType.IsEnum)
             {
                 IsFlags = ValueType.GetCustomAttribute<FlagsAttribute>() != null;
@@ -446,7 +431,7 @@ namespace RocketUI.Debugger
         {
             var values = Enum.GetValues(ValueType);
             Values = new KeyValuePair<string, object>[values.Length];
-            
+
             for (var i = 0; i < values.Length; i++)
             {
                 var value = values.GetValue(i);
@@ -455,8 +440,9 @@ namespace RocketUI.Debugger
             }
         }
     }
-    
-    class SanitizedElementDetailPropertyTypeJsonConverter : JsonConverter<IEnumerable<SanitizedElementDetailPropertyType>>
+
+    class SanitizedElementDetailPropertyTypeJsonConverter : JsonConverter<
+        IEnumerable<SanitizedElementDetailPropertyType>>
     {
         public override void WriteJson(JsonWriter writer, IEnumerable<SanitizedElementDetailPropertyType>? list,
             JsonSerializer                        serializer)
@@ -468,12 +454,12 @@ namespace RocketUI.Debugger
                 foreach (var value in list)
                 {
                     writer.WritePropertyName(value.Key, true);
-                    
+
                     writer.WriteStartObject();
-                    
+
                     writer.WritePropertyName("type");
                     writer.WriteValue(value.ValueType.FullName);
-                    
+
                     writer.WritePropertyName("editable");
                     writer.WriteValue(value.CanEdit);
 
@@ -482,7 +468,7 @@ namespace RocketUI.Debugger
                         writer.WritePropertyName("isFlags");
                         writer.WriteValue(true);
                     }
-                    
+
                     if (value.Values.Any())
                     {
                         writer.WritePropertyName("enumValues");

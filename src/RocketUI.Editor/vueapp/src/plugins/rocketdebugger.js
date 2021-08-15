@@ -110,8 +110,14 @@ class RocketDebugger extends EventTarget {
             // find matching messageID
             const queueItem = this.tryTakeFromQueue(message.id);
             if (queueItem !== null) {
-                console.log("RocketWS", "Call Callback", queueItem);
-                queueItem.callback(message.data);
+                if(message.error) {
+                    console.log("RocketWS", "Call Error Callback", queueItem);
+                    queueItem.errorCallback(message.error);
+                }
+                else {
+                    console.log("RocketWS", "Call Callback", queueItem);
+                    queueItem.callback(message.data);
+                }
                 return;
             }
             else {

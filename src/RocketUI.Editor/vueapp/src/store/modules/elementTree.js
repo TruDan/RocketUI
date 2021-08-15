@@ -3,15 +3,14 @@ import rocketdebugger from "@/plugins/rocketdebugger";
 const state = () => ({
     elements: [],
     rootElements: [],
-    selectedElement: null
+    selectedElement: null,
+    errors: []
 });
 
-const getters = {
-
-};
+const getters = {};
 
 const actions = {
-    getRootElement({ commit }) {
+    getRootElement({commit}) {
         rocketdebugger.send('GetRoot', 128).then(root => {
             commit('setRoot', root);
         });
@@ -28,17 +27,21 @@ const actions = {
         //     commit('setSelectedElementProperties', elementId, props);
         // });
     },
-    setPropertyValue({commit}, elementId, propertyName, propertyValue) {
-        console.log("SetPropertyValue ", elementId, propertyName, propertyValue);
-        rocketdebugger.send('SetPropertyValue', elementId, propertyName, propertyValue).then(success => {
-            commit('setPropertyValue', elementId, propertyName, propertyValue);
-            console.log("SetPropertyValue ", success, elementId, propertyName, propertyValue);
-        });
+    setPropertyValue({commit}, {id, name, value}) {
+        console.log("SetPropertyValue ", id, name, value);
+        rocketdebugger.send('SetPropertyValue', id, name, value)
+            .then(success => {
+                commit('setPropertyValue', id, name, value);
+                console.log("SetPropertyValue ", success, id, name, value);
+            })
+            .catch(error => {
+                commit('setError', error);
+            });
     }
 };
 
 const mutations = {
-    setRoot (state, root) {
+    setRoot(state, root) {
         state.elements = [];
         //state.elements.clear();
         state.elements.push(root);
@@ -56,7 +59,7 @@ const mutations = {
             }
         };
 
-        for(var screen of root) {
+        for (var screen of root) {
             state.elements.push(screen);
             discoverChildren(screen);
         }
@@ -70,13 +73,17 @@ const mutations = {
         state.elements.push(children);
         element.children = children;
     },
-    setSelectedElementProperties(state, elementId, props){
+    setSelectedElementProperties(state, elementId, props) {
         const element = state.elements.find(x => x.id === elementId);
         element.properties = props;
     },
     setPropertyValue(state, elementId, propertyName, propertyValue) {
         const element = state.elements.find(x => x.id === elementId);
         element.properties[propertyName] = propertyValue;
+    },
+    setError(state, error) {
+        state.errors = [error];
+        setTimeout(() => state.errors = [], 3000);
     }
 };
 

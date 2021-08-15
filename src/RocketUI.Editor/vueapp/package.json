@@ -27,10 +27,10 @@
   },
   "dependencies": {
     "core-js": "^3.15.2",
-    "vue": "^2.6.14",
-    "vue-multipane": "^0.9.5",
-    "vuetify": "^2.5.6",
+    "splitpanes": "^2.3.8",
     "v-clipboard": "^2.2.3",
+    "vue": "^2.6.14",
+    "vuetify": "^2.5.6",
     "vuex": "^3.6.2"
   },
   "devDependencies": {

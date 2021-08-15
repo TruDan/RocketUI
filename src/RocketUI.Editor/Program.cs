@@ -1,4 +1,4 @@
-﻿#define DEV
+﻿//#define DEV
 
 using System;
 using Chromely.Core;

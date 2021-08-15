@@ -2,25 +2,41 @@ import {VAutocomplete, VCol, VColorPicker, VRow, VSwitch, VTextField} from "vuet
 
 export const EnumEditor = {
     name: 'EnumEditor',
-    functional: true,
+    // functional: true,
 
     props: ["schema", "value"],
 
-    render(h, {props, data, children}) {
-        return h(VAutocomplete, {
-            ...data,
-            ...{
-                attrs: {
-                    items: props.schema.enumValues,
-                    itemText: "key",
-                    itemValue: "value",
-                    chips: props.schema.isFlags,
-                    multiple: props.schema.isFlags,
-                    ...props,
-                    ...(props.schema.isFlags ? {value: props.schema.enumValues.filter(x => (x.value & props.value) > 0).map(x => x.value)} : {})
-                }
+    computed: {
+        values() {
+            if (this.schema.isFlags) {
+                return this.schema.enumValues.filter(x => (x.value & this.value) === this.value).map(x => x.value);
+            } else {
+                return this.value;
             }
-        }, children);
+        }
+    },
+
+    methods: {
+        onChange(newValue) {
+            if (this.schema.isFlags) {
+                this.$emit('change', newValue.reduce((v1, v2) => (v1 | v2), 0));
+            } else {
+                this.$emit('change', newValue);
+            }
+        }
+    },
+
+    render() {
+        return (<VAutocomplete
+            items={this.schema.enumValues}
+            itemText="key"
+            itemValue="value"
+            chips={this.schema.isFlags}
+            multiple={this.schema.isFlags}
+            value={this.values}
+            {...{attrs: this.$attrs}}
+            vOn:change={this.onChange}
+        />);
     }
 }
 export const ObjectEditor = {
@@ -31,12 +47,17 @@ export const ObjectEditor = {
 
     render(h, {props, data, children}) {
         return (<VRow dense no-gutters>
-            {Object.entries(props.value || []).map(([k, v]) => (<VCol key={k}>
-                <ElementPropertyEditor
-                    schema={props.schema}
-                    value={v}
-                    {...data.attrs} />
-            </VCol>))}
+            {Object.entries(props.value || [])
+                .map(([k, v]) => (
+                    <VCol key={k}>
+                        <ElementPropertyEditor
+                            schema={props.schema}
+                            vModel={v}
+                            label={k}
+                            {...{attrs: data.attrs}}
+                        />
+                    </VCol>
+                ))}
             {children}
         </VRow>)
     }
@@ -58,10 +79,9 @@ export const ElementPropertyEditor = {
                 return VColorPicker;
             } else if (props.schema && props.schema.enumValues) {
                 return EnumEditor;
-            } else if(props.schema && props.schema.type === "System.String") {
+            } else if (props.schema && props.schema.type === "System.String") {
                 return VTextField;
-            }
-            else if (typeof (props.value) === 'object') {
+            } else if (typeof (props.value) === 'object') {
                 return ObjectEditor;
             } else {
                 return VTextField;
@@ -75,7 +95,6 @@ export const ElementPropertyEditor = {
                     ...data.attrs,
                     flat: false,
                     filled: editable,
-                    singleLine: true,
                     hideCanvas: true,
                     mode: "hexa",
                     dotSize: 12,

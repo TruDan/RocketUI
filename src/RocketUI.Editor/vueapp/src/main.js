@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
-import vuetify from './plugins/vuetify';
-import rocketws from './plugins/rocketdebugger';
+import plugins from './plugins';
 
-import './styles/main.scss';
+import '@/styles/main.scss';
+import 'splitpanes/dist/splitpanes.css';
 import store from './store'
 
 Vue.config.productionTip = false
@@ -15,8 +15,7 @@ Vue.filter('capitalize', function (value) {
 })
 
 new Vue({
-  vuetify,
-  rocketws,
+  ...plugins,
   store,
   render: h => h(App)
 }).$mount('#app')

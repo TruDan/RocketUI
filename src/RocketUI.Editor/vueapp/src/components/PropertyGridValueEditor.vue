@@ -7,7 +7,7 @@
       <element-property-editor
           :schema="schema"
           :value="value"
-          @change="v => $emit('change',v)"/>
+          @change="onChange"/>
     </v-list-item-content>
   </v-list-item>
 </template>
@@ -27,6 +27,13 @@ export default {
     toggleEdit() {
       this.editing = !this.editing;
     },
+    onChange(value) {
+      console.log('changed', value);
+      this.$emit('change',{
+        name: this.name,
+        value: value
+      });
+    }
   },
   props: ["value", "label", "schema", "name"]
 }

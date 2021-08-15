@@ -1,0 +1,40 @@
+.splitpanes {
+  background: map-get($material-dark, 'surface');
+}
+
+.splitpanes__pane {
+  overflow-y: auto !important;
+}
+
+.splitpanes__splitter {
+  position: relative;
+  background: #000;
+
+  &:before {
+    display: block;
+    content: "";
+    width: 3px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -20px;
+    margin-left: -1.5px;
+    border-left: 1px solid #666;
+    border-right: 1px solid #666;
+  }
+
+  &:hover {
+    &:before {
+      border-color: #888;
+    }
+  }
+}
+
+.splitpanes--vertical > .splitpanes__splitter {
+  min-width: 0.5rem !important;
+}
+
+.splitpanes--horizontal > .splitpanes__splitter {
+  min-height: 0.5rem !important;
+}

@@ -1,6 +1,19 @@
 <template>
   <v-sheet>
     <v-card>
+      <v-card-title>{{ element.type }}</v-card-title>
+      <v-card-text>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title>Id</v-list-item-title>
+            <v-list-item-content>
+              {{ element.properties.Id }}
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-card-text>
+    </v-card>
+    <v-card>
       <v-card-title>Layout</v-card-title>
       <div class="layout-grid">
         <div class="layout-box" data-label="Margin">
@@ -30,14 +43,19 @@
     <v-card>
       <v-card-title>Properties</v-card-title>
       <v-card-text>
+        <v-tabs v-model="activeTab">
+          <v-tab>All</v-tab>
+          <v-tab>Editable</v-tab>
+          <v-tab>Computed</v-tab>
+        </v-tabs>
         <v-list>
-          <template v-for="(prop, propName) in element.properties">
+          <template v-for="(prop, propName) in elementProperties">
             <property-grid-value-editor :key="propName"
-                                     :label="propName"
-                                     :name="propName"
-                                     :schema="element.schema[propName]"
-                                     :value="prop"
-                                     @change="v => onPropertyValueChange(propName, v)"
+                                        :label="propName"
+                                        :name="propName"
+                                        :schema="element.schema[propName]"
+                                        :value="prop"
+                                        @change="onPropertyValueChange"
             />
             <v-divider :key="propName + '1'"/>
           </template>
@@ -73,17 +91,65 @@ export default {
     layoutContent() {
       if (!this.element || !this.element.properties.ContentSize) return {width: 0, height: 0};
       return this.element.properties.ContentSize;
+    },
+    elementProperties() {
+      if (this.activeTab === 2) {
+        return Object.fromEntries(Object.entries(this.element.properties).filter(([p]) => !this.editableProps.includes(p)));
+      } else if (this.activeTab === 1) {
+        return Object.fromEntries(Object.entries(this.element.properties).filter(([p]) => this.editableProps.includes(p)));
+      }
+
+      return Object.fromEntries(Object.entries(this.element.properties));
     }
   },
   components: {
     PropertyGridValueEditor
   },
+
+  data: () => ({
+    activeTab: '',
+    allProps: [],
+    editableProps: []
+  }),
+
+  watch: {
+    element() {
+      this.organizeProperties();
+    }
+  },
+
+  mounted() {
+    if (this.element) {
+      this.organizeProperties();
+    }
+  },
+
   methods: {
     ...mapActions('elementTree', [
       'setPropertyValue'
     ]),
-    onPropertyValueChange(k, newValue) {
-      this.setPropertyValue(this.element.id, k, newValue);
+    onPropertyValueChange({name, value}) {
+      console.log('onPropertyValueChange', name, value);
+      this.setPropertyValue({
+        id: this.element.id,
+        name,
+        value
+      });
+    },
+    organizeProperties() {
+      var allProps = [];
+      var editableProps = [];
+
+      for (const [prop, schema] of Object.entries(this.element.schema)) {
+        if (schema.editable) {
+          editableProps.push(prop);
+        }
+
+        allProps.push(prop);
+      }
+
+      this.allProps = allProps;
+      this.editableProps = editableProps;
     }
   }
 }
@@ -127,7 +193,7 @@ export default {
       display: block;
       content: attr(data-label);
       font-size: ($size - (4*$padding));
-      color: rgba(map-get($material-theme, 'text-color'), map-get($material-theme, 'secondary-text-percent'));
+      color: rgba(map-get($material-dark, 'text-color'), map-get($material-theme, 'secondary-text-percent'));
       font-weight: bold;
       position: absolute;
       top: $padding;
@@ -138,7 +204,7 @@ export default {
       padding: $padding;
       position: absolute;
       font-size: ($size - (4*$padding));
-      color: rgba(map-get($material-theme, 'text-color'), map-get($material-theme, 'secondary-text-percent'));
+      color: rgba(map-get($material-dark, 'text-color'), map-get($material-theme, 'secondary-text-percent'));
 
       &.layout-text {
         width: $size;
