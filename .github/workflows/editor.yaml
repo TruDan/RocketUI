@@ -14,8 +14,17 @@ jobs:
   build:
     strategy:
       matrix: 
-        runtime: [ 'win-x64', 'linux-x64' ]
-    runs-on: ubuntu-latest
+        os: [ 'windows', 'linux' ]
+        include:
+          - os: windows
+            runtime: win-x64
+            runs-on: windows-latest
+            
+          - os: linux
+            runtime: linux-x64
+            runs-on: ubuntu-latest
+            
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -37,7 +46,7 @@ jobs:
 
       - name: Publish UI Project
         shell: bash
-        run: dotnet publish -o /publish -r ${{ matrix.runtime }} -c Release src/RocketUI.Editor/RocketUI.Editor.csproj
+        run: dotnet publish -o ./publish -r ${{ matrix.runtime }} -c Release src/RocketUI.Editor/RocketUI.Editor.csproj
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1
