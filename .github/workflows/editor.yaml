@@ -37,7 +37,7 @@ jobs:
 
       - name: Publish UI Project
         shell: bash
-        run: dotnet publish -o /publish -r ${{ matrix.runtime }} src/RocketUI.Editor/RocketUI.Editor.csproj
+        run: dotnet publish -o /publish -r ${{ matrix.runtime }} -c Release src/RocketUI.Editor/RocketUI.Editor.csproj
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1

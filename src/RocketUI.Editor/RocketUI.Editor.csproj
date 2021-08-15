@@ -4,19 +4,30 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
         <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+        <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
     </PropertyGroup>
 
     <PropertyGroup>
+        <AssemblyName>RocketUI.Editor</AssemblyName>
         <Configurations>Debug;Release;Dev</Configurations>
         <Platforms>x64;AnyCPU</Platforms>
         <PlatformTarget>x64</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-<!--        <PublishSingleFile>true</PublishSingleFile>-->
-        <AssemblyName>RocketUI.Editor</AssemblyName>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>false</SelfContained>
+        <PublishTrimmed>false</PublishTrimmed>
+        <PublishReadyToRun>false</PublishReadyToRun>
+        <ApplicationIcon>favicon.ico</ApplicationIcon>
     </PropertyGroup>
     
     <ItemGroup>
+      <PackageReference Include="cef.redist.x64" Version="92.0.25" />
       <PackageReference Include="Chromely" Version="5.1.88" />
+      <PackageReference Include="Chromely.CefGlue" Version="5.0.83" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     </ItemGroup>
 
@@ -27,13 +38,16 @@
         <EmbeddedResource Remove="vueapp\node_modules\**" />
         <None Remove="vueapp\node_modules\**" />
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <EmbeddedResource Include="dist\**\*" />
+    </ItemGroup>
 
     <ItemGroup>
         <None Update="Chromely.External.Controllers.dll" CopyToOutputDirectory="Always" />
     </ItemGroup>
 
-    <Target Name="DependsOn" DependsOnTargets="ValidateChromelyApp">
+    <Target Name="DependsOn" DependsOnTargets="ValidateChromelyApp, CefRedist64CopyResources">
         <Message Text="Target : DependsOn" />
     </Target>
 
@@ -52,7 +66,7 @@
 
     <Target Name="DebugChromelyApp" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' ">
         <Message Importance="High" Text="Building Vue App.." />
-        <Exec Command="npm run build" WorkingDirectory="vueapp" ContinueOnError="false" ConsoleToMSBuild="true">
+        <Exec Command="yarn build" WorkingDirectory="$(ProjectDir)vueapp" ContinueOnError="false" ConsoleToMSBuild="true">
             <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
         </Exec>
 
@@ -61,7 +75,8 @@
     </Target>
 
     <Target Name="ReleaseChromelyApp" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Release' ">
-        <Exec Command="npm run build" WorkingDirectory="vueapp" ContinueOnError="true" ConsoleToMSBuild="false">
+        <RemoveDir Directories="$(ProjectDir)dist" Condition="Exists('$(ProjectDir)dist')" ContinueOnError="true" />
+        <Exec Command="yarn build --dest ../dist" WorkingDirectory="$(ProjectDir)vueapp" ContinueOnError="true" ConsoleToMSBuild="false">
             <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
         </Exec>
     </Target>    
