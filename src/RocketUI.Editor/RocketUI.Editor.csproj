@@ -47,7 +47,7 @@
 
         <Message Importance="High" Text="Checking if node_modules exists.." />
         <Message Importance="High" Text="Running npm install, node_modules not found! (this could take a while)" Condition="!Exists('$(ProjectDir)vueapp\node_modules')" />
-        <Exec Command="npm install --silent" Condition="!Exists('$(ProjectDir)vueapp\node_modules')" WorkingDirectory="vueapp" ContinueOnError="false" />
+        <Exec Command="yarn install --silent" Condition="!Exists('$(ProjectDir)vueapp\node_modules')" WorkingDirectory="$(ProjectDir)vueapp" ContinueOnError="false" />
     </Target>
 
     <Target Name="DebugChromelyApp" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' ">

@@ -1,0 +1,46 @@
+﻿name: 'Publish Editor App'
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  CI_REPOSITORY_URL: https://github.com/${{ github.repository }}
+  CI_COMMIT_REF_NAME: ${{ github.ref }}
+  CI_COMMIT_SHA: ${{ github.sha }}
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+
+jobs:
+  build:
+    strategy:
+      matrix: 
+        runtime: [ 'win-x64', 'linux-x64' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Setup NodeJS 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Setup Yarn
+        run: npm install --global yarn
+
+      - name: Publish UI Project
+        shell: bash
+        run: dotnet publish -o /publish -r ${{ matrix.runtime }} src/RocketUI.Editor/RocketUI.Editor.csproj
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: RocketUI.Editor
+          path: ./publish
