@@ -1,40 +1,42 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Microsoft.Xna.Framework;
 using RocketUI.Input;
 using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
 {
-    public class Slider : RocketControl, IValuedControl<double>
+    public class Slider<T> : RocketControl, IValuedControl<T> where T : IConvertible
     {
-		public static readonly ValueFormatter<double> DefaultDisplayFormat = "{0:0.#}";
+        public static readonly ValueFormatter<T> DefaultDisplayFormat = "{0}";
         
-        public event EventHandler<double> ValueChanged; 
+        public event EventHandler<T> ValueChanged; 
 
-        public double MinValue { get; set; } = 0.0d;
-        public double MaxValue { get; set; } = 100.0d;
-        private double _value = 0.0d;
+        public T MinValue { get; set; }
+        public T MaxValue { get; set; }
+        private T _value = default(T);
 
-        public double Value
+        public T Value
         {
             get => _value;
             set
             {
-                var proposedValue = value;
-                if (StepInterval != 0d)
-                {
-                    proposedValue = MathHelpers.RoundToNearestInterval(proposedValue, StepInterval);
-                }
+                var newValue = ValidateValue(_value, value);
 
-                if (Math.Abs(proposedValue - _value) > 0d)
+                if (!_value.Equals(newValue))
                 {
-                    _value = proposedValue;
+                    _value = newValue;
                     ValueChanged?.Invoke(this, _value);
                 }
             }
         }
 
-        public double StepInterval { get; set; } = 1.0d;
+        protected virtual T ValidateValue(T oldValue, T newValue)
+        {
+            return newValue;
+        }
+
+        public T StepInterval { get; set; } = default(T);
 
         public GuiTexture2D ThumbBackground
         {
@@ -76,7 +78,7 @@ namespace RocketUI
         }
 
         public TextElement Label { get; private set; }
-        public ValueFormatter<double> DisplayFormat { get; set; } = DefaultDisplayFormat;
+        public ValueFormatter<T> DisplayFormat { get; set; } = DefaultDisplayFormat;
 
         private double _thumbOffsetX;
         private int _thumbWidth = 10;
@@ -109,9 +111,20 @@ namespace RocketUI
             
             _foregroundColor = c;
         }
-
+        
+        private Func<T, double> _getDouble;
+        private Func<double, T> _getValue;
         public Slider()
         {
+            var param = Expression.Parameter(typeof(T), "x");
+            UnaryExpression body = Expression.Convert(param, typeof(double));
+            _getDouble = Expression.Lambda<Func<T, double>>(body, param).Compile();
+            
+            var param2 = Expression.Parameter(typeof(double), "x");
+            UnaryExpression body2 = Expression.Convert(param2, typeof(T));
+            
+            _getValue = Expression.Lambda<Func<double, T>>(body2, param2).Compile();
+            
             Background = GuiTextures.ButtonDisabled;
             ThumbBackground = GuiTextures.ButtonDefault;
             ThumbHighlightBackground = GuiTextures.ButtonHover;
@@ -166,13 +179,16 @@ namespace RocketUI
         {
             base.OnUpdate(gameTime);
 
-            var val = MathHelper.Clamp((float)Value, (float)MinValue, (float)MaxValue);
-            val = MathHelpers.RoundToNearestInterval(val, (float)StepInterval);
-
-
-            var diff = MathHelpers.RoundToNearestInterval(Math.Abs(MinValue - MaxValue), StepInterval);
+            var min = _getDouble(MinValue);
+            var max = _getDouble(MaxValue);
+            var val = Math.Clamp(_getDouble(Value), min, max);
+            var stepInterval = _getDouble(StepInterval);
             
-            _thumbOffsetX = ((RenderBounds.Width - ThumbWidth) / (double) diff) * (val - MinValue);
+            val = MathHelpers.RoundToNearestInterval(val, stepInterval);
+            
+            var diff = MathHelpers.RoundToNearestInterval(Math.Abs(min - max), stepInterval);
+            
+            _thumbOffsetX = ((RenderBounds.Width - ThumbWidth) / (double) diff) * (val - min);
         }
 
         protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
@@ -197,8 +213,11 @@ namespace RocketUI
             else 
                 percentageClicked = (relativePosition.X - halfThumb) / (float)(RenderBounds.Width - _thumbWidth);
 
-            var diff = Math.Abs(MinValue - MaxValue);
-            Value = MinValue + (diff * percentageClicked);
+            var min = _getDouble(MinValue);
+            var max = _getDouble(MaxValue);
+            
+            var diff = Math.Abs(min - max);
+            Value = _getValue(min + (diff * percentageClicked));
         }
 
         protected override void OnHighlightActivate()
@@ -258,6 +277,23 @@ namespace RocketUI
             {
                 SetValueFromCursor(relativeNewPosition);
             }
+        }
+    }
+     
+    public class Slider : Slider<double>
+    {
+		public static readonly ValueFormatter<double> DefaultDisplayFormat = "{0:0.#}";
+
+        /// <inheritdoc />
+        protected override double ValidateValue(double oldValue, double newValue)
+        {
+            var proposedValue = newValue;
+            if (StepInterval != 0d)
+            {
+                proposedValue = MathHelpers.RoundToNearestInterval(proposedValue, StepInterval);
+            }
+
+            return proposedValue;
         }
     }
 }
