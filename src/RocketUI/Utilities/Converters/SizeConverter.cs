@@ -11,7 +11,7 @@ namespace RocketUI.Utilities.Converters
         /// <summary>
         /// The character to split up the string which will be converted
         /// </summary>
-        static readonly char[] DimensionSplitter = new char[1] { ',' };
+        static readonly char DimensionSplitter = ',';
 
         /// <summary>
         /// Determines if this converter can convert from the specified <paramref name="sourceType"/>
@@ -53,6 +53,24 @@ namespace RocketUI.Utilities.Converters
                 }
             }
             return base.ConvertFrom(context, culture, value);
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            if (destinationType.IsAssignableFrom(typeof(string))) return true;
+            return base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+            Type                                                destinationType)
+        {
+            if (!destinationType.IsAssignableFrom(typeof(string)) || !(value is Size size))
+            {
+                return base.ConvertTo(context, culture, value, destinationType);
+            }
+
+            return size.Width.ToString() + DimensionSplitter +
+                   size.Height.ToString();
         }
     }
 }

@@ -89,5 +89,13 @@ namespace RocketUI.Utilities.Converters
                 Color = new Color(r, g, b, a)
             };
         }
+        
+        
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            if (destinationType.IsAssignableFrom(typeof(string))) return false;
+            return base.CanConvertTo(context, destinationType);
+        }
+
     }
 }

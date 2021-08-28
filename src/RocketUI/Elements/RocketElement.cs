@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -30,6 +31,7 @@ namespace RocketUI
 		/// Gets the dictionary of properties for this widget
 		/// </summary>
 		[JsonIgnore]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public PropertyStore Properties
 		{
 			get
@@ -50,7 +52,8 @@ namespace RocketUI
 		
 		[JsonIgnore]
 		public object Tag  { get; set; }
-
+		
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public object DataContext { get; set; }
 
 		private IGuiScreen       _screen;
@@ -72,12 +75,14 @@ namespace RocketUI
 		//}
 
 		[DebuggerIgnore, JsonIgnore]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public virtual IGuiScreen RootScreen
 		{
 			get => ParentElement?.RootScreen;
 		}
 
 		[DebuggerIgnore, JsonIgnore]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public IGuiElement ParentElement
 		{
 			get => _parentElement;
@@ -96,6 +101,7 @@ namespace RocketUI
 
 
 		[DebuggerIgnore, JsonIgnore]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public virtual IGuiFocusContext FocusContext
 		{
 			get { return _focusContext ?? ParentElement?.FocusContext ?? RootScreen; }
@@ -104,6 +110,7 @@ namespace RocketUI
 
 
 		[DebuggerIgnore, JsonIgnore]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public IGuiElement[] ChildElements
 		{
 			get
@@ -134,11 +141,14 @@ namespace RocketUI
 		}
 
 		[DebuggerIgnore, JsonIgnore]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool HasChildren => Children.Count > 0;
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public int ChildCount => Children.Count;
 
 		[DebuggerIgnore, JsonIgnore]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		internal IReadOnlyList<IGuiElement> AllChildren =>
 			ChildElements.OfType<RocketElement>().SelectMany(c => new[] {c}.Union(c.AllChildren)).ToList();
 
