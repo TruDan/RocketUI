@@ -1,8 +1,11 @@
 ﻿//#define DEV
 
 using System;
+using System.Collections.Generic;
 using Chromely.Core;
 using Chromely.Core.Configuration;
+using Chromely.Core.Infrastructure;
+using Chromely.Core.Network;
 #if DEV
 using RocketUI.Editor.Utilities;
 #endif
@@ -15,6 +18,9 @@ namespace RocketUI.Editor
         static void Main(string[] args)
         {
             var config = DefaultConfiguration.CreateForRuntimePlatform();
+            config.WindowOptions.Title = "RocketUI Editor";
+            config.AppName = "RocketUI.Editor";
+            config.WindowOptions.RelativePathToIconFile = "icon.png";
 #if DEV
             if (!(args.Length > 0 && ushort.TryParse(args[0], out var port)))
             {
@@ -25,7 +31,16 @@ namespace RocketUI.Editor
             config.DebuggingMode = true;
             using var devserver = StartDevServer(port);
 #else
-            config.StartUrl = "local://dist/index.html";
+            config.StartUrl = "assembly://app/index.html";
+            config.CefDownloadOptions.DownloadSilently = true;
+            config.CefDownloadOptions.AutoDownloadWhenMissing = true;
+            
+            var assemblyOptions = new AssemblyOptions("RocketUI.Editor.dll", null, "dist");
+            config.UrlSchemes.AddRange(new List<UrlScheme>()
+            {
+                new UrlScheme(DefaultSchemeName.ASSEMBLYRESOURCE, "assembly", "app", string.Empty,
+                    UrlSchemeType.AssemblyResource, false, assemblyOptions)
+            });
 #endif
 
             AppBuilder
@@ -37,7 +52,6 @@ namespace RocketUI.Editor
         }
 
 #if DEV
-
         private static IDisposable StartDevServer(ushort port = 7080)
         {
             var server = new VueDevServerWrapper(port);

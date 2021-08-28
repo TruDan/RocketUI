@@ -403,6 +403,17 @@ namespace RocketUI
 
 			var children = ChildElements;
 
+			// First check all child elements
+			foreach (var child in children)
+			{
+				if (child.TryFindDeepestChild(predicate, out var recurseChild))
+				{
+					childElement = recurseChild;
+					return true;
+				}
+			}
+
+			//If we didn't find an element yet, check this layer.
 			foreach (var child in children)
 			{
 				if (predicate(child))
@@ -418,17 +429,7 @@ namespace RocketUI
 					return true;
 				}
 			}
-
-			// If the children on this level do not match, check their children.
-			foreach (var child in children)
-			{
-				if (child.TryFindDeepestChild(predicate, out var recurseChild))
-				{
-					childElement = recurseChild;
-					return true;
-				}
-			}
-
+			
 			return false;
 		}
 

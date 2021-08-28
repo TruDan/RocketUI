@@ -11,6 +11,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RocketUI.Design.Host", "src
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{80936BD7-EDEC-4947-80E1-547A27BB84FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RocketUI.Editor", "src\RocketUI.Editor\RocketUI.Editor.csproj", "{084B0BC6-0562-46E0-99EB-6210AFAE4807}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{08669554-A5CB-4F4F-A398-109295A8EE45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{6EC68C43-FD1B-4425-9322-65C565DE0B19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9349AC40-0D6E-478A-9A0C-F1A9849EE0B3}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\nuget.yaml = .github\workflows\nuget.yaml
+	.github\workflows\editor.yaml = .github\workflows\editor.yaml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +41,10 @@ Global
 		{837930CB-C302-4345-9A52-DF1EC436CF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{837930CB-C302-4345-9A52-DF1EC436CF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{837930CB-C302-4345-9A52-DF1EC436CF8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{084B0BC6-0562-46E0-99EB-6210AFAE4807}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{084B0BC6-0562-46E0-99EB-6210AFAE4807}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{084B0BC6-0562-46E0-99EB-6210AFAE4807}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{084B0BC6-0562-46E0-99EB-6210AFAE4807}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,6 +53,8 @@ Global
 		{343C5A50-B18D-436C-8DCC-75E6207C2CBD} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
 		{9D431E3C-8830-41FE-80A6-31342D4B4494} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
 		{837930CB-C302-4345-9A52-DF1EC436CF8C} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
+		{084B0BC6-0562-46E0-99EB-6210AFAE4807} = {80936BD7-EDEC-4947-80E1-547A27BB84FE}
+		{9349AC40-0D6E-478A-9A0C-F1A9849EE0B3} = {6EC68C43-FD1B-4425-9322-65C565DE0B19}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE104040-7866-4803-A4D7-C8B3426D2DE8}

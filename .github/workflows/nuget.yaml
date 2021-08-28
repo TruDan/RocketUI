@@ -12,6 +12,19 @@ env:
   
 jobs:
   build:
+    strategy:
+      matrix: 
+        project: [ 'RocketUI', 'RocketUI.Design', 'RocketUI.Design.Host' ]
+        include:
+          - project: RocketUI
+            projectSrc: src/RocketUI/RocketUI.csproj
+
+          - project: RocketUI.Design
+            projectSrc: src/RocketUI.Design/RocketUI.Design.csproj
+
+          - project: RocketUI.Design.Host
+            projectSrc: src/RocketUI.Design.Host/RocketUI.Design.Host.csproj
+
     runs-on: ubuntu-latest
     steps:
     - name: Checkout  
@@ -26,7 +39,7 @@ jobs:
         
     - name: Build & Pack Projects
       shell: bash
-      run: dotnet pack -o ./nuget -p:PackageVersion=1.0.${{ github.run_number }} --include-symbols --include-source
+      run: dotnet pack -o ./nuget -p:PackageVersion=1.0.${{ github.run_number }} --include-symbols --include-source ${{ matrix.projectSrc }}
     
     - name: Publish NuGet Packages
       shell: bash
@@ -38,6 +51,6 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Packages
+        name: ${{ matrix.project }}
         path: ./nuget
     
