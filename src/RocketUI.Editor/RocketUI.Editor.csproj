@@ -16,7 +16,6 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>false</SelfContained>
         <PublishTrimmed>false</PublishTrimmed>
@@ -37,8 +36,9 @@
         <Compile Remove="vueapp\node_modules\**" />
         <EmbeddedResource Remove="vueapp\node_modules\**" />
         <None Remove="vueapp\node_modules\**" />
+        <None Remove="vueapp\src\components\ScreenCodeEditor.vue" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <EmbeddedResource Include="dist\**\*" />
     </ItemGroup>
