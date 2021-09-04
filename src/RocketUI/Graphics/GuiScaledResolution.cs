@@ -1,6 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System.Numerics;
 using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
@@ -33,8 +32,8 @@ namespace RocketUI
 
 		public int ScaleFactor { get; private set; }
 
-		public Matrix TransformMatrix { get; private set; } = Matrix.Identity;
-		public Matrix InverseTransformMatrix { get; private set; } = Matrix.Identity;
+		public Matrix4x4 TransformMatrix { get; private set; } = Matrix4x4.Identity;
+		public Matrix4x4 InverseTransformMatrix { get; private set; } = Matrix4x4.Identity;
 
 		private int _targetWidth = 320;
 
@@ -130,8 +129,8 @@ namespace RocketUI
 
 				ElementScale = new Vector2(scaleX, scaleY);
 
-				TransformMatrix = Matrix.CreateScale(scaleX, scaleY, 1f);
-				InverseTransformMatrix = Matrix.Invert(TransformMatrix);
+				TransformMatrix = Matrix4x4.CreateScale(scaleX, scaleY, 1f);
+				InverseTransformMatrix = Matrix4x4.Invert(TransformMatrix);
 
 				ScaleChanged?.Invoke(this, new UiScaleEventArgs(ScaledWidth, ScaledHeight, ScaleFactor));
 			}

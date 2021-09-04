@@ -1,6 +1,4 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace RocketUI.Input.Listeners
 {
@@ -8,11 +6,11 @@ namespace RocketUI.Input.Listeners
     {
         public static EventHandler<KeyboardInputListener> InstanceCreated;
         
-        public KeyboardInputListener() : this(PlayerIndex.One)
+        public KeyboardInputListener() : this(1)
         {
 		}
 
-        public KeyboardInputListener(PlayerIndex playerIndex) : base(playerIndex)
+        public KeyboardInputListener(int playerIndex) : base(playerIndex)
         {
             InstanceCreated?.Invoke(this, this);
         }

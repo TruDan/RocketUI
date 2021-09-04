@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using JetBrains.Annotations;
-using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Portable.Xaml.Markup;
 using RocketUI.Attributes;
@@ -177,11 +178,11 @@ namespace RocketUI
 			}
 		}
 
-		[DebuggerIgnore] public Matrix LayoutTransform { get; set; } = Matrix.Identity;
+		[DebuggerIgnore] public Matrix4x4 LayoutTransform { get; set; } = Matrix4x4.Identity;
 
-		[DebuggerIgnore] public Matrix RenderTransform { get; set; } = Matrix.Identity;
+		[DebuggerIgnore] public Matrix4x4 RenderTransform { get; set; } = Matrix4x4.Identity;
 
-		public void Draw(GuiSpriteBatch graphics, GameTime gameTime)
+		public void Draw(GuiSpriteBatch graphics)
 		{
 			if (!IsVisible) return;
 			if (RenderBounds.Size == Point.Zero) return;
@@ -195,10 +196,10 @@ namespace RocketUI
 			{
 				if (_initialised)
 				{
-					OnDraw(graphics, gameTime);
+					OnDraw(graphics);
 				}
 
-				ForEachChild(c => c?.Draw(graphics, gameTime));
+				ForEachChild(c => c?.Draw(graphics));
 			}
 		}
 
@@ -247,18 +248,18 @@ namespace RocketUI
 			BackgroundOverlay.TryResolveTexture(renderer);
 		}
 
-		public void Update(GameTime gameTime)
+		public void Update()
 		{
 			if (_initialised)
 			{
 				UpdateStyle();
-				OnUpdate(gameTime);
+				OnUpdate();
 			}
 
-			ForEachChild(c => c.Update(gameTime));
+			ForEachChild(c => c.Update());
 		}
 
-		protected virtual void OnUpdate(GameTime gameTime)
+		protected virtual void OnUpdate()
 		{
 		}
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
-using Microsoft.Xna.Framework;
 
 namespace RocketUI.Utilities.Converters
 {
@@ -76,7 +75,7 @@ namespace RocketUI.Utilities.Converters
                     break;
                 
                 default:
-                    throw new FormatException("Color is not in an acceptable format (#RGB, #ARGB, #RRGGBB, #AARRGGBB)");
+                    throw new FormatException("RgbaColor is not in an acceptable format (#RGB, #ARGB, #RRGGBB, #AARRGGBB)");
             }
 
             var a = int.Parse(aStr, NumberStyles.HexNumber);
@@ -86,7 +85,7 @@ namespace RocketUI.Utilities.Converters
 
             return new GuiTexture2D()
             {
-                Color = new Color(r, g, b, a)
+                Color = new RgbaColor(r, g, b, a)
             };
         }
         

@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq.Expressions;
-using Microsoft.Xna.Framework;
 using RocketUI.Input;
+using RocketUI.Serialization;
 using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
@@ -83,10 +84,10 @@ namespace RocketUI
         private double _thumbOffsetX;
         private int _thumbWidth = 10;
 
-        private Color _foregroundColor = Color.White;
-        private Color _originalForegroundColor = Color.White;
+        private RgbaColor _foregroundColor = Colors.White;
+        private RgbaColor _originalForegroundColor = Colors.White;
         
-        public Color ForegroundColor
+        public RgbaColor ForegroundColor
         {
             get
             {
@@ -99,7 +100,7 @@ namespace RocketUI
             }
         }
 
-        void FixForegroundColor(Color color)
+        void FixForegroundColor(RgbaColor color)
         {
             _foregroundColor = color;
             var c = color;
@@ -175,9 +176,9 @@ namespace RocketUI
             ThumbDisabledBackground.TryResolveTexture(renderer);
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        protected override void OnUpdate()
         {
-            base.OnUpdate(gameTime);
+            base.OnUpdate();
 
             var min = _getDouble(MinValue);
             var max = _getDouble(MaxValue);
@@ -191,9 +192,9 @@ namespace RocketUI
             _thumbOffsetX = ((RenderBounds.Width - ThumbWidth) / (double) diff) * (val - min);
         }
 
-        protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected override void OnDraw(GuiSpriteBatch graphics)
         {
-            base.OnDraw(graphics, gameTime);
+            base.OnDraw(graphics);
 
             var bounds = new Rectangle((int) (RenderPosition.X + _thumbOffsetX), (int) RenderPosition.Y, ThumbWidth,
                                        RenderSize.Height);
@@ -224,14 +225,14 @@ namespace RocketUI
         {
             base.OnHighlightActivate();
 
-            Label.TextColor = Color.Yellow;
+            Label.TextColor = Colors.Yellow;
         }
 
         protected override void OnHighlightDeactivate()
         {
             base.OnHighlightDeactivate();
 
-            Label.TextColor = Color.White;
+            Label.TextColor = Colors.White;
         }
         
         protected override void OnCursorPressed(Point cursorPosition, MouseButton button)

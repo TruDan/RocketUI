@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Numerics;
+using RocketUI.Serialization;
 
 namespace RocketUI
 {
@@ -9,10 +10,10 @@ namespace RocketUI
 			Margin = new Thickness(5, 5, 5, 5);
 		}
 
-		protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+		protected override void OnDraw(GuiSpriteBatch graphics)
 		{
 			//	base.OnDraw(graphics, gameTime);
-			graphics.DrawLine(new Vector2(RenderBounds.Left, RenderBounds.Height / 2f), RenderBounds.Width, 0f, Color.DarkGray, 1);
+			graphics.DrawLine(new Vector2(RenderBounds.Left, RenderBounds.Height / 2f), RenderBounds.Width, 0f, Colors.DarkGray, 1);
 		}
 	}
 }

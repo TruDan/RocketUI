@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Numerics;
 using System.Runtime.Serialization;
-using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using RocketUI.Serialization.Json.Converters;
 using RocketUI.Utilities.Converters;
@@ -63,7 +64,7 @@ namespace RocketUI
 		}
 		public static Thickness Clamp(Thickness value, Thickness minValue, Thickness maxValue)
 		{
-			return new Thickness(MathHelper.Clamp(value.Left, minValue.Left, maxValue.Left), MathHelper.Clamp(value.Top, minValue.Top, maxValue.Top), MathHelper.Clamp(value.Right, minValue.Right, maxValue.Right), MathHelper.Clamp(value.Bottom, minValue.Bottom, maxValue.Bottom));
+			return new Thickness(Math.Clamp(value.Left, minValue.Left, maxValue.Left), Math.Clamp(value.Top, minValue.Top, maxValue.Top), Math.Clamp(value.Right, minValue.Right, maxValue.Right), Math.Clamp(value.Bottom, minValue.Bottom, maxValue.Bottom));
 		}
 		
 		public static Thickness Parse(string value)

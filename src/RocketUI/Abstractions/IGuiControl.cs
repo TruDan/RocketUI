@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using System.Numerics;
 using RocketUI.Attributes;
 using RocketUI.Input;
 
@@ -13,7 +12,7 @@ namespace RocketUI
         [DebuggerVisible] bool CanHighlight { get; }
         [DebuggerVisible] bool Highlighted { get; }
 
-        [DebuggerVisible] Keys AccessKey { get; set; }
+        [DebuggerVisible] char AccessKey { get; set; }
         [DebuggerVisible] int TabIndex { get; set; }
 
         bool Focus();
@@ -24,7 +23,7 @@ namespace RocketUI
         void InvokeFocusActivate();
         void InvokeFocusDeactivate();
         
-        bool InvokeKeyInput(char character, Keys key);
+        bool InvokeKeyInput(char character);
 
         void InvokeCursorDown(Vector2    cursorPosition);
         void InvokeCursorUp(Vector2      cursorPosition);

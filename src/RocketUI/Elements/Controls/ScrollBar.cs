@@ -1,6 +1,7 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using System.Drawing;
 using RocketUI.Input;
+using RocketUI.Serialization;
 using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
@@ -111,7 +112,7 @@ namespace RocketUI
 
         public ScrollBar()
         {
-            Background.Color = new Color(Color.Black, 0.2f);
+            Background.Color = new RgbaColor(Colors.Black, 0.2f);
             ThumbBackground = GuiTextures.ButtonDefault;
             ThumbHighlightBackground = GuiTextures.ButtonHover;
 
@@ -137,10 +138,10 @@ namespace RocketUI
                 CanFocus = false,
                 CanHighlight = false,
 
-                HighlightOutlineColor = Color.Yellow,
+                HighlightOutlineColor = Colors.Yellow,
                 HighlightOutlineThickness = new Thickness(2),
 
-                Background = Color.MediumVioletRed,
+                Background = Colors.MediumVioletRed,
                 HighlightedBackground = ThumbHighlightBackground,
                 FocusedBackground = GuiTextures.ScrollBarTrackFocused,
                 DisabledBackground = GuiTextures.ScrollBarTrackDisabled

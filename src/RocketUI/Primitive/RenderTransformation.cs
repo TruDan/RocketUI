@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using System.Numerics;
 
 namespace RocketUI
 {
@@ -22,12 +22,12 @@ namespace RocketUI
 
         
 
-        public static Matrix CreateMatrix(Vector2 position, RenderTransformation transformation)
+        public static Matrix4x4 CreateMatrix(Vector2 position, RenderTransformation transformation)
             => CreateMatrix(position, transformation.Origin, transformation.Rotation, transformation.Scale);
         
-        public static Matrix CreateMatrix(Vector2 position, Vector2 origin, float rotation, Vector2 scale)
+        public static Matrix4x4 CreateMatrix(Vector2 position, Vector2 origin, float rotation, Vector2 scale)
         {
-            var m = Matrix.Identity;
+            var m = Matrix4x4.Identity;
             float cos = 0.0f;
             float sin = 0.0f;
             if ((double) rotation == 0.0)

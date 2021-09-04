@@ -1,6 +1,7 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using System.Drawing;
 using RocketUI.Input;
+using RocketUI.Serialization;
 
 namespace RocketUI
 {
@@ -22,7 +23,7 @@ namespace RocketUI
             set => _checkedBackground = value;
         }
 
-        public override Color DefaultColor
+        public override RgbaColor DefaultColor
         {
             get
             {
@@ -33,9 +34,9 @@ namespace RocketUI
             set => _defaultColor = value;
         }
 
-        public virtual  Color? CheckedColor { get; set; } = Color.Yellow;
+        public virtual  RgbaColor? CheckedColor { get; set; } = Colors.Yellow;
 
-        public virtual Color     CheckedOutlineColor     { get; set; } = new Color(Color.White, 0.75f);
+        public virtual RgbaColor     CheckedOutlineColor     { get; set; } = new RgbaColor(Colors.White, 0.75f);
         public virtual Thickness CheckedOutlineThickness { get; set; } = Thickness.Zero;
 
         public bool Checked
@@ -61,7 +62,7 @@ namespace RocketUI
         }
 
         private ValueFormatter<bool> _formatter = DefaultDisplayFormat;
-        private Color                _defaultColor;
+        private RgbaColor                _defaultColor;
         private GuiTexture2D         _checkedBackground;
 
         public ValueFormatter<bool> DisplayFormat
@@ -130,9 +131,9 @@ namespace RocketUI
             CheckedBackground.TryResolveTexture(renderer);
         }
 
-        protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected override void OnDraw(GuiSpriteBatch graphics)
         {
-            base.OnDraw(graphics, gameTime);
+            base.OnDraw(graphics);
 
             if (Enabled)
             {

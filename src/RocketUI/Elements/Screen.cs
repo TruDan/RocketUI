@@ -1,7 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Microsoft.Xna.Framework;
+using System.Drawing;
+using System.Numerics;
 using Newtonsoft.Json;
+using RocketUI.Utilities.Extensions;
 
 namespace RocketUI
 {
@@ -29,7 +31,6 @@ namespace RocketUI
             // AutoSizeMode = AutoSizeMode.None;
             // Anchor = Alignment.Fixed;
             ClipToBounds = true;
-            
         }
 
         public void UpdateSize(int width, int height)
@@ -37,12 +38,13 @@ namespace RocketUI
             SetFixedSize(width, height);
             InvalidateLayout(true);
         }
-        
+
         private object     _updateLock = new object();
-        public  GuiManager GuiManager            { get; internal set; }
-        public  bool       IsSelfUpdating         { get; set; }
-        public  bool       IsSelfDrawing         { get; set; }
-        public  bool       IsSelfManaged
+        public  GuiManager GuiManager     { get; internal set; }
+        public  bool       IsSelfUpdating { get; set; }
+        public  bool       IsSelfDrawing  { get; set; }
+
+        public bool IsSelfManaged
         {
             get => IsSelfDrawing && IsSelfUpdating;
             set
@@ -52,15 +54,15 @@ namespace RocketUI
             }
         }
 
-        public  bool       IsAutomaticallyScaled { get; set; } = true;
-        public  bool       SizeToWindow { get; set; } = true;
+        public bool IsAutomaticallyScaled { get; set; } = true;
+        public bool SizeToWindow          { get; set; } = true;
 
         public void UpdateLayout()
         {
             if (!IsLayoutDirty || IsLayoutInProgress) return;
             IsLayoutInProgress = true;
 
-           // ThreadPool.QueueUserWorkItem(o =>
+            // ThreadPool.QueueUserWorkItem(o =>
             {
                 // Pass 1 - Update the Preferred size for all elements with
                 //          fixed sizes
@@ -80,17 +82,17 @@ namespace RocketUI
 
                 IsLayoutDirty = false;
                 IsLayoutInProgress = false;
-            }//);
+            } //);
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        protected override void OnUpdate()
         {
             if (IsLayoutDirty && !IsLayoutInProgress)
             {
                 UpdateLayout();
             }
 
-            base.OnUpdate(gameTime);
+            base.OnUpdate();
         }
 
         public bool Focus(IGuiControl control)
@@ -112,13 +114,39 @@ namespace RocketUI
 
         public void HandleContextActive()
         {
-
         }
 
         public void HandleContextInactive()
         {
-
         }
-        
+
+
+        public Vector2? Unproject(Ray ray)
+        {
+            Transform3D transform = new Transform3D();
+            if (Tag is ITransformable transformable)
+            {
+                transform = transformable.Transform;
+            }
+
+            var normal = Vector3.Normalize(Vector3.Transform(Vector3.UnitZ, transform.Rotation));
+            var plane = new Plane(transform.LocalPosition, -(
+                transform.LocalPosition.X * normal.X +
+                transform.LocalPosition.Y * normal.Y +
+                transform.LocalPosition.Z * normal.Z
+            ));
+            var intersection = ray.Intersects(plane);
+            if (intersection.HasValue)
+            {
+                // find intersectionpoint
+                var intersectionPoint = ray.Position + (ray.Direction * intersection.Value);
+
+                // unproject
+                var cursorPos = Vector3.Transform(intersectionPoint, transform.World.Invert());
+                return new Vector2(cursorPos.X, cursorPos.Y);
+            }
+
+            return null;
+        }
     }
 }

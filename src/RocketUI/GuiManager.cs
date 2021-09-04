@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using RocketUI.Input;
 using RocketUI.Utilities.Helpers;
 using SharpVR;
@@ -229,7 +226,7 @@ namespace RocketUI
                 if (screen == null || screen.IsSelfUpdating)
                     continue;
 
-                screen.Update(gameTime);
+                screen.Update();
             }
 
             // DebugHelper.Update(gameTime);
@@ -249,7 +246,7 @@ namespace RocketUI
                 {
                     GuiSpriteBatch.Begin(screen.IsAutomaticallyScaled);
 
-                    screen.Draw(GuiSpriteBatch, gameTime);
+                    screen.Draw(GuiSpriteBatch);
 
                     DrawScreen?.Invoke(this, new GuiDrawScreenEventArgs(screen, gameTime));
                     //  DebugHelper.DrawScreen(screen);

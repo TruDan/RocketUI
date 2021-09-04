@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using System.Numerics;
 using RocketUI.Events;
 using RocketUI.Input;
 using RocketUI.Input.Listeners;
@@ -12,10 +10,8 @@ namespace RocketUI
     public class GuiFocusHelper
     {
         private GuiManager     GuiManager     { get; }
-        private GraphicsDevice GraphicsDevice { get; }
         private InputManager   InputManager   { get; }
 
-        private Viewport Viewport => GraphicsDevice.Viewport;
 
         private Vector2 _previousCursorPosition;
         public  Vector2 CursorPosition { get; private set; }
@@ -65,24 +61,25 @@ namespace RocketUI
 
         public EventHandler<GuiFocusChangedEventArgs> FocusChanged;
 
-        public GuiFocusHelper(GuiManager guiManager, InputManager inputManager, GraphicsDevice graphicsDevice)
+        public GuiFocusHelper(GuiManager guiManager, InputManager inputManager)
         {
             GuiManager = guiManager;
             InputManager = inputManager;
-            GraphicsDevice = graphicsDevice;
         }
 
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             UpdateHighlightedElement();
             UpdateInput();
         }
 
-        public void OnTextInput(object sender, TextInputEventArgs args)
+        public void OnTextInput(char? inputChar)
         {
+            if (inputChar == null) return;
+            
             //if (args.Key == Keys.None) return;
-            if (args.Key != Keys.None && TryGetElement(e => e is IGuiControl c && c.AccessKey == args.Key,
+            if (TryGetElement(e => e is IGuiControl c && c.AccessKey == inputChar,
                 out var controlByAccessKey))
             {
                 if (FocusedElement != controlByAccessKey)
@@ -92,9 +89,9 @@ namespace RocketUI
                 }
             }
 
-            if (FocusedElement == null || !FocusedElement.InvokeKeyInput(args.Character, args.Key))
+            if (FocusedElement == null || !FocusedElement.InvokeKeyInput(inputChar.Value))
             {
-                if (args.Key == Keys.Tab)
+                if (inputChar == '\t') // Tab
                 {
                     // Switch to next control
                     var activeTabIndex = FocusedElement?.TabIndex ?? -1;
@@ -107,7 +104,7 @@ namespace RocketUI
 
                     FocusedElement = nextControl;
                 }
-                else if (args.Key == Keys.Escape)
+                else if (inputChar == '\x1B') // Escape
                 {
                     // Exit focus
                     FocusedElement = null;
@@ -138,7 +135,7 @@ namespace RocketUI
             // }
 
 
-            var cursorRay = InputManager.GetOrAddPlayerManager(PlayerIndex.One).GetCursorRay();
+            var cursorRay = InputManager.GetOrAddPlayerManager(1).GetCursorRay();
             var findResult    = FindScreen(cursorRay);
             if (findResult.HasValue)
             {
@@ -163,25 +160,10 @@ namespace RocketUI
             var screens = GuiManager.Screens.ToArray().Reverse();
             foreach (var screen in screens)
             {
-                Transform3D transform = new Transform3D();
-                if (screen.Tag is ITransformable transformable)
+                var cursorPos = screen.Unproject(cursorRay);
+                if (cursorPos.HasValue)
                 {
-                    transform = transformable.Transform;
-                }
-
-                var normal   = Vector3.Transform(Vector3.Backward, transform.Rotation);
-                normal.Normalize();
-
-                var plane        = new Plane(transform.LocalPosition, normal);
-                var intersection = cursorRay.Intersects(plane);
-                if (intersection.HasValue)
-                {
-                    // find intersectionpoint
-                    var intersectionPoint = cursorRay.Position + (cursorRay.Direction * intersection.Value);
-
-                    // unproject
-                    var cursorPos = Vector3.Transform(intersectionPoint, Matrix.Invert(transform.World));
-                    return (screen, new Vector2(cursorPos.X, cursorPos.Y));
+                    return (screen, cursorPos.Value);
                 }
             }
 
@@ -359,27 +341,27 @@ namespace RocketUI
             return false;
         }
 
-        private bool TryFindNextControl(Vector2 scanVector, out IGuiElement nextControl)
-        {
-            Vector2 scan = CursorPosition + scanVector;
-
-            while (Viewport.Bounds.Contains(scan))
-            {
-                if (TryGetElementAt(scan, e => true, out var matchedElement))
-                {
-                    if (matchedElement != HighlightedElement)
-                    {
-                        nextControl = matchedElement;
-                        return true;
-                    }
-                }
-
-                scan += scanVector;
-            }
-
-            nextControl = null;
-            return false;
-        }
+        // private bool TryFindNextControl(Vector2 scanVector, out IGuiElement nextControl)
+        // {
+        //     Vector2 scan = CursorPosition + scanVector;
+        //
+        //     while (Viewport.Bounds.Contains(scan))
+        //     {
+        //         if (TryGetElementAt(scan, e => true, out var matchedElement))
+        //         {
+        //             if (matchedElement != HighlightedElement)
+        //             {
+        //                 nextControl = matchedElement;
+        //                 return true;
+        //             }
+        //         }
+        //
+        //         scan += scanVector;
+        //     }
+        //
+        //     nextControl = null;
+        //     return false;
+        // }
 
         public bool TryGetElementAt(IGuiScreen screen, Vector2 position, GuiElementPredicate predicate,
             out IGuiElement                    element)

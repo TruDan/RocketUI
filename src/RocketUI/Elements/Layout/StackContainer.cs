@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using System.Drawing;
 using RocketUI.Attributes;
 
 namespace RocketUI
@@ -271,9 +271,9 @@ namespace RocketUI
 		{
 		}
 
-		protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+		protected override void OnDraw(GuiSpriteBatch graphics)
 		{
-			base.OnDraw(graphics, gameTime);
+			base.OnDraw(graphics);
 		}
 	}
 }

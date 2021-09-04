@@ -1,5 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Numerics;
 using RocketUI.Attributes;
+using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
 {
@@ -9,7 +10,7 @@ namespace RocketUI
         [DebuggerVisible] public float Rotation
         {
             get => _rotation;
-            set => _rotation = MathHelper.ToRadians(value);
+            set => _rotation = value.ToRadians();
         }
 
         [DebuggerVisible] public virtual Vector2 RotationOrigin { get; set; } = Vector2.Zero;
@@ -42,7 +43,7 @@ namespace RocketUI
         private GuiTexture2D _backgroundOverlay;
 
 
-        protected virtual void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected virtual void OnDraw(GuiSpriteBatch graphics)
         {
             graphics.FillRectangle(RenderBounds, Background);
             

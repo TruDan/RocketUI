@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System.Drawing;
+using System.Numerics;
 
 namespace RocketUI
 {
@@ -16,7 +16,7 @@ namespace RocketUI
         void DrawString(SpriteBatch   sb, 
                         string text, 
                         Vector2 position,
-                        Color     color,
+                        RgbaColor     color,
                         FontStyle     style      = FontStyle.None, Vector2? scale = null,
                         float         opacity    = 1f,
                         float         rotation   = 0f, Vector2? origin = null,

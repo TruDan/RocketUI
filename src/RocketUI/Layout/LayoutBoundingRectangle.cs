@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
+﻿
 namespace RocketUI.Layout
 {
     public struct LayoutBoundingRectangle

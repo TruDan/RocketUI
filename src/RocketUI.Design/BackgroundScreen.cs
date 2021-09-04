@@ -11,7 +11,7 @@ namespace RocketUI.Design
             {
                 if (_backgroundTexture == null)
                 {
-                    var texture = GpuResourceManager.CreateTexture2D(16, 16, false, SurfaceFormat.Color);
+                    var texture = GpuResourceManager.CreateTexture2D(16, 16, false, SurfaceFormat.RgbaColor);
 
                     var a = 0xFF252525;
                     var b = 0xFF606060;

@@ -75,7 +75,7 @@ export const ElementPropertyEditor = {
         function getAppropriateEditorComponentType() {
             if (props.schema && props.schema.type === "System.Boolean") {
                 return VSwitch;
-            } else if (props.schema && props.schema.type === "Microsoft.Xna.Framework.Color") {
+            } else if (props.schema && props.schema.type === "Microsoft.Xna.Framework.RgbaColor") {
                 return VColorPicker;
             } else if (props.schema && props.schema.enumValues) {
                 return EnumEditor;

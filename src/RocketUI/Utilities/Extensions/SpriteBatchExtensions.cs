@@ -1,6 +1,7 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System.Drawing;
+using System.Numerics;
+using RocketUI.Serialization;
 
 namespace RocketUI.Utilities.Extensions
 {
@@ -13,7 +14,7 @@ namespace RocketUI.Utilities.Extensions
 	    {
 		    // TODO
 		    WhiteTexture = GpuResourceManager.CreateTexture2D(1, 1);
-		    WhiteTexture.SetData(new Color[] {Color.White});
+		    WhiteTexture.SetData(new RgbaColor[] {Colors.White});
 	    }
 
 
@@ -23,7 +24,7 @@ namespace RocketUI.Utilities.Extensions
         /// <param name="start">Starting point.</param>
         /// <param name="end">End point.</param>
         /// <param name="color">The draw color.</param>
-        public static void DrawLine(this SpriteBatch sb, float thickness, Vector2 start, Vector2 end, Color color, Vector2 scale, float layerdepth)
+        public static void DrawLine(this SpriteBatch sb, float thickness, Vector2 start, Vector2 end, RgbaColor color, Vector2 scale, float layerdepth)
 		{
 			float length = (end - start).Length();
 			float rotation = (float)Math.Atan2(end.Y - start.Y, end.X - start.X);
@@ -35,7 +36,7 @@ namespace RocketUI.Utilities.Extensions
 		/// </summary>
 		/// <param name="rectangle">The rectangle to draw.</param>
 		/// <param name="color">The draw color.</param>
-		public static void DrawRectangle(this SpriteBatch sb, Rectangle rectangle, Color color)
+		public static void DrawRectangle(this SpriteBatch sb, Rectangle rectangle, RgbaColor color)
 		{
 			sb.Draw(WhiteTexture, new Rectangle(rectangle.Left, rectangle.Top, rectangle.Width, 1), color);
 			sb.Draw(WhiteTexture, new Rectangle(rectangle.Left, rectangle.Bottom, rectangle.Width, 1), color);
@@ -48,12 +49,12 @@ namespace RocketUI.Utilities.Extensions
 		/// </summary>
 		/// <param name="rectangle">The rectangle to fill.</param>
 		/// <param name="color">The fill color.</param>
-		public static void FillRectangle(this SpriteBatch sb, Rectangle rectangle, Color color)
+		public static void FillRectangle(this SpriteBatch sb, Rectangle rectangle, RgbaColor color)
 		{
 			sb.Draw(WhiteTexture, rectangle, color);
 		}
 		
-		public static void FillRectangle(this SpriteBatch sb, Rectangle rectangle, Color color, float layerDepth)
+		public static void FillRectangle(this SpriteBatch sb, Rectangle rectangle, RgbaColor color, float layerDepth)
 		{
 			sb.Draw(WhiteTexture, rectangle, null, color, 0f, Vector2.Zero, SpriteEffects.None, layerDepth);
 		}

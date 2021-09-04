@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using RocketUI.Serialization;
 using RocketUI.Utilities.Helpers;
 
 namespace RocketUI.Design.Screens
@@ -19,7 +20,7 @@ namespace RocketUI.Design.Screens
                 ChildAnchor = Alignment.FillLeft,
                 MinHeight = 20,
                 Height = 30,
-                Background = Color.DarkGray
+                Background = Colors.DarkGray
             });
 
             Children.Add(_screenContainer = new Container()

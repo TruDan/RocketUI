@@ -1,6 +1,7 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System.Drawing;
+using System.Numerics;
+using RocketUI.Serialization;
 
 namespace RocketUI
 {
@@ -38,25 +39,25 @@ namespace RocketUI
             SpriteBatch.End();
         }
        
-        public void DrawRectangle(Rectangle bounds, Color color, int thickness = 1)
+        public void DrawRectangle(Rectangle bounds, RgbaColor color, int thickness = 1)
         {
             DrawRectangle(bounds, color, thickness, thickness, thickness, thickness);
         }
 
-        public void DrawRectangle(Rectangle bounds, Color color, Thickness thickness)
+        public void DrawRectangle(Rectangle bounds, RgbaColor color, Thickness thickness)
         {
             DrawRectangle(bounds, color, thickness.Left, thickness.Top, thickness.Right, thickness.Bottom);
         }
 
-        public void DrawRectangle(Rectangle bounds, Color color, int thicknessVertical, int thicknessHorizontal)
+        public void DrawRectangle(Rectangle bounds, RgbaColor color, int thicknessVertical, int thicknessHorizontal)
         {
             DrawRectangle(bounds, color, thicknessHorizontal, thicknessVertical, thicknessHorizontal, thicknessVertical);
         }
 
-        public void DrawRectangle(Rectangle bounds, Color color, int thicknessLeft, int thicknessTop, int thicknessRight, int thicknessBottom)
+        public void DrawRectangle(Rectangle bounds, RgbaColor color, int thicknessLeft, int thicknessTop, int thicknessRight, int thicknessBottom)
         {
-            var texture = GpuResourceManager.CreateTexture2D( 1, 1, false, SurfaceFormat.Color);
-            texture.SetData(new Color[] {color});
+            var texture = GpuResourceManager.CreateTexture2D( 1, 1, false, SurfaceFormat.RgbaColor);
+            texture.SetData(new RgbaColor[] {color});
 
             // MinY
             if (thicknessTop > 0)
@@ -87,21 +88,21 @@ namespace RocketUI
             }
         }
 
-        public void FillRectangle(Rectangle bounds, Color color)
+        public void FillRectangle(Rectangle bounds, RgbaColor color)
         {
-            var texture = GpuResourceManager.CreateTexture2D( 1, 1, false, SurfaceFormat.Color);
-            texture.SetData(new Color[] {color});
+            var texture = GpuResourceManager.CreateTexture2D( 1, 1, false, SurfaceFormat.RgbaColor);
+            texture.SetData(new RgbaColor[] {color});
 
-            SpriteBatch.Draw(texture, bounds, Color.White);
+            SpriteBatch.Draw(texture, bounds, Colors.White);
         }
         
-        public void DrawLine(int startX, int startY, int endX, int endY, Color color, int thickness = 1)
+        public void DrawLine(int startX, int startY, int endX, int endY, RgbaColor color, int thickness = 1)
         {
             // TODO: support angles
             DrawRectangle(new Rectangle(startX, startY, endX-startX, endY-startY), color, thickness);
         }
 
-        public void DrawLine(Vector2 startPosition, Vector2 endPosition, Color color)
+        public void DrawLine(Vector2 startPosition, Vector2 endPosition, RgbaColor color)
         {
             //var diff = (endPosition - startPosition);
             //var len = Math.Sqrt(diff.X * diff.X + diff.Y * diff.Y);
@@ -201,24 +202,24 @@ namespace RocketUI
                 int srcRightHeight = (int) Math.Ceiling(srcHalfHeight);
 
                 // MinY MinX
-                SpriteBatch.Draw(texture, new Rectangle(xOffset               , yOffset, dstLeftWidth, dstLeftHeight), new Rectangle(srcX, srcY, srcLeftWidth, srcLeftHeight), Color.White);
+                SpriteBatch.Draw(texture, new Rectangle(xOffset               , yOffset, dstLeftWidth, dstLeftHeight), new Rectangle(srcX, srcY, srcLeftWidth, srcLeftHeight), Colors.White);
                 
                 // MinY MaxX
-                SpriteBatch.Draw(texture, new Rectangle(xOffset + dstLeftWidth, yOffset, dstRightWidth, dstRightHeight), new Rectangle(srcX + texture.Width - srcRightWidth, srcY, srcRightWidth, srcRightHeight), Color.White);
+                SpriteBatch.Draw(texture, new Rectangle(xOffset + dstLeftWidth, yOffset, dstRightWidth, dstRightHeight), new Rectangle(srcX + texture.Width - srcRightWidth, srcY, srcRightWidth, srcRightHeight), Colors.White);
 
 
                 // MaxY MinX
-                SpriteBatch.Draw(texture, new Rectangle(xOffset               , yOffset + dstLeftHeight , dstLeftWidth, dstLeftHeight), new Rectangle(srcX, srcY + texture.Height - srcRightHeight, srcLeftWidth, srcLeftHeight), Color.White);
+                SpriteBatch.Draw(texture, new Rectangle(xOffset               , yOffset + dstLeftHeight , dstLeftWidth, dstLeftHeight), new Rectangle(srcX, srcY + texture.Height - srcRightHeight, srcLeftWidth, srcLeftHeight), Colors.White);
                 
                 // MaxY MaxX
-                SpriteBatch.Draw(texture, new Rectangle(xOffset + dstLeftWidth, yOffset + dstRightHeight, dstRightWidth, dstRightHeight), new Rectangle(srcX + texture.Width - srcRightWidth, srcY + texture.Height - srcRightHeight, srcRightWidth, srcRightHeight), Color.White);
+                SpriteBatch.Draw(texture, new Rectangle(xOffset + dstLeftWidth, yOffset + dstRightHeight, dstRightWidth, dstRightHeight), new Rectangle(srcX + texture.Width - srcRightWidth, srcY + texture.Height - srcRightHeight, srcRightWidth, srcRightHeight), Colors.White);
             }
         }
         
         #region IFont Proxy
         
         public void DrawString(IFont     font,                        string    text,
-                               Vector2   position,                    Color color, float scale = 1f,
+                               Vector2   position,                    RgbaColor color, float scale = 1f,
                                FontStyle style      = FontStyle.None, float     rotation = 0f,
                                Vector2?  origin     = null,
                                float     opacity    = 1f, SpriteEffects effects = SpriteEffects.None,
@@ -227,7 +228,7 @@ namespace RocketUI
             font.DrawString(SpriteBatch, text, position, color, style, scale: new Vector2(scale), rotation: rotation, origin: origin ?? Vector2.Zero, opacity: opacity, effects: effects, layerDepth: layerDepth);
         }
 
-        public void DrawString(IFont font, string text, Vector2 position, Color color, Vector2? scale = null, FontStyle style = FontStyle.None, float rotation = 0f, Vector2? origin = null, float opacity = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        public void DrawString(IFont font, string text, Vector2 position, RgbaColor color, Vector2? scale = null, FontStyle style = FontStyle.None, float rotation = 0f, Vector2? origin = null, float opacity = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
         {
             font.DrawString(SpriteBatch, text, position, color, style, scale: scale ?? Vector2.One, rotation: rotation, origin: origin ?? Vector2.Zero, opacity: opacity, effects: effects, layerDepth: layerDepth);
         }

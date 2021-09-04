@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Numerics;
+using RocketUI.Serialization;
 
 namespace RocketUI
 {
@@ -82,9 +83,9 @@ namespace RocketUI
         }
 
         /// <inheritdoc />
-        protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected override void OnDraw(GuiSpriteBatch graphics)
         {
-            base.OnDraw(graphics, gameTime);
+            base.OnDraw(graphics);
 
             var position = RenderPosition;
             var value = _value;
@@ -92,7 +93,7 @@ namespace RocketUI
             if (value.HasValue)
             {
                 graphics.SpriteBatch.Draw(
-                    value, position + RotationOrigin, value.Color.GetValueOrDefault(Color.White), Rotation, RotationOrigin,
+                    value, position + RotationOrigin, value.Colors.GetValueOrDefault(Colors.White), Rotation, RotationOrigin,
                     value.Scale.GetValueOrDefault(Vector2.One));
             }
         }

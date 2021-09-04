@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using System.Numerics;
 
 /// Source: https://github.com/demonixis/C3DE/blob/911f3e604d13d7ade52e4c3e458c70f689df2392/C3DE/Extensions/QuaternionExtensions.cs#L75
 namespace Microsoft.Xna.Framework
@@ -56,8 +56,8 @@ namespace Microsoft.Xna.Framework
             }
             else
             {
-                up = Vector3.Transform(up, Matrix.CreateRotationY(-result.Y));
-                up = Vector3.Transform(up, Matrix.CreateRotationX(-result.X));
+                up = Vector3.Transform(up, Matrix4x4.CreateRotationY(-result.Y));
+                up = Vector3.Transform(up, Matrix4x4.CreateRotationX(-result.X));
                 result.Z = ArcTanAngle(up.Y, -up.X);
             }
         }

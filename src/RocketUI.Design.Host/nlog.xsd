@@ -704,7 +704,7 @@
                 </xs:attribute>
                 <xs:attribute name="enableAnsiOutput" type="xs:boolean">
                     <xs:annotation>
-                        <xs:documentation>Enables output using ANSI Color Codes</xs:documentation>
+                        <xs:documentation>Enables output using ANSI RgbaColor Codes</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
                 <xs:attribute name="encoding" type="xs:string">

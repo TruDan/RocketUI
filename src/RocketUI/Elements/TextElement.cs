@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
 using System.Text;
-using Microsoft.Xna.Framework;
 using Portable.Xaml.Markup;
 using RocketUI.Attributes;
+using RocketUI.Serialization;
 using RocketUI.Utilities.Extensions;
+using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
 {
     [ContentProperty(nameof(Text))]
     public class TextElement : RocketElement //GuiControl
     {
-        public static readonly Color DefaultTextBackgroundColor = new Color(Color.Black, 0.6f);
+        public static readonly RgbaColor DefaultTextBackgroundColor = new RgbaColor(Colors.Black, 0.6f);
 
         private string   _text;
         private float    _textOpacity = 1f;
@@ -62,7 +65,7 @@ namespace RocketUI
         }
 
         [DebuggerVisible]
-        public Color TextColor { get; set; } = Color.White;
+        public RgbaColor TextColor { get; set; } = Colors.White;
 
         [DebuggerVisible]
         public float TextOpacity
@@ -164,7 +167,7 @@ namespace RocketUI
             OnTranslationKeyUpdated();
         }
 
-        protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected override void OnDraw(GuiSpriteBatch graphics)
         {
             var text = _renderText;
 

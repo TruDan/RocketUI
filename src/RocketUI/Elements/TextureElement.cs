@@ -1,4 +1,5 @@
-using Microsoft.Xna.Framework;
+using System.Drawing;
+using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
 {
@@ -11,9 +12,9 @@ namespace RocketUI
 
         }
 
-        protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected override void OnDraw(GuiSpriteBatch graphics)
         {
-            base.OnDraw(graphics, gameTime);
+            base.OnDraw(graphics);
 
             if (Texture != null)
             {

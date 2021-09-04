@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Numerics;
 using System.Runtime.Serialization;
-using Microsoft.Xna.Framework;
-using RocketUI.Utilities.Converters;
+using SizeConverter = RocketUI.Utilities.Converters.SizeConverter;
 
 namespace RocketUI
 {
@@ -80,7 +81,7 @@ namespace RocketUI
         }
         public static Size Clamp(Size value, Size minSize, Size maxSize)
         {
-            return new Size(MathHelper.Clamp(value.Width, minSize.Width, maxSize.Width), MathHelper.Clamp(value.Height, minSize.Height, maxSize.Height));
+            return new Size(Math.Clamp(value.Width, minSize.Width, maxSize.Width), Math.Clamp(value.Height, minSize.Height, maxSize.Height));
         }
 
         #endregion

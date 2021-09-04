@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Numerics;
 
 namespace RocketUI
 {
@@ -6,7 +6,7 @@ namespace RocketUI
     {
         Transform3D Transform { get; }
         
-        Matrix World
+        Matrix4x4 World
         {
             get => Transform.World;
         }

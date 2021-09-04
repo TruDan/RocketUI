@@ -1,7 +1,9 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using System.Drawing;
+using System.Numerics;
 using RocketUI.Input;
+using RocketUI.Serialization;
+using RocketUI.Utilities.Helpers;
 using GuiCursorEventArgs = RocketUI.Events.GuiCursorEventArgs;
 using GuiCursorMoveEventArgs = RocketUI.Events.GuiCursorMoveEventArgs;
 
@@ -51,10 +53,10 @@ namespace RocketUI
             set => _focusedBackground = value;
         }
         
-        public virtual Color     HighlightOutlineColor { get; set; } = new Color(Color.Gray, 0.75f);
+        public virtual RgbaColor     HighlightOutlineColor { get; set; } = new RgbaColor(Colors.Gray, 0.75f);
         public virtual Thickness HighlightOutlineThickness { get; set; } = Thickness.Zero;
 
-        public virtual Color     FocusOutlineColor     { get; set; } = new Color(Color.White, 0.75f);
+        public virtual RgbaColor     FocusOutlineColor     { get; set; } = new RgbaColor(Colors.White, 0.75f);
         public virtual Thickness FocusOutlineThickness { get; set; } = Thickness.Zero;
 
         protected override void OnInit(IGuiRenderer renderer)
@@ -65,9 +67,9 @@ namespace RocketUI
             FocusedBackground.TryResolveTexture(renderer);
         }
         
-        protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected override void OnDraw(GuiSpriteBatch graphics)
         {
-            base.OnDraw(graphics, gameTime);
+            base.OnDraw(graphics);
 
             if (!Enabled)
             {
@@ -117,8 +119,8 @@ namespace RocketUI
         public bool CanHighlight { get; set; } = true;
         public bool Highlighted { get; private set; }
 
-        public Keys AccessKey { get; set; } = Keys.None;
-        public int TabIndex { get; set; } = -1;
+        public char AccessKey { get; set; } = '\0';
+        public int  TabIndex  { get; set; } = -1;
 
         public bool Focus()
         {
@@ -164,12 +166,12 @@ namespace RocketUI
         protected virtual void OnFocusDeactivate() { }
 
 
-        public bool InvokeKeyInput(char character, Keys key)
+        public bool InvokeKeyInput(char character)
         {
-			return OnKeyInput(character, key);
+			return OnKeyInput(character);
         }
 
-	    protected virtual bool OnKeyInput(char character, Keys key)
+	    protected virtual bool OnKeyInput(char character)
 	    {
 		    return false;
 	    }

@@ -1,5 +1,4 @@
 using System;
-using Microsoft.Xna.Framework;
 using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
@@ -33,9 +32,9 @@ namespace RocketUI
             _fadeEndTime = DateTime.UtcNow + _displayTime;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        protected override void OnUpdate()
         {
-            base.OnUpdate(gameTime);
+            base.OnUpdate();
 
             if (_fadeEndTime <= DateTime.UtcNow)
                 return;

@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using System.Drawing;
 
 namespace RocketUI
 {
@@ -39,24 +39,24 @@ namespace RocketUI
 	        Highlight = texture.Texture.Slice(new Rectangle(b.X + _spriteSheetSegmentWidth * 3, b.Y, _spriteSheetSegmentWidth, b.Height));
         }
 
-	    protected override void OnUpdate(GameTime gameTime)
+	    protected override void OnUpdate()
 	    {
-		    base.OnUpdate(gameTime);
+		    base.OnUpdate();
 
 		}
 
-	    protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+	    protected override void OnDraw(GuiSpriteBatch graphics)
         {
             var bounds = RenderBounds;
 
             var fillWidth = bounds.Width - 2 * _spriteSheetSegmentWidth;
 
-            base.OnDraw(graphics, gameTime);
+            base.OnDraw(graphics);
 
             bounds = new Rectangle(bounds.X + _spriteSheetSegmentWidth, bounds.Y, Math.Max(1, (int)(fillWidth * Percent)), bounds.Height);
             graphics.FillRectangle(bounds, Highlight);
 
-	       //	args.SpriteBatch.DrawString(FontRenderer, Text, RenderBounds.Center.ToVector2() - (TextSize / 2f), Color.Black, 0f, Vector2.Zero, TextScale, SpriteEffects.None, 0f);
+	       //	args.SpriteBatch.DrawString(FontRenderer, Text, RenderBounds.Center.ToVector2() - (TextSize / 2f), Colors.Black, 0f, Vector2.Zero, TextScale, SpriteEffects.None, 0f);
         }
     }
 }

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using RocketUI.Input.Listeners;
-using SharpVR;
 
 namespace RocketUI.Input
 {
@@ -24,7 +21,7 @@ namespace RocketUI.Input
 
         public InputActionBinding Binding      { get; }
         public InputCommand       InputCommand => Binding.InputCommand;
-        public PlayerIndex        PlayerIndex  => PlayerInputManager.PlayerIndex;
+        public int                PlayerIndex  => PlayerInputManager.PlayerIndex;
 
         public InputBindingEventArgs(PlayerInputManager playerInputManager, InputActionBinding binding)
         {
@@ -38,8 +35,8 @@ namespace RocketUI.Input
         public event EventHandler<InputListenerEventArgs> InputListenerAdded;
         public event EventHandler<InputBindingEventArgs>  InputCommandTriggered;
 
-        public PlayerIndex PlayerIndex { get; }
-        public InputType   InputType   { get; private set; }
+        public int       PlayerIndex { get; }
+        public InputType InputType   { get; private set; }
 
         private List<IInputListener> InputListeners { get; } = new List<IInputListener>();
         private IInputListener[]     _inputListeners      = Array.Empty<IInputListener>();
@@ -50,10 +47,8 @@ namespace RocketUI.Input
         private InputActionBinding[]     _bindings = Array.Empty<InputActionBinding>();
         private bool                     _bindingsDirty = false;
         private object                   _bindingsLock  = new object();
-
-        private bool _isVr = false;
-
-        public PlayerInputManager(PlayerIndex playerIndex, InputType inputType = InputType.GamePad)
+        
+        public PlayerInputManager(int playerIndex, InputType inputType = InputType.GamePad)
         {
             PlayerIndex = playerIndex;
             InputType = inputType;
@@ -89,7 +84,7 @@ namespace RocketUI.Input
             return false;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             if (_inputListenersDirty)
             {
@@ -102,7 +97,7 @@ namespace RocketUI.Input
 
             foreach (var inputListener in _inputListeners)
             {
-                inputListener.Update(gameTime);
+                inputListener.Update();
             }
 
             CheckTriggeredBindings();

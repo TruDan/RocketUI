@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Drawing;
+using System.Numerics;
 using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using RocketUI.Layout;
+using RocketUI.Serialization;
 using RocketUI.Utilities.Extensions;
 
 namespace RocketUI.Utilities.Helpers
@@ -13,12 +14,12 @@ namespace RocketUI.Utilities.Helpers
 		
 		private static readonly float DebugFontScale = 0.5f;
 
-		private static readonly Color DebugTextBackground = Color.WhiteSmoke * 0.6f;
-		private static readonly Color DebugTextForeground = Color.Black * 0.95f;
+		private static readonly RgbaColor DebugTextBackground = Colors.WhiteSmoke * 0.6f;
+		private static readonly RgbaColor DebugTextForeground = Colors.Black * 0.95f;
 
-		private static readonly Color OuterBoundsBackground = Color.LightGoldenrodYellow * 0.1f;
-		private static readonly Color BoundsBackground = Color.LightSeaGreen * 0.2f;
-		private static readonly Color InnerBoundsBackground = Color.CornflowerBlue * 0.1f;
+		private static readonly RgbaColor OuterBoundsBackground = Colors.LightGoldenrodYellow * 0.1f;
+		private static readonly RgbaColor BoundsBackground = Colors.LightSeaGreen * 0.2f;
+		private static readonly RgbaColor InnerBoundsBackground = Colors.CornflowerBlue * 0.1f;
 
 		public bool Enabled { get; set; } = false;
 		public bool BoundingBoxesEnabled { get; set; } = true;
@@ -138,12 +139,12 @@ namespace RocketUI.Utilities.Helpers
 
                 		var info = GetElementInfo(e);
 
-                		DrawDebugString(_cursorPosition, info, Color.WhiteSmoke * 0.85f, Color.Black, 2, 1, 1);
+                		DrawDebugString(_cursorPosition, info, Colors.WhiteSmoke * 0.85f, Colors.Black, 2, 1, 1);
 
                 		if (p != null)
                 		{
                 			var infoParent = GetElementInfo(p);
-                			DrawDebugString(_cursorPosition, infoParent, Color.WhiteSmoke * 0.85f, Color.Black, 2, -1, 1);
+                			DrawDebugString(_cursorPosition, infoParent, Colors.WhiteSmoke * 0.85f, Colors.Black, 2, -1, 1);
                 		}
                 	}
                 }   
@@ -212,17 +213,17 @@ namespace RocketUI.Utilities.Helpers
 
 			if (element.AutoSizeMode == AutoSizeMode.None)
 			{
-				DrawDebugBounds(element.RenderBounds, Color.Blue, false, true, isHighlighted, isHighlighted);
+				DrawDebugBounds(element.RenderBounds, Colors.Blue, false, true, isHighlighted, isHighlighted);
 			}
 
 			if (element.AutoSizeMode == AutoSizeMode.GrowAndShrink)
 			{
-				DrawDebugBounds(element.RenderBounds, Color.YellowGreen, false, true, isHighlighted, isHighlighted);
+				DrawDebugBounds(element.RenderBounds, Colors.YellowGreen, false, true, isHighlighted, isHighlighted);
 			}
 
 			if (element.AutoSizeMode == AutoSizeMode.GrowOnly)
 			{
-				DrawDebugBounds(element.RenderBounds, Color.LawnGreen, false, true, isHighlighted, isHighlighted);
+				DrawDebugBounds(element.RenderBounds, Colors.LawnGreen, false, true, isHighlighted, isHighlighted);
 			}
 
 			if (element.InnerBounds != element.Bounds)
@@ -234,19 +235,19 @@ namespace RocketUI.Utilities.Helpers
 			{
 				if (element.OuterBounds.Contains(_cursorPosition))
 				{
-					DrawDebugBounds(element.OuterBounds, Color.OrangeRed, isHighlighted, true, false, false);
+					DrawDebugBounds(element.OuterBounds, Colors.OrangeRed, isHighlighted, true, false, false);
 				}
 
 				if (element.Bounds.Contains(_cursorPosition))
 				{
-					DrawDebugBounds(element.Bounds, Color.Red, isHighlighted, true, false, isHighlighted, isHighlighted);
+					DrawDebugBounds(element.Bounds, Colors.Red, isHighlighted, true, false, isHighlighted, isHighlighted);
 					if (isHighlighted)
-						DrawDebugString(element.Bounds.TopCenter(), element.GetType().Name, Color.Red * 0.25f, Color.White);
+						DrawDebugString(element.Bounds.TopCenter(), element.GetType().Name, Colors.Red * 0.25f, Colors.White);
 				}
 
 				if (element.Bounds.Contains(_cursorPosition))
 				{
-					DrawDebugBounds(element.InnerBounds, Color.MediumVioletRed, isHighlighted, true, false, false);
+					DrawDebugBounds(element.InnerBounds, Colors.MediumVioletRed, isHighlighted, true, false, false);
 				}
 			}
 
@@ -258,7 +259,7 @@ namespace RocketUI.Utilities.Helpers
 
 		#region Draw Helpers
 
-		private void DrawDebugBounds(Rectangle bounds, Color color, bool drawBackground = false, bool drawBorders = true, bool drawCoordinates = false, bool drawSize = false, bool highlight = false)
+		private void DrawDebugBounds(Rectangle bounds, RgbaColor color, bool drawBackground = false, bool drawBorders = true, bool drawCoordinates = false, bool drawSize = false, bool highlight = false)
 		{
 			// Bounding Rectangle
 			if (drawBackground)
@@ -293,25 +294,25 @@ namespace RocketUI.Utilities.Helpers
 
             DrawDebugString(position, obj.ToString(), DebugTextBackground, DebugTextForeground, 2, x, y);
         }
-        private void DrawDebugString(Vector2 position, object obj, Color color, Alignment align = Alignment.TopLeft)
+        private void DrawDebugString(Vector2 position, object obj, RgbaColor color, Alignment align = Alignment.TopLeft)
         {
             var x = (align & (Alignment.CenterX | Alignment.FillX)) != 0 ? 0 : ((align & Alignment.MinX) != 0 ? -1 : 1);
             var y = (align & (Alignment.CenterY | Alignment.FillY)) != 0 ? 0 : ((align & Alignment.MinY) != 0 ? -1 : 1);
 
             DrawDebugString(position, obj.ToString(), DebugTextBackground, color, 2, x, y);
         }
-        private void DrawDebugString(Vector2 position, object obj, Color? background, Color color, Alignment align = Alignment.TopLeft)
+        private void DrawDebugString(Vector2 position, object obj, RgbaColor? background, RgbaColor color, Alignment align = Alignment.TopLeft)
         {
             var x = (align & (Alignment.CenterX | Alignment.FillX)) != 0 ? 0 : ((align & Alignment.MinX) != 0 ? -1 : 1);
             var y = (align & (Alignment.CenterY | Alignment.FillY)) != 0 ? 0 : ((align & Alignment.MinY) != 0 ? -1 : 1);
 
             DrawDebugString(position, obj.ToString(), background, color, 2, x, y);
         }
-        private void DrawDebugString(Vector2 position, object obj, Color color, int padding = 2, int xAlign = 0, int yAlign = 0)
+        private void DrawDebugString(Vector2 position, object obj, RgbaColor color, int padding = 2, int xAlign = 0, int yAlign = 0)
         {
             DrawDebugString(position, obj.ToString(), color, padding, xAlign, yAlign);
         }
-        private void DrawDebugString(Vector2 position, string text, Color? background, Color color, int padding = 2, int xAlign = 0, int yAlign = 0)
+        private void DrawDebugString(Vector2 position, string text, RgbaColor? background, RgbaColor color, int padding = 2, int xAlign = 0, int yAlign = 0)
         {
             if (Renderer.Font == null) return;
 

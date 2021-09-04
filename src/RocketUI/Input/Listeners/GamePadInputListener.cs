@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using System.Numerics;
 
 namespace RocketUI.Input.Listeners
 {
@@ -9,7 +8,7 @@ namespace RocketUI.Input.Listeners
 
         public bool IsConnected => CurrentState.IsConnected;
         
-        public GamePadInputListener(PlayerIndex playerIndex) : base(playerIndex)
+        public GamePadInputListener(int playerIndex) : base(playerIndex)
         {
             RegisterMap(InputCommand.MoveForwards, Buttons.LeftThumbstickUp);
             RegisterMap(InputCommand.MoveBackwards, Buttons.LeftThumbstickDown);
@@ -40,7 +39,7 @@ namespace RocketUI.Input.Listeners
 
         protected override GamePadState GetCurrentState()
         {
-            return GamePad.GetState(PlayerIndex);
+            return GamePad.GetState(int);
         }
 
         protected override bool IsButtonDown(GamePadState state, Buttons buttons)
@@ -56,7 +55,7 @@ namespace RocketUI.Input.Listeners
         protected override void OnUpdate(GameTime gameTime)
         {
             var dt = gameTime.ElapsedGameTime.TotalSeconds;
-            _gamePadCapabilities = GamePad.GetCapabilities(PlayerIndex);
+            _gamePadCapabilities = GamePad.GetCapabilities(int);
             var leftStick = CurrentState.ThumbSticks.Left;
             
             _cursorPosition = new Vector2((float) (_cursorPosition.X + (leftStick.X * 200 * dt)), (float) (_cursorPosition.Y + (-leftStick.Y * 200 * dt)));

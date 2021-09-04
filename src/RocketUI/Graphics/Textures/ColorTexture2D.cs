@@ -1,6 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System.Drawing;
 
 namespace RocketUI
 {
@@ -14,11 +13,11 @@ namespace RocketUI
         public int Width  { get; }
         public int Height { get; }
 
-        public ColorTexture2D(GraphicsDevice graphics, Color color) : this(graphics, color, DefaultSize)
+        public ColorTexture2D(GraphicsDevice graphics, RgbaColor color) : this(graphics, color, DefaultSize)
         {
         }
 
-        public ColorTexture2D(GraphicsDevice graphics, Color color, Size size)
+        public ColorTexture2D(GraphicsDevice graphics, RgbaColor color, Size size)
         {
             Width = size.Width;
             Height = size.Height;
@@ -27,10 +26,10 @@ namespace RocketUI
         }
 
 
-        private Texture2D CreateTexture(GraphicsDevice graphics, Rectangle bounds, Color color)
+        private Texture2D CreateTexture(GraphicsDevice graphics, Rectangle bounds, RgbaColor color)
         {
-            var texture = GpuResourceManager.CreateTexture2D( bounds.Width, bounds.Height, false, SurfaceFormat.Color);
-            var data = new Color[bounds.Width * bounds.Height];
+            var texture = GpuResourceManager.CreateTexture2D( bounds.Width, bounds.Height, false, SurfaceFormat.RgbaColor);
+            var data = new RgbaColor[bounds.Width * bounds.Height];
 
             for (var i = 0; i < data.Length; i++)
             {

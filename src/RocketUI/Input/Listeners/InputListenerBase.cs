@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.Xna.Framework;
 
 namespace RocketUI.Input.Listeners
 {
     public abstract class InputListenerBase<TState, TButtons> : IInputListener
     {
-        public PlayerIndex PlayerIndex { get; }
+        public int int { get; }
 
         public int Order { get; set; } = 0;
 
@@ -23,9 +22,9 @@ namespace RocketUI.Input.Listeners
         protected abstract bool IsButtonDown(TState state, TButtons buttons);
         protected abstract bool IsButtonUp(TState state, TButtons buttons);
 
-        protected InputListenerBase(PlayerIndex playerIndex)
+        protected InputListenerBase(int playerIndex)
         {
-            PlayerIndex = playerIndex;
+            int = playerIndex;
         }
 
         public void Update(GameTime gameTime)

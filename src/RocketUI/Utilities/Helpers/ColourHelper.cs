@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
-using Microsoft.Xna.Framework;
 
 namespace RocketUI.Utilities.Helpers
 {
     public static class ColorHelper
     {
-        public static Color HexToColor(string hexString)
+        public static RgbaColor HexToColor(string hexString)
         {
             //replace # occurences
             if (hexString.IndexOf('#') != -1)
@@ -19,10 +18,10 @@ namespace RocketUI.Utilities.Helpers
             g = int.Parse(hexString.Substring(2, 2), NumberStyles.AllowHexSpecifier);
             b = int.Parse(hexString.Substring(4, 2), NumberStyles.AllowHexSpecifier);
 
-            return new Color(r, g, b);
+            return new RgbaColor(r, g, b);
         }
 
-        public static string ToHexString(this Color color, string prefix = "#")
+        public static string ToHexString(this RgbaColor color, string prefix = "#")
         {
             var sb = new StringBuilder();
             sb.Append(prefix);
@@ -35,7 +34,7 @@ namespace RocketUI.Utilities.Helpers
             return sb.ToString();
         }
 
-        public static Color Darken(this Color color, float amount)
+        public static RgbaColor Darken(this RgbaColor color, float amount)
         {
             var hsl = (HslColor) color;
             hsl.Luminosity -= amount;

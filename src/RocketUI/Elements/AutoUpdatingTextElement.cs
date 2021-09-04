@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using System.Diagnostics;
 using Portable.Xaml.Markup;
 
 namespace RocketUI
@@ -14,7 +14,7 @@ namespace RocketUI
         {
             _updateFunc = updateFunc;
             Text        = _updateFunc();
-            _nextUpdate = TimeSpan.Zero;
+            _sw = Stopwatch.StartNew();
         }
 
         public AutoUpdatingTextElement()
@@ -22,13 +22,13 @@ namespace RocketUI
             
         }
 
-        private TimeSpan _nextUpdate;
-        protected override void OnUpdate(GameTime gameTime)
+        private Stopwatch _sw;
+        protected override void OnUpdate()
         {
-            if (gameTime.TotalGameTime > _nextUpdate)
+            if(_sw.Elapsed > Interval)
             {
                 Text = _updateFunc();
-                _nextUpdate = gameTime.TotalGameTime + Interval;
+                _sw.Restart();
             }
         }
     }

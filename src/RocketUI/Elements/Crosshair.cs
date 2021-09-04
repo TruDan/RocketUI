@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+﻿using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
 {
@@ -17,14 +17,14 @@ namespace RocketUI
             Background = GuiTextures.Crosshair;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        protected override void OnUpdate()
         {
             if (RootScreen.GuiManager != null)
             {
                 var pos = RootScreen.GuiManager.FocusManager.CursorPosition.ToPoint();
                 Margin = new Thickness(pos.X, pos.Y, 0, 0);
             }
-            base.OnUpdate(gameTime);
+            base.OnUpdate();
         }
     }
 }

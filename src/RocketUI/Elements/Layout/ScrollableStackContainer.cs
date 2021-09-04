@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using System.Numerics;
 using RocketUI.Attributes;
 using RocketUI.Input;
 
@@ -91,7 +91,7 @@ namespace RocketUI
 		}
 		
 
-		private Matrix _childRenderTransform = Matrix.Identity;
+		private Matrix4x4 _childRenderTransform = Matrix4x4.Identity;
 
 		protected virtual void OnScrollOffsetChanged(Vector2 oldValue, Vector2 newValue)
 		{
@@ -99,11 +99,11 @@ namespace RocketUI
 
 			//if (newValue == Vector2.Zero)
 			//{
-			//	_childRenderTransform = Matrix.Identity;
+			//	_childRenderTransform = Matrix4x4.Identity;
 			//}
 			//else
 			//{
-			//	_childRenderTransform = Matrix.Identity * Matrix.CreateTranslation(-newValue.X, -newValue.Y, 0);
+			//	_childRenderTransform = Matrix4x4.Identity * Matrix4x4.CreateTranslation(-newValue.X, -newValue.Y, 0);
 			//}
 
 			//ForEachChild(e =>
@@ -126,27 +126,21 @@ namespace RocketUI
 
 			VerticalScrollBar.MaxScrollOffset   = Math.Max(0, sizeDiff.Height);
 			HorizontalScrollBar.MaxScrollOffset = Math.Max(0, sizeDiff.Width);
-
-			var ms = Mouse.GetState();
-			_scrollWheelValue = ms.ScrollWheelValue;
-			_horizontalScrollWheelValue = ms.HorizontalScrollWheelValue;
 		}
 
 		private bool _mouseInBounds = false;
-		private MouseState _mouseState;
 		/// <inheritdoc />
-		protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+		protected override void OnDraw(GuiSpriteBatch graphics)
 		{
-			base.OnDraw(graphics, gameTime);
+			base.OnDraw(graphics);
 
 			if (HorizontalScrollBar.IsVisible || VerticalScrollBar.IsVisible)
 			{
-				_mouseState = Mouse.GetState();
-				_mouseInBounds = RenderBounds.Contains(graphics.Unproject(_mouseState.Position.ToVector2()));
+				_mouseInBounds = GuiManager.InputManager.Any(i => RenderBounds.Contains(graphics.Unproject(i.GetCursorRay())));
 			}
 		}
 
-		protected override void OnUpdate(GameTime gameTime)
+		protected override void OnUpdate()
 		{
 			if (_previousSize != RenderBounds.Size)
 			{
@@ -161,7 +155,7 @@ namespace RocketUI
 			
 			UpdateScroll();
 
-			base.OnUpdate(gameTime);
+			base.OnUpdate();
 		}
 
 		private int _scrollWheelValue = 0;
@@ -198,25 +192,6 @@ namespace RocketUI
 			
 			HorizontalScrollBar.IsVisible = _hasHorizontalScroll;
 			
-			if (_mouseInBounds)
-			{
-				if (_hasVerticalScroll && _mouseState.ScrollWheelValue != _scrollWheelValue)
-				{
-					var scrollDelta = (_scrollWheelValue - _mouseState.ScrollWheelValue);
-					
-					VerticalScrollBar.ScrollOffsetValue += scrollDelta;
-
-					_scrollWheelValue = _mouseState.ScrollWheelValue;
-				}
-
-				if (_hasHorizontalScroll && _mouseState.HorizontalScrollWheelValue != _horizontalScrollWheelValue)
-				{
-					var scrollDelta = (_horizontalScrollWheelValue - _mouseState.HorizontalScrollWheelValue);
-					
-					VerticalScrollBar.ScrollOffsetValue += scrollDelta;
-				}
-			}
-
 			ScrollOffset = new Vector2(HorizontalScrollBar.ScrollOffsetValue, VerticalScrollBar.ScrollOffsetValue);
 		}
 
@@ -240,7 +215,7 @@ namespace RocketUI
 							  Thickness.Zero,            true);
 			}
 
-			//ForEachChild(c => ((GuiElement)c).RenderTransform = Matrix.CreateTranslation(-ScrollOffset.X, -ScrollOffset.Y, 0));
+			//ForEachChild(c => ((GuiElement)c).RenderTransform = Matrix4x4.CreateTranslation(-ScrollOffset.X, -ScrollOffset.Y, 0));
 		}
 
 		protected override bool ShouldPositionChild(RocketElement child)

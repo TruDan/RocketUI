@@ -1,14 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-
+﻿
 namespace RocketUI.Input.Listeners
 {
     public interface IInputListener
     {
-        PlayerIndex PlayerIndex { get; }
+        int PlayerIndex { get; }
 
         int Order { get; set; }
         
-        void Update(GameTime gameTime);
+        void Update();
 
         bool IsDown(InputCommand       command);
         bool IsUp(InputCommand         command);
@@ -18,7 +17,7 @@ namespace RocketUI.Input.Listeners
 
     public interface IInputListenerFactory
     {
-        IInputListener CreateInputListener(PlayerIndex playerIndex);
+        IInputListener CreateInputListener(int playerIndex);
     }
 
     public class DefaultInputListenerFactory<TListener> : IInputListenerFactory
@@ -31,12 +30,12 @@ namespace RocketUI.Input.Listeners
             _inputListenerFactory = inputListenerFactory;
         }
 
-        public IInputListener CreateInputListener(PlayerIndex playerIndex)
+        public IInputListener CreateInputListener(int playerIndex)
         {
             return _inputListenerFactory.Invoke(playerIndex);
         }
     }
 
-    public delegate IInputListener InputListenerFactory(PlayerIndex playerIndex);
-    public delegate T InputListenerFactory<T>(PlayerIndex playerIndex) where T : class, IInputListener;
+    public delegate IInputListener InputListenerFactory(int playerIndex);
+    public delegate T InputListenerFactory<T>(int playerIndex) where T : class, IInputListener;
 }

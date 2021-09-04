@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using System.Numerics;
 using SharpVR;
 
 namespace RocketUI.Input.Listeners
@@ -11,7 +11,7 @@ namespace RocketUI.Input.Listeners
 
         private VrContext _vrContext;
 
-        public VRControllerInputListener(PlayerIndex playerIndex) : base(playerIndex)
+        public VRControllerInputListener(int playerIndex) : base(playerIndex)
         {
             Order = -100;
             

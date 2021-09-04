@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Numerics;
 using System.Runtime.Serialization;
-using Microsoft.Xna.Framework;
+using RocketUI.Utilities.Extensions;
 
 namespace RocketUI
 {
@@ -12,7 +13,7 @@ namespace RocketUI
         private Vector3     _localScale    = Vector3.One;
         private Vector3     _localPosition = Vector3.Zero;
         private Quaternion  _localRotation = Quaternion.Identity;
-        private Matrix      _world            = Matrix.Identity;
+        private Matrix4x4   _world         = Matrix4x4.Identity;
         private Transform3D _parentTransform;
         private bool        _dirty;
 
@@ -116,7 +117,7 @@ namespace RocketUI
                 }
                 else
                 {
-                    LocalPosition = Vector3.Transform(value, Matrix.Invert(ParentTransform.World));
+                    LocalPosition = Vector3.Transform(value,ParentTransform.World.Invert());
                 }
             }
         }
@@ -127,7 +128,7 @@ namespace RocketUI
             {
                 if (_dirty)
                     UpdateAbsolutes();
-                if(_parentTransform != null)
+                if (_parentTransform != null)
                     return Quaternion.Multiply(_localRotation, _parentTransform.Rotation);
                 return _localRotation;
             }
@@ -144,12 +145,13 @@ namespace RocketUI
                     {
                         result *= Quaternion.Inverse(_parentTransform.Rotation);
                     }
+
                     LocalRotation = result;
                 }
             }
         }
 
-        public virtual Matrix World
+        public virtual Matrix4x4 World
         {
             get
             {
@@ -176,10 +178,10 @@ namespace RocketUI
         private void UpdateAbsolutes()
         {
             _dirty = false;
-            _world = Matrix.Identity
-                     * Matrix.CreateScale(_localScale)
-                     * Matrix.CreateFromQuaternion(_localRotation)
-                     * Matrix.CreateTranslation(_localPosition);
+            _world = Matrix4x4.Identity
+                     * Matrix4x4.CreateScale(_localScale)
+                     * Matrix4x4.CreateFromQuaternion(_localRotation)
+                     * Matrix4x4.CreateTranslation(_localPosition);
 
             if (ParentTransform != null)
                 _world *= ParentTransform.World;

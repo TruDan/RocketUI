@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using NLog;
 using RocketUI.Design.Screens;
 using RocketUI.Input;
+using RocketUI.Serialization;
 using RocketUI.Serialization.Xaml;
 using RocketUI.Utilities.Helpers;
 
@@ -143,7 +144,7 @@ namespace RocketUI.Design
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Colors.Black);
             base.Draw(gameTime);
         }
 
@@ -184,19 +185,19 @@ namespace RocketUI.Design
             {
                 Anchor = Alignment.MiddleCenter,
                 Margin = new Thickness(10),
-                BackgroundOverlay = Color.Black * 0.5f,
+                BackgroundOverlay = Colors.Black * 0.5f,
                 Orientation = Orientation.Vertical
             });
             
             _container.AddChild(new TextElement("Exception")
             {
                 Scale = 2.0f,
-                TextColor = Color.OrangeRed
+                TextColor = Colors.OrangeRed
             });
 
             _container.AddChild(new TextElement(exception.Message)
             {
-                TextColor = Color.OrangeRed
+                TextColor = Colors.OrangeRed
             });
             
             if (exception.StackTrace != null)
@@ -210,7 +211,7 @@ namespace RocketUI.Design
                 {
                     stacktrace.AddChild(new TextElement(s)
                     {
-                        TextColor = Color.OrangeRed,
+                        TextColor = Colors.OrangeRed,
                         Scale = 0.75f
                     });
                 }

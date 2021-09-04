@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using Microsoft.Xna.Framework;
 
 namespace RocketUI.Input
 {
@@ -73,7 +72,7 @@ namespace RocketUI.Input
             }
             set
             {
-                var p = MathHelper.Clamp(value, 0, Length);
+                var p = Math.Clamp(value, 0, Length);
 
                 if (p != _cursorPosition)
                 {

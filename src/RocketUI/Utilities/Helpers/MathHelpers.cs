@@ -1,10 +1,45 @@
 ﻿using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace RocketUI.Utilities.Helpers
 {
     public static class MathHelpers
     {
-        public static double PiOver180 = Math.PI / 180.0;
+        public const double PiOver180 = Math.PI / 180.0;
+        private const double _180OverPi = 180.0 / Math.PI;
+
+        /// <summary>
+        /// Converts radians to degrees.
+        /// </summary>
+        /// <param name="radians">The angle in radians.</param>
+        /// <returns>The angle in degrees.</returns>
+        /// <remarks>
+        /// This method uses double precission internally,
+        /// though it returns single float
+        /// Factor = 180 / pi
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float ToDegrees(this float radians)
+        { 
+            return (float)(radians * _180OverPi);
+        }
+        
+        /// <summary>
+        /// Converts degrees to radians.
+        /// </summary>
+        /// <param name="degrees">The angle in degrees.</param>
+        /// <returns>The angle in radians.</returns>
+        /// <remarks>
+        /// This method uses double precission internally,
+        /// though it returns single float
+        /// Factor = pi / 180
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float ToRadians(this float degrees)
+        { 
+            return (float)(degrees * PiOver180);
+        }
         
         public static int IntCeil(double value)
         {
@@ -52,6 +87,12 @@ namespace RocketUI.Utilities.Helpers
         public static byte Clamp(byte value, byte min, byte max)
         {
             return Math.Min(max, Math.Max(min, value));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Point ToPoint(this Vector2 vector)
+        {
+            return new Point((int)vector.X, (int)vector.Y);
         }
     }
 }

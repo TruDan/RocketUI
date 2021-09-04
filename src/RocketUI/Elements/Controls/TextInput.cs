@@ -1,7 +1,8 @@
-﻿using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using System.Drawing;
+using System.Linq;
+using System.Numerics;
 using RocketUI.Input;
+using RocketUI.Serialization;
 using RocketUI.Utilities.Helpers;
 using RocketUI.Utilities.IO;
 
@@ -9,13 +10,13 @@ namespace RocketUI
 {
     public class TextInput : ValuedControl<string>
     {
-	    private Color _textColor         = Color.White;
-	    private Color _inactiveTextColor = Color.Gray;
-	    public  Color BorderColor { get; set; } = Color.LightGray;
+	    private RgbaColor _textColor         = Colors.White;
+	    private RgbaColor _inactiveTextColor = Colors.Gray;
+	    public  RgbaColor BorderColor { get; set; } = Colors.LightGray;
 
         public Thickness BorderThickness { get; set; } = Thickness.One;
 		
-	    public Color TextColor
+	    public RgbaColor TextColor
 	    {
 		    get => _textColor;
 		    set
@@ -24,7 +25,7 @@ namespace RocketUI
 				UpdateDisplayText();
 		    }
 	    }
-		public Color InactiveTextColor
+		public RgbaColor InactiveTextColor
 	    {
 		    get => _inactiveTextColor;
 		    set 
@@ -65,7 +66,7 @@ namespace RocketUI
         {
             MinWidth = 100;
             MinHeight = 20;
-            BackgroundOverlay = Color.Black;
+            BackgroundOverlay = Colors.Black;
 
             TextBuilder = new TextInputBuilder(text);
             AddChild(TextElement = new TextElement()
@@ -91,12 +92,12 @@ namespace RocketUI
 		private KeyboardState _kbState;
 		private double _lastKeyInputTime = 0d;
 		private double _lastUpdate;
-        protected override void OnUpdate(GameTime gameTime)
+        protected override void OnUpdate()
 		{
 			var ms = gameTime.TotalGameTime.TotalMilliseconds;
 			_lastUpdate = ms;
 
-			base.OnUpdate(gameTime);
+			base.OnUpdate();
 			
 	        if (Focused)
 			{
@@ -233,9 +234,9 @@ namespace RocketUI
 	        return false;
         }
 
-        protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected override void OnDraw(GuiSpriteBatch graphics)
         {
-            base.OnDraw(graphics, gameTime);
+            base.OnDraw(graphics);
 
             var bounds = RenderBounds;
             bounds.Inflate(1f, 1f);

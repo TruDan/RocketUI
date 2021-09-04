@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using System.Drawing;
 using RocketUI.Input;
+using RocketUI.Serialization;
 
 namespace RocketUI
 {
@@ -28,10 +28,10 @@ namespace RocketUI
         protected TextElement TextElement { get; }
         public    Action         Action      { get; set; }
 
-        public virtual Color? DisabledColor  { get; set; } = Color.DarkGray;
-        public virtual Color  DefaultColor   { get; set; } = Color.White;
-        public virtual Color? HighlightColor { get; set; } = Color.Yellow;
-        public virtual Color? FocusColor     { get; set; } = Color.White;
+        public virtual RgbaColor? DisabledColor  { get; set; } = Colors.DarkGray;
+        public virtual RgbaColor  DefaultColor   { get; set; } = Colors.White;
+        public virtual RgbaColor? HighlightColor { get; set; } = Colors.Yellow;
+        public virtual RgbaColor? FocusColor     { get; set; } = Colors.White;
 
         public GuiSound HighlightSound;
         public GuiSound ClickSound;
@@ -71,7 +71,7 @@ namespace RocketUI
                 Margin = new Thickness(5),
                 Anchor = Alignment.MiddleCenter,
                 Text = text,
-                TextColor = Color.White,
+                TextColor = Colors.White,
                 TextOpacity = 0.875f,
                 FontStyle = FontStyle.DropShadow,
                 //Enabled = false,
@@ -143,9 +143,9 @@ namespace RocketUI
             //Action?.Invoke();
         }
 
-        protected override void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
+        protected override void OnDraw(GuiSpriteBatch graphics)
         {
-            base.OnDraw(graphics, gameTime);
+            base.OnDraw(graphics);
         }
 
         protected override void OnEnabledChanged()
@@ -163,15 +163,15 @@ namespace RocketUI
             }
         }
 
-        protected override bool OnKeyInput(char character, Keys key)
+        protected override bool OnKeyInput(char character)
         {
-            if (key == Keys.Enter)
+            if (character is '\r' or (char)(13)) // Enter
             {
                 Action?.Invoke();
                 return true;
             }
 
-            return base.OnKeyInput(character, key);
+            return base.OnKeyInput(character);
         }
 
     }

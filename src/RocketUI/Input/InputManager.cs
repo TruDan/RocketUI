@@ -4,18 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Xna.Framework;
 using RocketUI.Input.Listeners;
-using SharpVR;
 
 namespace RocketUI.Input
 {
     public class PlayerInputManagerEvent
     {
-        public PlayerIndex        PlayerIndex        { get; }
+        public int                PlayerIndex        { get; }
         public PlayerInputManager PlayerInputManager { get; }
 
-        protected PlayerInputManagerEvent(PlayerIndex index, PlayerInputManager inputManager)
+        protected PlayerInputManagerEvent(int index, PlayerInputManager inputManager)
         {
             PlayerIndex = index;
             PlayerInputManager = inputManager;
@@ -24,41 +22,41 @@ namespace RocketUI.Input
 
     public sealed class PlayerInputManagerAdded : PlayerInputManagerEvent
     {
-        public PlayerInputManagerAdded(PlayerIndex index, PlayerInputManager inputManager) : base(index, inputManager)
+        public PlayerInputManagerAdded(int index, PlayerInputManager inputManager) : base(index, inputManager)
         {
         }
     }
 
     public sealed class PlayerInputManagerRemoved : PlayerInputManagerEvent
     {
-        public PlayerInputManagerRemoved(PlayerIndex index, PlayerInputManager inputManager) : base(index, inputManager)
+        public PlayerInputManagerRemoved(int index, PlayerInputManager inputManager) : base(index, inputManager)
         {
         }
     }
 
-    public class InputManager : GameComponent
+    public class InputManager
     {
         public event EventHandler<PlayerInputManagerAdded> InputManagerAdded;
         public event EventHandler<InputBindingEventArgs>   InputCommandTriggered;
 
         private readonly IServiceProvider _serviceProvider;
 
-        private ConcurrentDictionary<PlayerIndex, PlayerInputManager> PlayerInputManagers { get; } =
-            new ConcurrentDictionary<PlayerIndex, PlayerInputManager>();
+        private ConcurrentDictionary<int, PlayerInputManager> PlayerInputManagers { get; } =
+            new ConcurrentDictionary<int, PlayerInputManager>();
 
         public int PlayerCount => PlayerInputManagers.Count;
 
         private object _bindingsLock = new object();
         private List<InputActionBinding> Bindings { get; } = new List<InputActionBinding>();
 
-        public InputManager(Game game, IServiceProvider serviceProvider) : base(game)
+        public InputManager(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            UpdateOrder = -10;
-            //var playerOne = GetOrAddPlayerManager(PlayerIndex.One);
+            // UpdateOrder = -10;
+            //var playerOne = GetOrAddPlayerManager(1);
         }
 
-        public PlayerInputManager GetOrAddPlayerManager(PlayerIndex playerIndex)
+        public PlayerInputManager GetOrAddPlayerManager(int playerIndex)
         {
             if (!PlayerInputManagers.TryGetValue(playerIndex, out var playerInputManager))
             {
@@ -83,17 +81,15 @@ namespace RocketUI.Input
             return playerInputManager;
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update()
         {
-            base.Update(gameTime);
-
             //if (!Game.IsActive)
             //    return;
 
             var playerInputManagers = PlayerInputManagers.Values.ToArray();
             foreach (var playerInputManager in playerInputManagers)
             {
-                playerInputManager.Update(gameTime);
+                playerInputManager.Update();
             }
 
             CheckTriggeredBindings(playerInputManagers);

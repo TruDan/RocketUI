@@ -1,6 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System.Drawing;
 
 namespace RocketUI
 {
@@ -18,7 +17,7 @@ namespace RocketUI
         private readonly PropertyState<GraphicsDevice, RasterizerState> _rasterizerStateProperty;
         private readonly PropertyState<GraphicsDevice, SamplerState> _samplerStateProperty;
         private readonly PropertyState<GraphicsDevice, Rectangle> _scissorRectangleProperty;
-        private readonly PropertyState<GraphicsDevice, Color> _blendFactorProperty;
+        private readonly PropertyState<GraphicsDevice, RgbaColor> _blendFactorProperty;
 
         public Viewport Viewport
         {
@@ -50,7 +49,7 @@ namespace RocketUI
             get => _scissorRectangleProperty;
             set => _scissorRectangleProperty.Set(value);
         }
-        public Color BlendFactor
+        public RgbaColor BlendFactor
         {
             get => _blendFactorProperty;
             set => _blendFactorProperty.Set(value);

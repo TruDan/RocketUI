@@ -1,11 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using System.Numerics;
 
 namespace RocketUI.Input.Listeners
 {
     public class MouseInputListener : InputListenerBase<MouseState, MouseButton>, ICursorInputListener
     {
-        public MouseInputListener(PlayerIndex playerIndex) : base(playerIndex)
+        public MouseInputListener(int playerIndex) : base(playerIndex)
         {
             RegisterMap(InputCommand.LeftClick, MouseButton.Left);
             RegisterMap(InputCommand.RightClick, MouseButton.Right);

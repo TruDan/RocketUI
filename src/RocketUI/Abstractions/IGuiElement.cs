@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Microsoft.Xna.Framework;
+using System.Drawing;
+using System.Numerics;
 using RocketUI.Attributes;
 using RocketUI.Serialization;
 
@@ -36,9 +37,9 @@ namespace RocketUI
 
         void Init(IGuiRenderer renderer, bool force = false);
 
-        void Update(GameTime gameTime);
+        void Update();
 
-        void Draw(GuiSpriteBatch graphics, GameTime gameTime);
+        void Draw(GuiSpriteBatch graphics);
 
         void AddChild(IGuiElement element);
         void RemoveChild(IGuiElement element);

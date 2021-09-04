@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
@@ -40,7 +39,7 @@ namespace RocketUI
 
         private double CheckRange(double val) => Math.Max(0.0f, Math.Min(1.0f, val));
         
-        public HslColor(Color color) : this()
+        public HslColor(RgbaColor color) : this()
         {
             ColorHelper.RgbToHsl(color.R, color.G, color.B, out var h, out var s, out var l);
 
@@ -57,19 +56,19 @@ namespace RocketUI
             Alpha      = alpha;
         }
 
-        public Color ToRgb()
+        public RgbaColor ToRgb()
         {
             ColorHelper.HslToRgb(Hue, Saturation, Luminosity, out var r, out var g, out var b);
-            return new Color(r, g, b, Convert.ToByte(Alpha * 255.0f));
+            return new RgbaColor(r, g, b, Convert.ToByte(Alpha * 255.0f));
         }
 
-        public static implicit operator Color(HslColor hslColor)
+        public static implicit operator RgbaColor(HslColor hslColor)
         {
             return hslColor.ToRgb();
         }
         
 
-        public static implicit operator HslColor(Color color)
+        public static implicit operator HslColor(RgbaColor color)
         {
             return new HslColor(color);
         }

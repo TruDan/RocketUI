@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
+using System.Drawing;
+using System.Numerics;
 using RocketUI.Audio;
+using RocketUI.Serialization;
 using RocketUI.Utilities.Converters;
 
 namespace RocketUI
@@ -10,11 +10,14 @@ namespace RocketUI
     public class GuiSound
     {
         public GuiSoundEffects? GuiSoundEffect { get; set; }
-        public ISoundEffect     SoundEffect { get; set; }
+        public ISoundEffect     SoundEffect    { get; set; }
 
         public bool HasValue => GuiSoundEffect.HasValue && GuiSoundEffect.Value != GuiSoundEffects.None;
 
-        public GuiSound() { }
+        public GuiSound()
+        {
+        }
+
         public GuiSound(GuiSoundEffects guiSoundEffects) : this()
         {
             GuiSoundEffect = guiSoundEffects;
@@ -24,7 +27,7 @@ namespace RocketUI
         {
             if (GuiSoundEffect.HasValue)
             {
-                if(GuiSoundEffect.Value != GuiSoundEffects.None) 
+                if (GuiSoundEffect.Value != GuiSoundEffects.None)
                     SoundEffect = renderer.GetSoundEffect(GuiSoundEffect.Value);
                 return SoundEffect != null;
             }
@@ -42,39 +45,48 @@ namespace RocketUI
             return new GuiSound(guiSoundEffects);
         }
     }
-    
+
     [TypeConverter(typeof(GuiTexture2DTypeConverter))]
     public class GuiTexture2D : ITexture2D
     {
-        public Color?            Color           { get; set; }
+        public RgbaColor?        Color           { get; set; }
         public GuiTextures?      TextureResource { get; set; }
         public string            TexturePath     { get; set; }
         public ITexture2D        Texture         { get; set; }
         public TextureRepeatMode RepeatMode      { get; set; }
-        public Color?            Mask            { get; set; }
+        public RgbaColor?        Mask            { get; set; }
         public Vector2?          Scale           { get; set; }
 
-        public bool HasValue => Texture != null || Color.HasValue || TextureResource.HasValue || !string.IsNullOrEmpty(TexturePath);
+        public bool HasValue => Texture != null || Color.HasValue || TextureResource.HasValue ||
+                                !string.IsNullOrEmpty(TexturePath);
 
-        public GuiTexture2D() { }
+        public GuiTexture2D()
+        {
+        }
+
         public GuiTexture2D(ITexture2D texture) : this()
         {
             Texture = texture;
-		}
-		public GuiTexture2D(ITexture2D texture, TextureRepeatMode repeatMode = TextureRepeatMode.Stretch, Vector2? scale = null) : this()
-		{
-			Texture = texture;
-			RepeatMode = repeatMode;
-			Scale = scale;
-		}
+        }
 
-		public GuiTexture2D(GuiTextures guiTexture, TextureRepeatMode repeatMode = TextureRepeatMode.Stretch, Vector2? scale = null) : this()
+        public GuiTexture2D(ITexture2D texture, TextureRepeatMode repeatMode = TextureRepeatMode.Stretch,
+            Vector2?                   scale = null) : this()
+        {
+            Texture = texture;
+            RepeatMode = repeatMode;
+            Scale = scale;
+        }
+
+        public GuiTexture2D(GuiTextures guiTexture, TextureRepeatMode repeatMode = TextureRepeatMode.Stretch,
+            Vector2?                    scale = null) : this()
         {
             TextureResource = guiTexture;
             RepeatMode = repeatMode;
             Scale = scale;
         }
-        public GuiTexture2D(string texturePath, TextureRepeatMode repeatMode = TextureRepeatMode.Stretch, Vector2? scale = null) : this()
+
+        public GuiTexture2D(string texturePath, TextureRepeatMode repeatMode = TextureRepeatMode.Stretch,
+            Vector2?               scale = null) : this()
         {
             TexturePath = texturePath;
             RepeatMode = repeatMode;
@@ -93,7 +105,8 @@ namespace RocketUI
             {
                 Texture = renderer.GetTexture(TexturePath);
                 return Texture != null;
-            }   
+            }
+
             return true;
         }
 
@@ -107,11 +120,11 @@ namespace RocketUI
             return new GuiTexture2D(texture);
         }
 
-        public static implicit operator GuiTexture2D(Color color)
+        public static implicit operator GuiTexture2D(RgbaColor color)
         {
             return new GuiTexture2D { Color = color };
         }
-        
+
         public static explicit operator GuiTexture2D(string texturePath)
         {
             return new GuiTexture2D { TexturePath = texturePath };
@@ -122,9 +135,9 @@ namespace RocketUI
             return new GuiTexture2D { TextureResource = textureResource };
         }
 
-        Texture2D ITexture2D.Texture => Texture.Texture;
-        public Rectangle ClipBounds => Texture?.ClipBounds ?? Rectangle.Empty;
-        public int Width => Texture?.Width ?? 0;
-        public int Height => Texture?.Height ?? 0;
+        Texture2D ITexture2D.Texture    => Texture.Texture;
+        public Rectangle     ClipBounds => Texture?.ClipBounds ?? Rectangle.Empty;
+        public int           Width      => Texture?.Width ?? 0;
+        public int           Height     => Texture?.Height ?? 0;
     }
 }
