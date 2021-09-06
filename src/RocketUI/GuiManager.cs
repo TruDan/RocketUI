@@ -11,16 +11,13 @@ namespace RocketUI
     {
         public Screen Screen { get; }
 
-        public GameTime GameTime { get; }
-
-        internal GuiDrawScreenEventArgs(Screen screen, GameTime gameTime)
+        internal GuiDrawScreenEventArgs(Screen screen)
         {
             Screen = screen;
-            GameTime = gameTime;
         }
     }
 
-    public class GuiManager : DrawableGameComponent
+    public class GuiManager
     {
         public GuiDebugHelper DebugHelper { get; }
 
@@ -31,9 +28,7 @@ namespace RocketUI
 
         public IGuiRenderer GuiRenderer { get; }
 
-        public InputManager InputManager { get; }
-        internal SpriteBatch  SpriteBatch  { get; private set; }
-
+        public InputManager   InputManager   { get; }
         public GuiSpriteBatch GuiSpriteBatch { get; private set; }
 
         public List<Screen> Screens { get; } = new List<Screen>();
@@ -49,7 +44,7 @@ namespace RocketUI
                 {
                     Game.IsMouseVisible = value != null;
                     Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
-                    
+
                     RemoveScreen(oldValue);
                     oldValue.OnClose();
                 }
@@ -58,7 +53,7 @@ namespace RocketUI
 
                 if (value == null)
                     return;
-                
+
                 Game.IsMouseVisible = true;
                 Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
                 AddScreen(value);
@@ -68,11 +63,10 @@ namespace RocketUI
 
         private IServiceProvider ServiceProvider { get; }
 
-        public GuiManager(Game game,
-            IServiceProvider   serviceProvider,
-            InputManager       inputManager,
-            IGuiRenderer       guiRenderer
-        ) : base(game)
+        public GuiManager(IServiceProvider serviceProvider,
+            InputManager                   inputManager,
+            IGuiRenderer                   guiRenderer
+        )
         {
             ServiceProvider = serviceProvider;
             InputManager = inputManager;
@@ -93,9 +87,9 @@ namespace RocketUI
             DebugHelper = new GuiDebugHelper(game, this);
         }
 
-        public void InvokeDrawScreen(Screen screen, GameTime gameTime)
+        public void InvokeDrawScreen(Screen screen)
         {
-            DrawScreen?.Invoke(this, new GuiDrawScreenEventArgs(screen, gameTime));
+            DrawScreen?.Invoke(this, new GuiDrawScreenEventArgs(screen));
         }
 
         private void ScaledResolutionOnScaleChanged(object sender, UiScaleEventArgs args)
@@ -120,25 +114,23 @@ namespace RocketUI
             }
         }
 
-        public override void Initialize()
+        public void Initialize()
         {
-            base.Initialize();
             Init();
         }
 
         public void Init()
         {
-            SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
-            GuiRenderer.Init(Game.GraphicsDevice, ServiceProvider);
+            GuiRenderer.Init(ServiceProvider);
             ApplyFont(GuiRenderer.Font);
-            
+
             GuiSpriteBatch?.Dispose();
             GuiSpriteBatch = new GuiSpriteBatch(GuiRenderer, Game.GraphicsDevice, SpriteBatch);
-                  
+
             SetSize(ScaledResolution.ViewportSize.Width, ScaledResolution.ViewportSize.Height);
         }
 
-        private bool _doInit = true;
+        private bool       _doInit = true;
         private DialogBase _activeDialog;
 
         public void ApplyFont(IFont font)
@@ -200,11 +192,8 @@ namespace RocketUI
             return Screens.Contains(screen);
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update()
         {
-            if (!Enabled)
-                return;
-
             ScaledResolution.Update();
 
             var screens = Screens.ToArray();
@@ -219,7 +208,7 @@ namespace RocketUI
                 }
             }
 
-            FocusManager.Update(gameTime);
+            FocusManager.Update();
 
             foreach (var screen in screens)
             {
@@ -232,23 +221,19 @@ namespace RocketUI
             // DebugHelper.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public void Draw()
         {
-            if (!Visible)
-                return;
-
             foreach (var screen in Screens.ToArray())
             {
                 if (screen == null || screen.IsSelfDrawing)
                     continue;
-                
+
                 try
                 {
                     GuiSpriteBatch.Begin(screen.IsAutomaticallyScaled);
 
                     screen.Draw(GuiSpriteBatch);
-
-                    DrawScreen?.Invoke(this, new GuiDrawScreenEventArgs(screen, gameTime));
+                    InvokeDrawScreen(screen);
                     //  DebugHelper.DrawScreen(screen);
                 }
                 finally

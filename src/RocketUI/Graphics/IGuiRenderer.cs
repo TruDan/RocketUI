@@ -8,7 +8,7 @@ namespace RocketUI
     public interface IGuiRenderer
     {
         GuiScaledResolution ScaledResolution { get; set; }
-        void Init(GraphicsDevice graphics, IServiceProvider serviceProvider);
+        void Init(IServiceProvider serviceProvider);
 
         IFont Font { get; set; }
 
@@ -22,8 +22,9 @@ namespace RocketUI
         Vector2 Project(Vector2 point);
         Vector2 Unproject(Vector2 screen);
 
-        GraphicsContext CreateGuiSpriteBatchContext(GraphicsDevice graphics) => GraphicsContext.CreateContext(graphics, BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullNone, SamplerState.LinearClamp);
-
+        IElementRenderer<TElement> ResolveRenderer<TElement>(TElement element) where TElement : IGuiElement;
+        void Draw(IGuiElement element);
+        
         IStyle[] ResolveStyles(Type elementType, string[] classNames);
         
         void OnBeginDraw() {}

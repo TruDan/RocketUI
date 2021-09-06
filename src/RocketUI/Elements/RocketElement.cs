@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Portable.Xaml.Markup;
@@ -182,25 +183,9 @@ namespace RocketUI
 
 		[DebuggerIgnore] public Matrix4x4 RenderTransform { get; set; } = Matrix4x4.Identity;
 
-		public void Draw(GuiSpriteBatch graphics)
+		public void Draw()
 		{
-			if (!IsVisible) return;
-			if (RenderBounds.Size == Point.Zero) return;
-
-			IDisposable clipDispose = null;
-
-			if (ClipToBounds)
-				clipDispose = graphics.BeginClipBounds(RenderBounds, true);
-
-			using (clipDispose)
-			{
-				if (_initialised)
-				{
-					OnDraw(graphics);
-				}
-
-				ForEachChild(c => c?.Draw(graphics));
-			}
+			_guiRenderer.Draw(this);
 		}
 
 		#endregion

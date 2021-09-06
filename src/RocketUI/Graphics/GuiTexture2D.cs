@@ -135,7 +135,7 @@ namespace RocketUI
             return new GuiTexture2D { TextureResource = textureResource };
         }
 
-        Texture2D ITexture2D.Texture    => Texture.Texture;
+        ITexture2D ITexture2D.Texture    => Texture.Texture;
         public Rectangle     ClipBounds => Texture?.ClipBounds ?? Rectangle.Empty;
         public int           Width      => Texture?.Width ?? 0;
         public int           Height     => Texture?.Height ?? 0;

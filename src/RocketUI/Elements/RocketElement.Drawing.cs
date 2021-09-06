@@ -41,13 +41,6 @@ namespace RocketUI
 
         private GuiTexture2D _background;
         private GuiTexture2D _backgroundOverlay;
-
-
-        protected virtual void OnDraw(GuiSpriteBatch graphics)
-        {
-            graphics.FillRectangle(RenderBounds, Background);
-            
-            graphics.FillRectangle(RenderBounds, BackgroundOverlay);
-        }
+        
     }
 }

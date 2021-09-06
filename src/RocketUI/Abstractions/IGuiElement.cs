@@ -39,7 +39,7 @@ namespace RocketUI
 
         void Update();
 
-        void Draw(GuiSpriteBatch graphics);
+        void Draw();
 
         void AddChild(IGuiElement element);
         void RemoveChild(IGuiElement element);

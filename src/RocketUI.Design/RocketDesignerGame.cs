@@ -93,7 +93,7 @@ namespace RocketUI.Design
 
             GraphicsDeviceManager.ApplyChanges();
 
-            InputManager = new InputManager(this, Services);
+            InputManager = new InputManager(Services);
             Components.Add(InputManager);
 
             base.Initialize();

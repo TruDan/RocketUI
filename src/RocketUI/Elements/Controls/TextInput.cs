@@ -199,7 +199,7 @@ namespace RocketUI
             }
         }
 
-        protected override bool OnKeyInput(char character, Keys key)
+        protected override bool OnKeyInput(char character)
         {
 			if (Focused)
 			{

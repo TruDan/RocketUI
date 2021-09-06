@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using RocketUI.Utilities.Extensions;
 using RocketUI.Utilities.Helpers;
 
 namespace RocketUI
@@ -86,15 +87,16 @@ namespace RocketUI
 		//private GraphicsDevice Graphics { get; }
 		//private Viewport       Viewport => Graphics.Viewport;
 
-		public GuiScaledResolution(Game game)
+		public GuiScaledResolution() : this(new Size(360, 270)) { }
+		public GuiScaledResolution(Size initialSize)
 		{
 			//Graphics = game.GraphicsDevice;
 
-			ViewportSize = new Size(game.Window.ClientBounds.Width, game.Window.ClientBounds.Height);
+			ViewportSize = initialSize;
 			
 			//Graphics.DeviceReset          += (sender, args) => Update();
-			game.Window.ClientSizeChanged += (sender, args) => ViewportSize = new Size(game.Window.ClientBounds.Width,  game.Window.ClientBounds.Height);
-			game.Activated                += (sender, args) => Update();
+			// game.Window.ClientSizeChanged += (sender, args) => ViewportSize = new Size(game.Window.ClientBounds.Width,  game.Window.ClientBounds.Height);
+			// game.Activated                += (sender, args) => Update();
 
 			TargetWidth = 360;
 			TargetHeight = 270;
@@ -130,7 +132,7 @@ namespace RocketUI
 				ElementScale = new Vector2(scaleX, scaleY);
 
 				TransformMatrix = Matrix4x4.CreateScale(scaleX, scaleY, 1f);
-				InverseTransformMatrix = Matrix4x4.Invert(TransformMatrix);
+				InverseTransformMatrix = TransformMatrix.Invert();
 
 				ScaleChanged?.Invoke(this, new UiScaleEventArgs(ScaledWidth, ScaledHeight, ScaleFactor));
 			}

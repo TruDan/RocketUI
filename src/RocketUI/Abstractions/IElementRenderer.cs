@@ -1,6 +1,6 @@
 ﻿namespace RocketUI
 {
-    public interface IElementRenderer<T> where T : IGuiElement
+    public interface IElementRenderer<in T> where T : IGuiElement
     {
 
         void Draw(T element);

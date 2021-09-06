@@ -93,7 +93,7 @@ namespace RocketUI
             if (value.HasValue)
             {
                 graphics.SpriteBatch.Draw(
-                    value, position + RotationOrigin, value.Colors.GetValueOrDefault(Colors.White), Rotation, RotationOrigin,
+                    value, position + RotationOrigin, value.Color.GetValueOrDefault(Colors.White), Rotation, RotationOrigin,
                     value.Scale.GetValueOrDefault(Vector2.One));
             }
         }

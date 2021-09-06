@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\RocketUI.Platform.MonoGame.DesktopGL\RocketUI.Platform.MonoGame.DesktopGL.csproj" />
       <ProjectReference Include="..\RocketUI\RocketUI.csproj" />
     </ItemGroup>
 

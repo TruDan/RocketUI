@@ -12,8 +12,8 @@ namespace RocketUI
 
         public float Percent => Math.Max(0, Math.Min(1, Value / (float)Math.Abs(MaxValue - MinValue)));
 
-        private int _spriteSheetSegmentWidth = 3;
-        public ITexture2D Highlight { get; set; }
+        public int        SpriteSheetSegmentWidth { get; private set; } = 3;
+        public ITexture2D Highlight                { get; set; }
 
 		public ProgressBar()
 		{
@@ -31,12 +31,12 @@ namespace RocketUI
 			var texture = renderer.GetTexture(GuiTextures.ProgressBar);
             var b = texture.ClipBounds;
 
-            _spriteSheetSegmentWidth = (int)Math.Round(b.Width / 4f);
-	        var bgBounds = new Rectangle(b.X, b.Y, _spriteSheetSegmentWidth * 3, b.Height);
+            SpriteSheetSegmentWidth = (int)Math.Round(b.Width / 4f);
+	        var bgBounds = new Rectangle(b.X, b.Y, SpriteSheetSegmentWidth * 3, b.Height);
 
-            Background = new NinePatchTexture2D(texture.Texture.Slice(bgBounds), _spriteSheetSegmentWidth);
+            Background = new NinePatchTexture2D(texture.Texture.Slice(bgBounds), SpriteSheetSegmentWidth);
 
-	        Highlight = texture.Texture.Slice(new Rectangle(b.X + _spriteSheetSegmentWidth * 3, b.Y, _spriteSheetSegmentWidth, b.Height));
+	        Highlight = texture.Texture.Slice(new Rectangle(b.X + SpriteSheetSegmentWidth * 3, b.Y, SpriteSheetSegmentWidth, b.Height));
         }
 
 	    protected override void OnUpdate()
@@ -44,19 +44,5 @@ namespace RocketUI
 		    base.OnUpdate();
 
 		}
-
-	    protected override void OnDraw(GuiSpriteBatch graphics)
-        {
-            var bounds = RenderBounds;
-
-            var fillWidth = bounds.Width - 2 * _spriteSheetSegmentWidth;
-
-            base.OnDraw(graphics);
-
-            bounds = new Rectangle(bounds.X + _spriteSheetSegmentWidth, bounds.Y, Math.Max(1, (int)(fillWidth * Percent)), bounds.Height);
-            graphics.FillRectangle(bounds, Highlight);
-
-	       //	args.SpriteBatch.DrawString(FontRenderer, Text, RenderBounds.Center.ToVector2() - (TextSize / 2f), Colors.Black, 0f, Vector2.Zero, TextScale, SpriteEffects.None, 0f);
-        }
     }
 }
