@@ -1,4 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿#if STRIDE
+using Stride.Core.Mathematics;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
+using Microsoft.Xna.Framework;
+#endif
+#endif
 
 namespace RocketUI
 {

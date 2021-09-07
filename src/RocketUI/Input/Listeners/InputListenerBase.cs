@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 
 namespace RocketUI.Input.Listeners
 {

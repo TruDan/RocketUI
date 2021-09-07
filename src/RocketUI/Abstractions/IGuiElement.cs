@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using RocketUI.Attributes;
 using RocketUI.Serialization;
+using Stride.Games;
 
 namespace RocketUI
 {

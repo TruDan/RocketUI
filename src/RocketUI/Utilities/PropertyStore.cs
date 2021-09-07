@@ -4,7 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using Newtonsoft.Json;
 using RocketUI.Attributes;
 

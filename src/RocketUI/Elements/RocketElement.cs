@@ -5,7 +5,11 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using JetBrains.Annotations;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using Newtonsoft.Json;
 using Portable.Xaml.Markup;
 using RocketUI.Attributes;

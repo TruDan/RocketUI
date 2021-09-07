@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Text;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using Microsoft.Xna.Framework.Input;
 using RocketUI.Layout;
 using RocketUI.Utilities.Extensions;

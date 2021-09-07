@@ -5,7 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using MonoGame.Framework.Utilities;
 using NLog;
 using NLog.Fluent;

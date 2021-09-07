@@ -1,7 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿#if STRIDE
+using Stride.Core.Mathematics;
+using Stride.Input;
+#else
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+#endif
 using RocketUI.Attributes;
-using RocketUI.Input;
+using MouseButton = RocketUI.Input.MouseButton;
 
 namespace RocketUI
 {

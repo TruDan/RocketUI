@@ -1,5 +1,9 @@
 ﻿using System.ComponentModel;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using RocketUI.Audio;

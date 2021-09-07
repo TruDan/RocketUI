@@ -1,5 +1,9 @@
 ﻿using System;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using SharpVR;
 
 namespace RocketUI.Input.Listeners

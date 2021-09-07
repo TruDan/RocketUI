@@ -2,7 +2,11 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using Newtonsoft.Json;
 using RocketUI.Serialization.Json.Converters;
 using RocketUI.Utilities.Converters;

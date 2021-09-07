@@ -1,6 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using Newtonsoft.Json;
 
 namespace RocketUI

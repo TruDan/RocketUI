@@ -25,13 +25,9 @@
         <PackageReference Include="JetBrains.ExternalAnnotations" Version="10.2.91" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Portable.Xaml" Version="0.26.0" />
         <PackageReference Include="WebSocketSharp.Standard" Version="1.0.3" />
-    </ItemGroup>
-    <ItemGroup>
-      <PackageReference Include="SharpVR.MonoGame" Version="1.0.12" />
     </ItemGroup>
 
 </Project>

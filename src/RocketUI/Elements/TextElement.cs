@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using Portable.Xaml.Markup;
 using RocketUI.Attributes;
 using RocketUI.Utilities.Extensions;

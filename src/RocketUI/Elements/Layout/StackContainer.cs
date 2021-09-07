@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 using RocketUI.Attributes;
 
 namespace RocketUI

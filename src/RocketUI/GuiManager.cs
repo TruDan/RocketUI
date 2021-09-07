@@ -1,12 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if STRIDE
+using Stride.Core.Mathematics;
+using Stride.Games;
+using Stride.Graphics;
+#else
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+#endif
+using OpenTK.Input;
 using RocketUI.Input;
 using RocketUI.Utilities.Helpers;
 using SharpVR;
+using Stride.Core;
+using Stride.Engine;
 
 namespace RocketUI
 {
@@ -23,7 +32,7 @@ namespace RocketUI
         }
     }
 
-    public class GuiManager : DrawableGameComponent
+    public class GuiManager : ComponentBase
     {
         public GuiDebugHelper DebugHelper { get; }
 
@@ -50,7 +59,7 @@ namespace RocketUI
 
                 if (oldValue != null)
                 {
-                    Game.IsMouseVisible = value != null;
+                    base..IsMouseVisible = value != null;
                     Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
                     
                     RemoveScreen(oldValue);

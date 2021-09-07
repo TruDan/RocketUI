@@ -1,5 +1,13 @@
 ﻿using System;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
+#endif
 using Microsoft.Xna.Framework.Input;
 using RocketUI.Input;
 using GuiCursorEventArgs = RocketUI.Events.GuiCursorEventArgs;

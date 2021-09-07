@@ -1,5 +1,9 @@
 ﻿using System;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 
 /// Source: https://github.com/demonixis/C3DE/blob/911f3e604d13d7ade52e4c3e458c70f689df2392/C3DE/Extensions/QuaternionExtensions.cs#L75
 namespace Microsoft.Xna.Framework

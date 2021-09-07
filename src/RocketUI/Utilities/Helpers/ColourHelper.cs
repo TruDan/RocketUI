@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 
 namespace RocketUI.Utilities.Helpers
 {

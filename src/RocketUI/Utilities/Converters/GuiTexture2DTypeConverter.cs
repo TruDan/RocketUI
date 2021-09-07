@@ -1,7 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+#if STRIDE
+using Stride.Core.Mathematics;
+#else
 using Microsoft.Xna.Framework;
+#endif
 
 namespace RocketUI.Utilities.Converters
 {
