@@ -96,10 +96,10 @@ namespace RocketUI.Input
                 playerInputManager.Update(gameTime);
             }
 
-            CheckTriggeredBindings(playerInputManagers);
+            CheckGlobalBindings(playerInputManagers);
         }
 
-        private void CheckTriggeredBindings(PlayerInputManager[] playerInputManagers)
+        private void CheckGlobalBindings(PlayerInputManager[] playerInputManagers)
         {
             InputActionBinding[] bindings;
 
@@ -114,6 +114,7 @@ namespace RocketUI.Input
                 {
                     if (playerInputManager.CheckBinding(binding))
                     {
+                        binding.Action?.Invoke();
                         InputCommandTriggered?.Invoke(this, new InputBindingEventArgs(playerInputManager, binding));
                     }
                 }

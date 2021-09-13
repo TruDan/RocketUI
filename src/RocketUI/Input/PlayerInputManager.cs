@@ -118,10 +118,10 @@ namespace RocketUI.Input
                     _bindingsDirty = false;
                 }
             }
-
-            foreach (var binding in _bindings)
+            
+            foreach (var binding in _bindings.Where(CheckBinding))
             {
-                CheckBinding(binding);
+                HandleBindingTriggered(binding);
             }
         }
 
@@ -139,7 +139,6 @@ namespace RocketUI.Input
             if (binding.Predicate())
             {
                 // triggered
-                HandleBindingTriggered(binding);
                 return true;
             }
 
