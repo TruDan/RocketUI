@@ -218,6 +218,19 @@ namespace RocketUI
 
         private void UpdateInput()
         {
+            //Make sure the currently focused element is still on-screen, if not, lose focus.
+            var currentFocus = FocusedElement;
+            if (currentFocus != null && currentFocus.RootScreen is Screen screen && !GuiManager.HasScreen(screen))
+            {
+                FocusedElement = null;
+            }
+            
+            var currentHighLight = HighlightedElement;
+            if (currentHighLight != null && currentHighLight.RootScreen is Screen highlightScreen && !GuiManager.HasScreen(highlightScreen))
+            {
+                HighlightedElement = null;
+            }
+
             if (InputManager.Any(x => x.IsPressed(InputCommand.NavigateUp)))
             {
                 if (TryFindNextControl(InputCommand.NavigateUp, out IGuiControl control))
