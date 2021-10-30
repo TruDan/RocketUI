@@ -160,8 +160,8 @@ namespace RocketUI
 
         private (IGuiScreen screen, Vector2 cursorPos)? FindScreen(Ray cursorRay)
         {
-            var screens = GuiManager.Screens.ToArray().Reverse();
-            foreach (var screen in screens)
+           // var screens = GuiManager.Screens.ToArray().Reverse();
+            foreach (var screen in GuiManager.GetActiveScreens())
             {
                 Transform3D transform = new Transform3D();
                 if (screen.Tag is ITransformable transformable)
@@ -220,13 +220,18 @@ namespace RocketUI
         {
             //Make sure the currently focused element is still on-screen, if not, lose focus.
             var currentFocus = FocusedElement;
-            if (currentFocus != null && currentFocus.RootScreen is Screen screen && !GuiManager.HasScreen(screen))
+
+            if (currentFocus != null && currentFocus.RootScreen is Screen screen
+                                     && (!GuiManager.HasScreen(screen) || !GuiManager.IsScreenActive(screen)))
             {
                 FocusedElement = null;
             }
-            
+
             var currentHighLight = HighlightedElement;
-            if (currentHighLight != null && currentHighLight.RootScreen is Screen highlightScreen && !GuiManager.HasScreen(highlightScreen))
+
+            if (currentHighLight != null && currentHighLight.RootScreen is Screen highlightScreen
+                                         && (!GuiManager.HasScreen(highlightScreen)
+                                             || !GuiManager.IsScreenActive(highlightScreen)))
             {
                 HighlightedElement = null;
             }
@@ -416,7 +421,7 @@ namespace RocketUI
 
         public bool TryGetElementAt(Vector2 position, GuiElementPredicate predicate, out IGuiElement element)
         {
-            foreach (var screen in GuiManager.Screens.ToArray().Reverse())
+            foreach (var screen in GuiManager.GetActiveScreens())
             {
                 //if(!(screen is IGuiScreen3D) && TryGetElementAt(screen, position, predicate, out element))
                 if(TryGetElementAt(screen, position, predicate, out element))
@@ -429,7 +434,7 @@ namespace RocketUI
 
         private bool TryGetElement(GuiElementPredicate predicate, out IGuiElement element)
         {
-            foreach (var screen in GuiManager.Screens.ToArray().Reverse())
+            foreach (var screen in GuiManager.GetActiveScreens())
             {
                 if (screen == null)
                     continue;
@@ -447,7 +452,7 @@ namespace RocketUI
 
         private IGuiControl GetNextTabIndexedControl(int activeIndex)
         {
-            var allControls = GuiManager.Screens
+            var allControls = GuiManager.GetActiveScreens()
                 .SelectMany(e => e.AllChildren)
                 .OfType<IGuiControl>();
 

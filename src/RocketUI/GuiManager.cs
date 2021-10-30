@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using RocketUI.Input;
 using RocketUI.Utilities.Helpers;
 using SharpVR;
+using SimpleInjector;
 
 namespace RocketUI
 {
@@ -39,23 +44,18 @@ namespace RocketUI
 
         public GuiSpriteBatch GuiSpriteBatch { get; private set; }
 
-        public List<Screen> Screens { get; } = new List<Screen>();
+        private ObservableCollection<Screen> _screens = new ObservableCollection<Screen>();
 
+        public IReadOnlyCollection<Screen> Screens => _screens;
         public DialogBase ActiveDialog
         {
             get => _activeDialog;
             private set
             {
                 var oldValue = _activeDialog;
-
+                
                 if (oldValue != null)
-                {
-                    Game.IsMouseVisible = value != null;
-                    Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
-                    
-                    RemoveScreen(oldValue);
-                    oldValue.OnClose();
-                }
+                    CloseDialogBase(oldValue);
 
                 _activeDialog = value;
 
@@ -69,23 +69,28 @@ namespace RocketUI
             }
         }
 
-        private IServiceProvider ServiceProvider { get; }
+        private void CloseDialogBase(DialogBase dialog)
+        {
+            if (dialog != null)
+            {
+                Game.IsMouseVisible = dialog != null;
+                Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+                    
+                RemoveScreen(dialog);
+                dialog.OnClose();
+            }
+        }
 
-        public GuiManager(Game game,
-            IServiceProvider   serviceProvider,
-            InputManager       inputManager,
-            IGuiRenderer       guiRenderer
+        private IServiceProvider ServiceProvider { get; }
+        public GuiManager(Game game, IGuiRenderer guiRenderer, IServiceProvider serviceProvider
         ) : base(game)
         {
             ServiceProvider = serviceProvider;
-            InputManager = inputManager;
             ScaledResolution = new GuiScaledResolution(game)
             {
                 GuiScale = 9999
             };
             ScaledResolution.ScaleChanged += ScaledResolutionOnScaleChanged;
-
-            FocusManager = new GuiFocusHelper(this, InputManager, game.GraphicsDevice);
 
             GuiRenderer = guiRenderer;
             guiRenderer.ScaledResolution = ScaledResolution;
@@ -94,6 +99,54 @@ namespace RocketUI
             GuiSpriteBatch = new GuiSpriteBatch(guiRenderer, Game.GraphicsDevice, SpriteBatch);
             //  DebugHelper = new GuiDebugHelper(this);
             DebugHelper = new GuiDebugHelper(game, this);
+            
+            _screens.CollectionChanged += ScreensOnCollectionChanged;
+
+            InputManager = serviceProvider.GetService<InputManager>();
+            FocusManager = new GuiFocusHelper(this, InputManager, game.GraphicsDevice);
+        }
+
+        private void ContainerOnResolveUnregisteredType(object sender, UnregisteredTypeEventArgs e)
+        {
+            var gameService = Game.Services.GetService(e.UnregisteredServiceType);
+            if (gameService != null)
+            {
+                e.Register(() => Game.Services.GetService(e.UnregisteredServiceType));
+                return;
+            }
+        }
+
+        private void InitScreen(Screen screen)
+        {
+            screen.GuiManager = this;
+            screen.AutoSizeMode = AutoSizeMode.None;
+            screen.Anchor = Alignment.Fixed;
+
+            if (screen.SizeToWindow)
+                screen.UpdateSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
+            else
+                screen.InvalidateLayout();
+
+            screen.Init(GuiRenderer);
+        }
+        
+        private void ScreensOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (Screen screen in e.NewItems)
+                {
+                    switch (e.Action)
+                    {
+                        case NotifyCollectionChangedAction.Add:
+                            InitScreen(screen);
+                            break;
+                        case NotifyCollectionChangedAction.Remove:
+                            screen.GuiManager = null;
+                            break;
+                    }
+                }
+            }
         }
 
         public void InvokeDrawScreen(Screen screen, GameTime gameTime)
@@ -111,7 +164,7 @@ namespace RocketUI
             ScaledResolution.ViewportSize = new Size(width, height);
             GuiSpriteBatch.UpdateProjection();
 
-            foreach (var screen in Screens.ToArray())
+            foreach (var screen in _screens.ToArray())
             {
                 if (!screen.SizeToWindow)
                 {
@@ -152,6 +205,31 @@ namespace RocketUI
             _doInit = true;
         }
 
+        private T CreateInstance<T>()
+        {
+            return (T)CreateInstance(typeof(T));
+        }
+
+        private object CreateInstance(Type type)
+        {
+            return ServiceProvider.GetService(type);
+        }
+
+        public T CreateScreen<T>() where T : Screen
+        {
+            var instance = CreateInstance<T>();
+            AddScreen(instance);
+            return instance;
+        }
+
+        public T CreateDialog<T>() where T : DialogBase
+        {
+            var dialog = CreateInstance<T>();
+            ActiveDialog = dialog;
+            
+            return dialog;
+        }
+        
         public void ShowDialog(DialogBase dialog)
         {
             ActiveDialog = dialog;
@@ -160,47 +238,71 @@ namespace RocketUI
         public void HideDialog(DialogBase dialog)
         {
             if (ActiveDialog == dialog)
+            {
                 ActiveDialog = null;
+            }
         }
 
         public void HideDialog<TGuiDialog>() where TGuiDialog : DialogBase
         {
-            foreach (var screen in Screens.ToArray())
+            if (ActiveDialog is TGuiDialog)
+            {
+                ActiveDialog = null;
+                return;
+            }
+            
+            foreach (var screen in _screens.ToArray())
             {
                 if (screen is TGuiDialog dialog)
                 {
-                    dialog?.OnClose();
-                    Screens.Remove(dialog);
-                    if (ActiveDialog == dialog)
-                        ActiveDialog = Screens.ToArray().LastOrDefault(e => e is TGuiDialog) as DialogBase;
+                    CloseDialogBase(dialog);
+                    
+                    //if (ActiveDialog == dialog)
+                    //    ActiveDialog = _screens.ToArray().LastOrDefault(e => e is TGuiDialog) as DialogBase;
                 }
             }
         }
 
         public void AddScreen(Screen screen)
         {
-            screen.GuiManager = this;
-            screen.AutoSizeMode = AutoSizeMode.None;
-            screen.Anchor = Alignment.Fixed;
-
-            if (screen.SizeToWindow)
-                screen.UpdateSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
-            else
-                screen.InvalidateLayout();
-
-            screen.Init(GuiRenderer);
-            Screens.Add(screen);
+            if (_screens.Contains(screen))
+                return;
+            
+            _screens.Add(screen);
         }
 
         public void RemoveScreen(Screen screen)
         {
-            Screens.Remove(screen);
-            screen.GuiManager = null;
+            if (!_screens.Contains(screen))
+                return;
+            
+            _screens.Remove(screen);
         }
 
         public bool HasScreen(Screen screen)
         {
-            return Screens.Contains(screen);
+            return _screens.Contains(screen);
+        }
+
+        public IEnumerable<Screen> GetActiveScreens()
+        {
+            var dialog = _activeDialog;
+
+            if (dialog != null)
+            {
+                yield return dialog;
+                
+                if (dialog.AlwaysInFront)
+                    yield break;
+            }
+
+            foreach(var s in _screens.ToArray())
+            yield return s;
+        }
+
+        public bool IsScreenActive(Screen screen)
+        {
+            return GetActiveScreens().Any(x => x == screen);
         }
 
         public override void Update(GameTime gameTime)
@@ -210,7 +312,7 @@ namespace RocketUI
 
             ScaledResolution.Update();
 
-            var screens = Screens.ToArray();
+            var screens = _screens.ToArray();
 
             if (_doInit)
             {
@@ -240,7 +342,7 @@ namespace RocketUI
             if (!Visible)
                 return;
 
-            foreach (var screen in Screens.ToArray())
+            foreach (var screen in _screens.ToArray())
             {
                 if (screen == null || screen.IsSelfDrawing)
                     continue;

@@ -23,6 +23,7 @@ namespace RocketUI
 
         public IGuiControl FocusedControl { get; private set; }
 
+        public new GuiManager GuiManager { get; set; }
 
         public Screen()
         {
@@ -39,7 +40,7 @@ namespace RocketUI
         }
         
         private object     _updateLock = new object();
-        public  GuiManager GuiManager            { get; internal set; }
+        //public  GuiManager GuiManager            { get; internal set; }
         public  bool       IsSelfUpdating         { get; set; }
         public  bool       IsSelfDrawing         { get; set; }
         public  bool       IsSelfManaged
