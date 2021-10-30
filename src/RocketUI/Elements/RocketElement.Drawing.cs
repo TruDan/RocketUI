@@ -41,6 +41,7 @@ namespace RocketUI
         private GuiTexture2D _background;
         private GuiTexture2D _backgroundOverlay;
 
+        public int ZIndex { get; set; }
 
         protected virtual void OnDraw(GuiSpriteBatch graphics, GameTime gameTime)
         {

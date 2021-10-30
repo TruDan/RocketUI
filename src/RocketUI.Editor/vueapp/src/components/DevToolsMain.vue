@@ -1,10 +1,17 @@
 <template>
   <splitpanes>
     <pane>
-      <element-toolbar/>
-      <ScreenTreeView/>
+      <splitpanes horizontal>
+        <pane>
+          <element-toolbar/>
+          <ScreenTreeView/>
+        </pane>
+        <pane>
+          <xaml-editor/>
+        </pane>
+      </splitpanes>
     </pane>
-    <pane>
+    <pane size="20%" min-size="10%">
       <v-card>
         <ElementPropertyGrid/>
       </v-card>
@@ -17,11 +24,13 @@ import ScreenTreeView from "@/components/ScreenTreeView";
 import ElementPropertyGrid from "@/components/ElementPropertyGrid";
 import ElementToolbar from "@/components/ElementToolbar";
 import {Pane, Splitpanes} from "splitpanes/src/components/splitpanes";
+import XamlEditor from "@/components/XamlEditor";
 
 export default {
   name: 'DevToolsMain',
 
   components: {
+    XamlEditor,
     ElementToolbar,
     ElementPropertyGrid,
     ScreenTreeView,
@@ -37,6 +46,7 @@ export default {
 .panes {
   height: 100%;
 }
+
 .panes > .multipane-resizer {
   display: table-cell;
   margin: 0;
@@ -64,6 +74,7 @@ export default {
     }
   }
 }
+
 .splitpanes__pane {
   max-height: calc(100vh - 24px);
 }

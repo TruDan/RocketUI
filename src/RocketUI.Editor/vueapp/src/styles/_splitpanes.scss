@@ -1,27 +1,41 @@
 .splitpanes {
   background: map-get($material-dark, 'surface');
+
+  &--horizontal {
+    > .splitpanes__splitter {
+      border-width: 1px 0 1px 0;
+    }
+  }
+
+  &--vertical {
+    > .splitpanes__splitter {
+      border-width: 0 1px 0 1px;
+    }
+  }
+
+
 }
 
 .splitpanes__pane {
   overflow-y: auto !important;
+  //background: #2b2b2b;
+  background: #3c3f41;
 }
 
 .splitpanes__splitter {
   position: relative;
-  background: #000;
+  background: #313335;
+  border-color: #323232;
+  border-width: 0;
+  border-style: solid;
 
   &:before {
-    display: block;
+    //display: block;
+    display: none;
     content: "";
-    width: 3px;
-    height: 40px;
     position: absolute;
     top: 50%;
     left: 50%;
-    margin-top: -20px;
-    margin-left: -1.5px;
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
   }
 
   &:hover {
@@ -29,12 +43,31 @@
       border-color: #888;
     }
   }
+
+  .splitpanes--vertical > &:before {
+    width: 1px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -1.5px;
+    border-left: 1px solid #666;
+    border-right: 1px solid #666;
+  }
+
+  .splitpanes--horizontal > &:before {
+    height: 1px;
+    width: 40px;
+    margin-left: -20px;
+    margin-top: -1.5px;
+    border-top: 1px solid #666;
+    border-bottom: 1px solid #666;
+
+  }
 }
 
 .splitpanes--vertical > .splitpanes__splitter {
-  min-width: 0.5rem !important;
+  min-width: 0.25rem !important;
 }
 
 .splitpanes--horizontal > .splitpanes__splitter {
-  min-height: 0.5rem !important;
+  min-height: 0.25rem !important;
 }

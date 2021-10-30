@@ -1,13 +1,25 @@
 import rocketdebugger from "@/plugins/rocketdebugger";
+import Vue from "vue";
 
 const state = () => ({
     elements: [],
     rootElements: [],
+    xamls: {},
     selectedElement: null,
+    selectedElementXaml: null,
     errors: []
 });
 
-const getters = {};
+const getters = {
+
+    getElementXaml: (state) => (elementId) => {
+        if(elementId in state.xamls) {
+            return state.xamls[elementId];
+        }
+        return undefined;
+    }
+
+};
 
 const actions = {
     getRootElement({commit}) {
@@ -33,6 +45,17 @@ const actions = {
             .then(success => {
                 commit('setPropertyValue', id, name, value);
                 console.log("SetPropertyValue ", success, id, name, value);
+            })
+            .catch(error => {
+                commit('setError', error);
+            });
+    },
+    loadElementXaml({commit}, elementId) {
+        console.log('GetElementXaml', elementId);
+        rocketdebugger.send('GetObjectAsXaml', elementId)
+            .then(success => {
+                commit('setElementXaml', {elementId, xaml: success});
+                console.log('GetElementXaml - ', elementId, success);
             })
             .catch(error => {
                 commit('setError', error);
@@ -84,6 +107,12 @@ const mutations = {
     setError(state, error) {
         state.errors = [error];
         setTimeout(() => state.errors = [], 3000);
+    },
+    setElementXaml(state, {elementId, xaml}) {
+        const element = state.elements.find(x => x.id === elementId);
+        element.xaml = xaml;
+        state.selectedElementXaml = xaml;
+        Vue.set(state.xamls, elementId, xaml);
     }
 };
 

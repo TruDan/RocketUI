@@ -258,6 +258,7 @@ namespace RocketUI.Serialization.Xaml
 		{
 			var readerSettings = new XamlObjectReaderSettings();
 			readerSettings.IgnoreDefaultValues = true;
+			readerSettings.UseIgnoreDataMemberAttribute = true;
 			using var reader = new XamlObjectReader(instance, RocketXamlLoader.Context, readerSettings);
 			
 			XamlServices.Transform(reader, xamlXmlWriter);
