@@ -155,12 +155,15 @@ namespace RocketUI
 		#region Drawing
 
 		[DebuggerVisible]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public virtual Vector2 RenderPosition { get; set; }
 
 		[DebuggerVisible]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public virtual Size RenderSize { get; set; }
 
 		[DebuggerVisible]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public virtual Rectangle RenderBounds { get; set; }
 
 		[DebuggerVisible]
@@ -177,9 +180,13 @@ namespace RocketUI
 			}
 		}
 
-		[DebuggerIgnore] public Matrix LayoutTransform { get; set; } = Matrix.Identity;
+		[DebuggerIgnore] 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public Matrix LayoutTransform { get; set; } = Matrix.Identity;
 
-		[DebuggerIgnore] public Matrix RenderTransform { get; set; } = Matrix.Identity;
+		[DebuggerIgnore] 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public Matrix RenderTransform { get; set; } = Matrix.Identity;
 
 		public void Draw(GuiSpriteBatch graphics, GameTime gameTime)
 		{

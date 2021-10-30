@@ -18,6 +18,7 @@
         <Folder Update="./**/*">
             <IsNamespaceProvider>false</IsNamespaceProvider>
         </Folder>
+        <Folder Include="Markup" />
     </ItemGroup>
     
     <ItemGroup>

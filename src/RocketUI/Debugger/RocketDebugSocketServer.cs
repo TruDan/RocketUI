@@ -15,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using RocketUI.Debugger.Exceptions;
 using RocketUI.Debugger.Models;
 using RocketUI.Serialization.Json.Converters;
+using RocketUI.Serialization.Xaml;
 using WebSocketSharp;
 using WebSocketSharp.Net.WebSockets;
 using WebSocketSharp.Server;
@@ -202,6 +203,15 @@ namespace RocketUI.Debugger
 
                     return true;
 
+                    break;
+                }
+
+                case "GetObjectAsXaml":
+                {
+                    var elementId = Guid.Parse(msg.Arguments[0]);
+                    var element   = FindElementById(elementId);
+                    var xaml      = RocketXamlSaver.SaveToXaml(element);
+                    return xaml;
                     break;
                 }
 

@@ -8,7 +8,8 @@ import ErrorList from './ErrorList.vue';
 import PropertyGridValueEditor from './PropertyGridValueEditor.vue';
 import RocketWSStatus from './RocketWSStatus.vue';
 import ScreenTreeView from './ScreenTreeView.vue';
+import XamlEditor from './XamlEditor.vue';
 
-export { DevToolsMain, ElementPropertyEditor, ElementPropertyGrid, ElementToolbar, ErrorList, PropertyGridValueEditor, RocketWSStatus, ScreenTreeView };
-export default { DevToolsMain, ElementPropertyEditor, ElementPropertyGrid, ElementToolbar, ErrorList, PropertyGridValueEditor, RocketWSStatus, ScreenTreeView };
+export { DevToolsMain, ElementPropertyEditor, ElementPropertyGrid, ElementToolbar, ErrorList, PropertyGridValueEditor, RocketWSStatus, ScreenTreeView, XamlEditor };
+export default { DevToolsMain, ElementPropertyEditor, ElementPropertyGrid, ElementToolbar, ErrorList, PropertyGridValueEditor, RocketWSStatus, ScreenTreeView, XamlEditor };
 
