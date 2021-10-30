@@ -15,32 +15,20 @@ namespace RocketUI
             _spriteFont = spriteFont;
         }
 
-        public Vector2 MeasureString(string text, float scale = 1)
+        public Vector2 MeasureString(string text) => _spriteFont.MeasureString(text);
+
+        public void DrawString(SpriteBatch sb, string text, Vector2 position,
+            Color                          color,
+            FontStyle                      style      = FontStyle.None, Vector2? scale = null,
+            float                          opacity    = 1f,
+            float                          rotation   = 0f, Vector2? origin = null,
+            SpriteEffects                  effects    = SpriteEffects.None,
+            float                          layerDepth = 0f)
         {
-            return _spriteFont.MeasureString(text) * scale;
+            sb.DrawString(_spriteFont, text, position, color * opacity, rotation, origin ?? Vector2.Zero,
+                scale ?? Vector2.One, effects, layerDepth);
         }
 
-        public Vector2 MeasureString(string text, Vector2 scale)
-        {
-            return _spriteFont.MeasureString(text) * scale;
-        }
-
-        public void MeasureString(string text, out Vector2 size)
-        {
-            size = _spriteFont.MeasureString(text);
-        }
-
-        public void DrawString(SpriteBatch   sb, string text, Vector2 position,
-                               Color     color,
-                               FontStyle     style      = FontStyle.None, Vector2? scale = null,
-                               float         opacity    = 1f,
-                               float         rotation   = 0f, Vector2? origin = null,
-                               SpriteEffects effects    = SpriteEffects.None,
-                               float         layerDepth = 0f)
-        {
-            sb.DrawString(_spriteFont, text, position, color * opacity, rotation, origin ?? Vector2.Zero, scale ?? Vector2.One, effects, layerDepth);
-        }
-        
         public static implicit operator WrappedSpriteFont(SpriteFont spriteFont)
         {
             return new WrappedSpriteFont(spriteFont);

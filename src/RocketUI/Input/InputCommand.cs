@@ -2,7 +2,7 @@
 
 namespace RocketUI.Input
 {
-    public struct InputCommand
+    public struct InputCommand : IEquatable<InputCommand>
     {
 	    public static readonly string DefaultNamespace = "RocketUI";
     
@@ -52,6 +52,35 @@ namespace RocketUI.Input
 		public static implicit operator string(InputCommand inputCommand)
 		{
 			return inputCommand.HasValue ? inputCommand.ToString() : null;
+		}
+		
+		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
+		public bool Equals(InputCommand other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+
+			return GetHashCode() == other.GetHashCode();
+			// return string.Equals(Namespace, other.Namespace, StringComparison.OrdinalIgnoreCase) && string.Equals(Path, other.Path, StringComparison.OrdinalIgnoreCase);
+		}
+
+		/// <summary>Determines whether the specified object is equal to the current object.</summary>
+		/// <param name="obj">The object to compare with the current object.</param>
+		/// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			return obj.GetType() == this.GetType() && Equals((InputCommand) obj);
+		}
+        
+		/// <summary>Serves as the default hash function.</summary>
+		/// <returns>A hash code for the current object.</returns>
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(Namespace, Key);
 		}
 
 		public override string ToString()
