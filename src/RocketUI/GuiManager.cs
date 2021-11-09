@@ -71,14 +71,13 @@ namespace RocketUI
 
         private void CloseDialogBase(DialogBase dialog)
         {
-            if (dialog != null)
-            {
-                Game.IsMouseVisible = dialog != null;
-                Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+            if (dialog == null) return;
+            
+            Game.IsMouseVisible = false;
+            Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
                     
-                RemoveScreen(dialog);
-                dialog.OnClose();
-            }
+            RemoveScreen(dialog);
+            dialog.OnClose();
         }
 
         private IServiceProvider ServiceProvider { get; }
