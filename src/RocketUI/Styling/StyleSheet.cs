@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Portable.Xaml.Markup;
 
 namespace RocketUI
@@ -7,16 +9,20 @@ namespace RocketUI
     public class StyleSheet
     {
         public ResourceDictionary Resources { get; set; }
-        public List<Style>   Styles    { get; set; }
+        public List<Style> Styles { get; set; }
 
         public StyleSheet()
         {
-            
         }
 
-        public void CompileStyles()
+        public Style[] ResolveStyles(Type targetType, string[] classNames)
         {
-            
+            if (Styles == null) return Array.Empty<Style>();
+
+            return Styles
+                .Where(x => x.TargetType == null || x.TargetType.IsAssignableFrom(targetType))
+                .Where(x => x.Name == null || classNames.Contains(x.Name))
+                .ToArray();
         }
     }
 }
