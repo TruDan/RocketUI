@@ -21,7 +21,7 @@ namespace RocketUI
 
             return Styles
                 .Where(x => x.TargetType == null || x.TargetType.IsAssignableFrom(targetType))
-                .Where(x => x.Name == null || classNames.Contains(x.Name))
+                .Where(x => x.Name == null || classNames == null || classNames.Contains(x.Name))
                 .ToArray();
         }
     }
