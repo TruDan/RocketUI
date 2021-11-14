@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net6.0;net5.0;netstandard2.1</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU;x64;x86</Platforms>
         <LangVersion>latest</LangVersion>
