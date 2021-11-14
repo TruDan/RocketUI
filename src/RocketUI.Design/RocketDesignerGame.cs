@@ -103,7 +103,7 @@ namespace RocketUI.Design
             GpuResourceManager.Init(GraphicsDevice);
             base.LoadContent();
 
-            GuiManager = new GuiManager(this, Services, InputManager, GuiRenderer);
+            GuiManager = new GuiManager(this, GuiRenderer, Services);
             GuiManager.DrawOrder = 10;
             GuiManager.Visible = true;
             GuiManager.Enabled = true;
