@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using RocketUI.Utilities.Converters;
 
 namespace RocketUI
 {
@@ -9,6 +11,7 @@ namespace RocketUI
         ButtonClick
     }
 
+    [TypeConverter(typeof(GuiTexturesTypeConverter))]
     public struct GuiTextures : IResource
     {
         public const string DefaultNamespace = "RocketUI";

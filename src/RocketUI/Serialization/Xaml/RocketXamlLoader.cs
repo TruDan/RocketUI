@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using Portable.Xaml;
@@ -31,7 +33,26 @@ namespace RocketUI.Serialization.Xaml
 
 		private static Stream GetStream(Type type, string resourceName)
 		{
-			return type.Assembly.GetManifestResourceStream(resourceName);
+			Assembly searchAssembly = type.Assembly;
+			
+			if (!type.Assembly.GetManifestResourceNames().Contains(resourceName))
+			{
+				searchAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x =>
+				{
+					try
+					{
+						var names = x.GetManifestResourceNames();
+						return names.Contains(resourceName);
+					}
+					catch
+					{
+						return false;
+					}
+				});
+			}
+
+			if (searchAssembly == null) return null;
+			return searchAssembly.GetManifestResourceStream(resourceName);
 		}
 
 		/// <summary>

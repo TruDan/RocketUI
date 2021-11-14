@@ -13,6 +13,8 @@ namespace RocketUI
 
         public StyleSheet()
         {
+            Resources = new ResourceDictionary();
+            Styles = new List<Style>();
         }
 
         public Style[] ResolveStyles(Type targetType, string[] classNames)

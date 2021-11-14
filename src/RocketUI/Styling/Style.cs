@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Portable.Xaml.Markup;
@@ -104,7 +105,18 @@ namespace RocketUI
                     {
                         if (prop.CanWrite)
                         {
-                            prop.SetValue(element, newValue);
+                            if (newValue != null && prop.PropertyType.IsInstanceOfType(newValue))
+                            {
+                                prop.SetValue(element, newValue);
+                            }
+                            else
+                            {
+                                var converter = TypeDescriptor.GetConverter(prop.PropertyType);
+                                var convertedValue = newValue is string str 
+                                    ? converter.ConvertFromInvariantString(str) 
+                                    : converter.ConvertFrom(newValue);
+                                prop.SetValue(element, convertedValue);
+                            }
                         }
                     }
                 }

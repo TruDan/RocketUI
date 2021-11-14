@@ -9,13 +9,21 @@ namespace RocketUI.Utilities.Converters
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
-            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+            if (sourceType.IsAssignableFrom(typeof(GuiTexture2D)) ||
+                sourceType.IsAssignableFrom(typeof(string))) return true;
+            return base.CanConvertFrom(context, sourceType);
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            if (destinationType.IsAssignableFrom(typeof(GuiTexture2D)) ||
+                destinationType.IsAssignableFrom(typeof(string))) return true;
+            return base.CanConvertTo(context, destinationType);
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            string text = value as string;
-            if (text != null)
+            if (value is string text)
             {
                 if (text.StartsWith('#'))
                 {
@@ -24,7 +32,6 @@ namespace RocketUI.Utilities.Converters
                 }
                 else if (text.Contains(':'))
                 {
-
                     return new GuiTexture2D()
                     {
                         TextureResource = GuiTextures.Parse(text)
@@ -39,13 +46,37 @@ namespace RocketUI.Utilities.Converters
             return base.ConvertFrom(context, culture, value);
         }
 
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            if (destinationType.IsAssignableFrom(typeof(string)))
+            {
+                if (value is GuiTexture2D guiTexture)
+                {
+                    if (guiTexture.TextureResource.HasValue)
+                    {
+                        return guiTexture.TextureResource.Value.ToString();
+                    }
+                    else if (guiTexture.Color.HasValue)
+                    {
+                        var color = guiTexture.Color.Value;
+                        if (color.A == byte.MaxValue)
+                            return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+                        return $"#{color.R:X2}{color.G:X2}{color.B:X2}{color.A:X2}";
+                    }
+
+                    return null;
+                }
+            }
+            
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
 
         private GuiTexture2D ConvertFromColorString(string input)
         {
             input = input.Substring(1); // remove leading '#'
 
             string aStr, rStr, gStr, bStr;
-            
+
             switch (input.Length)
             {
                 case 8: // ARGB
@@ -74,7 +105,7 @@ namespace RocketUI.Utilities.Converters
                     gStr = new string(input[1], 2);
                     bStr = new string(input[2], 2);
                     break;
-                
+
                 default:
                     throw new FormatException("Color is not in an acceptable format (#RGB, #ARGB, #RRGGBB, #AARRGGBB)");
             }
@@ -89,13 +120,5 @@ namespace RocketUI.Utilities.Converters
                 Color = new Color(r, g, b, a)
             };
         }
-        
-        
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-        {
-            if (destinationType.IsAssignableFrom(typeof(string))) return false;
-            return base.CanConvertTo(context, destinationType);
-        }
-
     }
 }

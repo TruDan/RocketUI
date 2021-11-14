@@ -22,10 +22,15 @@
     </ItemGroup>
     
     <ItemGroup>
+        <PackageReference Include="Fody" Version="6.6.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
         <PackageReference Include="JetBrains.ExternalAnnotations" Version="10.2.103" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+        <PackageReference Include="ModuleInit.Fody" Version="2.1.1" />
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Portable.Xaml" Version="0.26.0" />

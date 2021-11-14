@@ -46,6 +46,24 @@ namespace RocketUI.Serialization.Xaml
 				_typeCache.Add(type, xamlType);
 				return xamlType;
 			}
+			else if (info.IsAssignableFrom(typeof(GuiTexture2D)))
+			{
+				xamlType = new RocketCustomConverterXamlType(type, typeof(GuiTexture2DTypeConverter), this);
+				_typeCache.Add(type, xamlType);
+				return xamlType;
+			}
+			else if (info.IsAssignableFrom(typeof(Size)))
+			{
+				xamlType = new RocketCustomConverterXamlType(type, typeof(SizeConverter), this);
+				_typeCache.Add(type, xamlType);
+				return xamlType;
+			}
+			else if (info.IsAssignableFrom(typeof(Thickness)))
+			{
+				xamlType = new RocketCustomConverterXamlType(type, typeof(ThicknessConverter), this);
+				_typeCache.Add(type, xamlType);
+				return xamlType;
+			}
 
 			if (
 				info.IsSubclassOf(typeof(RocketElement))

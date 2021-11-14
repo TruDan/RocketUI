@@ -26,6 +26,9 @@ namespace RocketUI.Utilities.Helpers
 		public bool HoverInfoEnabled { get; set; } = true;
 
 		public Keys ToggleDebugHotKey { get; set; } = Keys.Pause;
+		public Keys ToggleDebugBoundingBoxesHotKey { get; set; } = Keys.B;
+		public Keys ToggleDebugBoundingBoxesHoverHotKey { get; set; } = Keys.J;
+		public Keys ToggleDebugHoverInfoHotKey { get; set; } = Keys.H;
 
 		protected GuiManager GuiManager { get; }
 
@@ -72,8 +75,23 @@ namespace RocketUI.Utilities.Helpers
 
 			if (_previousKeyboard.IsKeyDown(ToggleDebugHotKey) && _currentKeyboard.IsKeyUp(ToggleDebugHotKey))
 			{
-				Enabled = !Enabled;
-            }
+				if (_previousKeyboard.IsKeyDown(ToggleDebugBoundingBoxesHotKey) && _currentKeyboard.IsKeyUp(ToggleDebugBoundingBoxesHotKey))
+				{
+					BoundingBoxesEnabled = !BoundingBoxesEnabled;
+				}
+				else if (_previousKeyboard.IsKeyDown(ToggleDebugBoundingBoxesHoverHotKey) && _currentKeyboard.IsKeyUp(ToggleDebugBoundingBoxesHoverHotKey))
+				{
+					BoundingBoxesHoverEnabled = !BoundingBoxesHoverEnabled;
+				}
+				else if (_previousKeyboard.IsKeyDown(ToggleDebugHoverInfoHotKey) && _currentKeyboard.IsKeyUp(ToggleDebugHoverInfoHotKey))
+				{
+					HoverInfoEnabled = !HoverInfoEnabled;
+				}
+				else
+				{
+					Enabled = !Enabled;
+				}
+			}
 
 			if (!Enabled) return;
 			if (!BoundingBoxesEnabled) return;
