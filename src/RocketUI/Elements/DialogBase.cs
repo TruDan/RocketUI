@@ -26,8 +26,18 @@ namespace RocketUI
             {
                 Anchor = Alignment.MiddleCenter
             });
+
+            ZIndex = int.MaxValue;
         }
 
+        /// <summary>
+        ///     Opens the Dialog
+        /// </summary>
+        public void Show()
+        {
+            GuiManager?.ShowDialog(this);
+        }
+        
         /// <summary>
         ///     Attempts to close the dialog
         /// </summary>

@@ -25,6 +25,7 @@ namespace RocketUI
 
         public new GuiManager GuiManager { get; set; }
 
+        public int ZIndex { get; set; } = 0;
         public Screen()
         {
             // AutoSizeMode = AutoSizeMode.None;

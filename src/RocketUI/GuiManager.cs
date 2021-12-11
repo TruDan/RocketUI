@@ -61,9 +61,13 @@ namespace RocketUI
 
                 if (value == null)
                     return;
-                
-                Game.IsMouseVisible = true;
-                Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+
+                if (!Game.IsMouseVisible)
+                {
+                    Game.IsMouseVisible = true;
+                    Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+                }
+
                 AddScreen(value);
                 value?.OnShow();
             }
@@ -73,8 +77,8 @@ namespace RocketUI
         {
             if (dialog == null) return;
             
-            Game.IsMouseVisible = false;
-            Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+         //   Game.IsMouseVisible = false;
+            //Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
                     
             RemoveScreen(dialog);
             dialog.OnClose();
@@ -175,6 +179,14 @@ namespace RocketUI
             }
         }
 
+        public void Reinitialize()
+        {
+            foreach (var screen in _screens.ToArray())
+            {
+                screen.Init(GuiRenderer, true);
+            }
+        }
+        
         public override void Initialize()
         {
             base.Initialize();
@@ -224,6 +236,8 @@ namespace RocketUI
         public T CreateDialog<T>() where T : DialogBase
         {
             var dialog = CreateInstance<T>();
+            dialog.GuiManager = this;
+            
             ActiveDialog = dialog;
             
             return dialog;
@@ -311,7 +325,7 @@ namespace RocketUI
 
             ScaledResolution.Update();
 
-            var screens = _screens.ToArray();
+            var screens = _screens.OrderBy(x => x.ZIndex).ToArray();
 
             if (_doInit)
             {
@@ -341,7 +355,7 @@ namespace RocketUI
             if (!Visible)
                 return;
 
-            foreach (var screen in _screens.ToArray())
+            foreach (var screen in _screens.OrderBy(x => x.ZIndex).ToArray())
             {
                 if (screen == null || screen.IsSelfDrawing)
                     continue;
