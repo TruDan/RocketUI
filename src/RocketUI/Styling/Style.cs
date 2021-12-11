@@ -19,7 +19,6 @@ namespace RocketUI
     [ContentProperty(nameof(Setters))]
     public class Style : IStyle
     {
-        
         public string Name { get; set; }
         
         public Style InheritFrom { get; set; }

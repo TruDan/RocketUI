@@ -123,7 +123,7 @@ namespace RocketUI
         public  IGuiElement Owner { get; }
 
         public string Name       { get; set; }
-        
+
         public Type     TargetType { get; set; }
         public IStyle[] Inherited  { get; set; }
 
