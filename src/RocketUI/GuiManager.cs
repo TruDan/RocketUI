@@ -47,41 +47,10 @@ namespace RocketUI
         private ObservableCollection<Screen> _screens = new ObservableCollection<Screen>();
 
         public IReadOnlyCollection<Screen> Screens => _screens;
+
         public DialogBase ActiveDialog
         {
             get => _activeDialog;
-            private set
-            {
-                var oldValue = _activeDialog;
-                
-                if (oldValue != null)
-                    CloseDialogBase(oldValue);
-
-                _activeDialog = value;
-
-                if (value == null)
-                    return;
-
-                if (!Game.IsMouseVisible)
-                {
-                    Game.IsMouseVisible = true;
-                    Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
-                }
-
-                AddScreen(value);
-                value?.OnShow();
-            }
-        }
-
-        private void CloseDialogBase(DialogBase dialog)
-        {
-            if (dialog == null) return;
-            
-         //   Game.IsMouseVisible = false;
-            //Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
-                    
-            RemoveScreen(dialog);
-            dialog.OnClose();
         }
 
         private IServiceProvider ServiceProvider { get; }
@@ -237,30 +206,47 @@ namespace RocketUI
         {
             var dialog = CreateInstance<T>();
             dialog.GuiManager = this;
-            
-            ActiveDialog = dialog;
+            ShowDialog(dialog);
             
             return dialog;
         }
         
         public void ShowDialog(DialogBase dialog)
         {
-            ActiveDialog = dialog;
+            var activeDialog = _activeDialog;
+            if (activeDialog != null)
+                HideDialog(activeDialog);
+            
+            _activeDialog = dialog;
+
+            if (dialog != null)
+            {
+                if (!Game.IsMouseVisible)
+                {
+                    Game.IsMouseVisible = true;
+                    Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+                }
+
+                AddScreen(dialog);
+                dialog?.OnShow();
+            }
         }
 
         public void HideDialog(DialogBase dialog)
         {
             if (ActiveDialog == dialog)
             {
-                ActiveDialog = null;
+                _activeDialog = null;
             }
+            
+            EnsureDialogClosed(dialog);
         }
 
         public void HideDialog<TGuiDialog>() where TGuiDialog : DialogBase
         {
-            if (ActiveDialog is TGuiDialog)
+            if (ActiveDialog is TGuiDialog activeDialog)
             {
-                ActiveDialog = null;
+                HideDialog(activeDialog);
                 return;
             }
             
@@ -268,12 +254,23 @@ namespace RocketUI
             {
                 if (screen is TGuiDialog dialog)
                 {
-                    CloseDialogBase(dialog);
+                    EnsureDialogClosed(dialog);
                     
                     //if (ActiveDialog == dialog)
                     //    ActiveDialog = _screens.ToArray().LastOrDefault(e => e is TGuiDialog) as DialogBase;
                 }
             }
+        }
+        
+        private void EnsureDialogClosed(DialogBase dialog)
+        {
+            if (dialog == null) return;
+            
+            //   Game.IsMouseVisible = false;
+            //Mouse.SetPosition(Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2);
+                    
+            RemoveScreen(dialog);
+            dialog.OnClose();
         }
 
         public void AddScreen(Screen screen)
@@ -309,8 +306,13 @@ namespace RocketUI
                     yield break;
             }
 
-            foreach(var s in _screens.ToArray())
-            yield return s;
+            foreach (var s in _screens.ToArray())
+            {
+                if (s == dialog)
+                    continue;
+                
+                yield return s;
+            }
         }
 
         public bool IsScreenActive(Screen screen)
