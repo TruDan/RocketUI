@@ -9,10 +9,12 @@ namespace RocketUI
     {
         public event EventHandler Changed;
 
-        private Vector3     _localScale    = Vector3.One;
-        private Vector3     _localPosition = Vector3.Zero;
-        private Quaternion  _localRotation = Quaternion.Identity;
-        private Matrix      _world            = Matrix.Identity;
+        private Vector3     _localScale          = Vector3.One;
+        private Vector3     _localScaleOrigin    = Vector3.Zero;
+        private Vector3     _localPosition       = Vector3.Zero;
+        private Vector3     _localRotationOrigin = Vector3.Zero;
+        private Quaternion  _localRotation       = Quaternion.Identity;
+        private Matrix      _world               = Matrix.Identity;
         private Transform3D _parentTransform;
         private bool        _dirty;
 
@@ -36,6 +38,7 @@ namespace RocketUI
             }
         }
 
+        
         [DataMember]
         public virtual Vector3 LocalScale
         {
@@ -45,6 +48,19 @@ namespace RocketUI
                 if (_localScale == value)
                     return;
                 _localScale = value;
+                OnChanged();
+            }
+        }
+        
+        [DataMember]
+        public virtual Vector3 LocalScaleOrigin
+        {
+            get => _localScaleOrigin;
+            set
+            {
+                if (_localScaleOrigin == value)
+                    return;
+                _localScaleOrigin = value;
                 OnChanged();
             }
         }
@@ -62,6 +78,19 @@ namespace RocketUI
             }
         }
 
+        [DataMember]
+        public virtual Vector3 LocalRotationOrigin 
+        {
+            get => _localRotationOrigin;
+            set
+            {
+                if (_localRotationOrigin == value)
+                    return;
+                _localRotationOrigin = value;
+                OnChanged();
+            }
+        }
+       
         [DataMember]
         public virtual Quaternion LocalRotation
         {
@@ -177,8 +206,14 @@ namespace RocketUI
         {
             _dirty = false;
             _world = Matrix.Identity
+                     * Matrix.CreateTranslation(-_localScaleOrigin)
                      * Matrix.CreateScale(_localScale)
+                     * Matrix.CreateTranslation(_localScaleOrigin)
+
+                     * Matrix.CreateTranslation(-_localRotationOrigin)
                      * Matrix.CreateFromQuaternion(_localRotation)
+                     * Matrix.CreateTranslation(_localRotationOrigin)
+                     
                      * Matrix.CreateTranslation(_localPosition);
 
             if (ParentTransform != null)

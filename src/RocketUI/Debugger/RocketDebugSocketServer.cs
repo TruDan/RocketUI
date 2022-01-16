@@ -253,7 +253,8 @@ namespace RocketUI.Debugger
 
         public void Dispose()
         {
-            ((IDisposable)_webSocket)?.Dispose();
+            if(_webSocket is IDisposable disposableWebSocket)
+                disposableWebSocket?.Dispose();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

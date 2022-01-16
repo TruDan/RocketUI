@@ -66,6 +66,26 @@ namespace RocketUI.Input.Listeners
         {
             _buttonMap.Clear();
         }
+
+        public bool IsAnyDown(params TButtons[] buttons)
+        {
+            return buttons.Any(button => IsButtonDown(CurrentState, button));
+        }
+        
+        public bool IsAnyUp(params TButtons[] buttons)
+        {
+            return buttons.Any(button => IsButtonUp(CurrentState, button));
+        }
+        
+        public bool IsAnyBeginPress(params TButtons[] buttons)
+        {
+            return buttons.Any(button => IsButtonDown(CurrentState, button) && IsButtonUp(PreviousState, button));
+        }
+        
+        public bool IsAnyPressed(params TButtons[] buttons)
+        {
+            return buttons.Any(button => IsButtonUp(CurrentState, button) && IsButtonDown(PreviousState, button));
+        }
         
         public bool IsDown(InputCommand command)
         {
