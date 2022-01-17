@@ -110,9 +110,20 @@ namespace RocketUI
                 {
                     switch (e.Action)
                     {
+                        case NotifyCollectionChangedAction.Replace:
                         case NotifyCollectionChangedAction.Add:
                             InitScreen(screen);
                             break;
+                    }
+                }
+            }
+            else if (e.OldItems != null)
+            {
+                foreach (Screen screen in e.OldItems)
+                {
+                    switch (e.Action)
+                    {
+                        case NotifyCollectionChangedAction.Replace:
                         case NotifyCollectionChangedAction.Remove:
                             screen.GuiManager = null;
                             break;
@@ -221,6 +232,7 @@ namespace RocketUI
 
             if (dialog != null)
             {
+                dialog.GuiManager = this;
                 if (!Game.IsMouseVisible)
                 {
                     Game.IsMouseVisible = true;

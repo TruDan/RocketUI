@@ -58,29 +58,37 @@ namespace RocketUI.Input
             //var playerOne = GetOrAddPlayerManager(PlayerIndex.One);
         }
 
+        public bool TryRemovePlayerManager(PlayerIndex playerIndex)
+        {
+            if (PlayerInputManagers.TryRemove(playerIndex, out var manager))
+            {
+                manager?.Dispose();
+                return true;
+            }
+
+            return false;
+        }
+        
         public PlayerInputManager GetOrAddPlayerManager(PlayerIndex playerIndex)
         {
-            if (!PlayerInputManagers.TryGetValue(playerIndex, out var playerInputManager))
+            return PlayerInputManagers.GetOrAdd(playerIndex, index =>
             {
-                playerInputManager = new PlayerInputManager(playerIndex);
+                var playerInputManager = new PlayerInputManager(index);
 
                 var listeners = _serviceProvider.GetService<IEnumerable<IInputListenerFactory>>();
                 if (listeners != null)
                 {
                     foreach (var listenerFactory in listeners)
                     {
-                        var listener = listenerFactory.CreateInputListener(playerIndex);
+                        var listener = listenerFactory.CreateInputListener(index);
                         if (listener != null)
                             playerInputManager.AddListener(listener);
                     }
                 }
 
-                PlayerInputManagers.TryAdd(playerIndex, playerInputManager);
-
-                InputManagerAdded?.Invoke(this, new PlayerInputManagerAdded(playerIndex, playerInputManager));
-            }
-
-            return playerInputManager;
+                InputManagerAdded?.Invoke(this, new PlayerInputManagerAdded(index, playerInputManager));
+                return playerInputManager;
+            });
         }
 
         public override void Update(GameTime gameTime)

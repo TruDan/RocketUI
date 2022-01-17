@@ -33,7 +33,7 @@ namespace RocketUI.Input
         }
     }
 
-    public class PlayerInputManager
+    public class PlayerInputManager : IDisposable
     {
         public event EventHandler<InputListenerEventArgs> InputListenerAdded;
         public event EventHandler<InputBindingEventArgs>  InputCommandTriggered;
@@ -63,7 +63,7 @@ namespace RocketUI.Input
         {
             lock (_listenersLock)
             {
-                InputListeners.Add(listener);
+                InputListeners?.Add(listener);
                 _inputListenersDirty = true;
             }
 
@@ -77,7 +77,7 @@ namespace RocketUI.Input
 
             lock (_listenersLock)
             {
-                first = InputListeners.FirstOrDefault(x => typeof(TType) == x.GetType());
+                first = InputListeners?.FirstOrDefault(x => typeof(TType) == x.GetType());
             }
 
             if (first != default)
@@ -91,18 +91,22 @@ namespace RocketUI.Input
 
         public void Update(GameTime gameTime)
         {
+            IInputListener[] inputListeners = _inputListeners;
             if (_inputListenersDirty)
             {
                 lock (_listenersLock)
                 {
-                    _inputListeners = InputListeners.OrderBy(x => x.Order).ToArray();
+                    inputListeners = _inputListeners = InputListeners?.OrderBy(x => x.Order).ToArray();
                     _inputListenersDirty = false;
                 }
             }
 
-            foreach (var inputListener in _inputListeners)
+            if (inputListeners != null)
             {
-                inputListener.Update(gameTime);
+                foreach (var inputListener in inputListeners)
+                {
+                    inputListener.Update(gameTime);
+                }
             }
 
             CheckTriggeredBindings();
@@ -110,18 +114,22 @@ namespace RocketUI.Input
 
         private void CheckTriggeredBindings()
         {
+            InputActionBinding[] inputActionBindings = _bindings;
             if (_bindingsDirty)
             {
                 lock (_bindingsLock)
-                {
-                    _bindings = Bindings.ToArray();
+                { 
+                    inputActionBindings = _bindings = Bindings?.ToArray();
                     _bindingsDirty = false;
                 }
             }
-            
-            foreach (var binding in _bindings.Where(CheckBinding))
+
+            if (inputActionBindings != null)
             {
-                HandleBindingTriggered(binding);
+                foreach (var binding in inputActionBindings.Where(CheckBinding))
+                {
+                    HandleBindingTriggered(binding);
+                }
             }
         }
 
@@ -159,7 +167,7 @@ namespace RocketUI.Input
 
             lock (_bindingsLock)
             {
-                Bindings.Add(binding);
+                Bindings?.Add(binding);
                 _bindingsDirty = true;
             }
 
@@ -175,40 +183,59 @@ namespace RocketUI.Input
         {
             lock (_bindingsLock)
             {
-                Bindings.Remove(binding);
+                Bindings?.Remove(binding);
                 _bindingsDirty = true;
             }
         }
 
         public bool IsUp(params InputCommand[] commands)
         {
-            return _inputListeners.Any(l => commands.Any(l.IsUp));
+            return _inputListeners?.Any(l => commands.Any(l.IsUp)) ?? false;
         }
 
         public bool IsDown(params InputCommand[] commands)
         {
-            return _inputListeners.Any(l => commands.Any(l.IsDown));
+            return _inputListeners?.Any(l => commands.Any(l.IsDown)) ?? false;
         }
 
         public bool IsBeginPress(params InputCommand[] commands)
         {
-            return _inputListeners.Any(l => commands.Any(l.IsBeginPress));
+            return _inputListeners?.Any(l => commands.Any(l.IsBeginPress)) ?? false;
         }
 
         public bool IsPressed(params InputCommand[] commands)
         {
-            return _inputListeners.Any(l => commands.Any(l.IsPressed));
+            return _inputListeners?.Any(l => commands.Any(l.IsPressed)) ?? false;
         }
 
         public Ray GetCursorRay()
         {
-            foreach (var inputListener in _inputListeners.OfType<ICursorInputListener>())
+            var inputListeners = _inputListeners;
+
+            if (inputListeners == null) return new Ray();
+            
+            foreach (var inputListener in inputListeners.OfType<ICursorInputListener>())
             {
                 var cursorRay = inputListener.GetCursorRay();
                 return cursorRay;
             }
 
             return new Ray();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            var inputListeners = InputListeners.ToArray();
+            InputListeners.Clear();
+            _inputListeners = null;
+            
+            var binding = Bindings.ToArray();
+            Bindings.Clear();
+            _bindings = null;
+
+            _inputListeners = null;
+            _bindings = null;
         }
     }
 }
