@@ -49,8 +49,8 @@ namespace RocketUI
             get => IsSelfDrawing && IsSelfUpdating;
             set
             {
-                IsSelfUpdating = true;
-                IsSelfDrawing = true;
+                IsSelfUpdating = value;
+                IsSelfDrawing = value;
             }
         }
 

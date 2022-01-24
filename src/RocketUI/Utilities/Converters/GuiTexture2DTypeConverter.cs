@@ -63,9 +63,9 @@ namespace RocketUI.Utilities.Converters
                             return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
                         return $"#{color.R:X2}{color.G:X2}{color.B:X2}{color.A:X2}";
                     }
-
-                    return null;
                 }
+                
+                return string.Empty;
             }
             
             return base.ConvertTo(context, culture, value, destinationType);

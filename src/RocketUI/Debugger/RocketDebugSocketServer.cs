@@ -230,9 +230,11 @@ namespace RocketUI.Debugger
 
         private RocketElement FindElementById(Guid id)
         {
-            foreach (var screens in _guiManager.Screens.ToArray())
+            foreach (var screen in _guiManager.Screens.ToArray())
             {
-                if (screens.TryFindDeepestChild(guiElement => guiElement.Id == id, out var element))
+                if (screen.Id == id) return screen;
+                
+                if (screen.TryFindDeepestChild(guiElement => guiElement.Id == id, out var element))
                 {
                     return element as RocketElement;
                 }

@@ -13,7 +13,7 @@ namespace RocketUI
         private Vector3     _localScaleOrigin    = Vector3.Zero;
         private Vector3     _localPosition       = Vector3.Zero;
         private Vector3     _localRotationOrigin = Vector3.Zero;
-        private Quaternion  _localRotation       = Quaternion.Identity;
+        private Vector3     _localRotation       = Vector3.Zero;
         private Matrix      _world               = Matrix.Identity;
         private Transform3D _parentTransform;
         private bool        _dirty;
@@ -32,6 +32,7 @@ namespace RocketUI
                     _parentTransform.Changed -= OnParentChanged;
 
                 _parentTransform = value;
+                OnChanged();
 
                 if (_parentTransform != null)
                     _parentTransform.Changed += OnParentChanged;
@@ -92,14 +93,14 @@ namespace RocketUI
         }
        
         [DataMember]
-        public virtual Quaternion LocalRotation
+        public virtual Vector3 LocalRotation
         {
             get => _localRotation;
             set
             {
                 if (_localRotation == value)
                     return;
-                _localRotation = value;
+                _localRotation = new Vector3(value.X % 360.0f, value.Y % 360.0f, value.Z % 360.0f);
                 OnChanged();
             }
         }
@@ -150,14 +151,14 @@ namespace RocketUI
             }
         }
 
-        public virtual Quaternion Rotation
+        public virtual Vector3 Rotation
         {
             get
             {
                 if (_dirty)
                     UpdateAbsolutes();
                 if(_parentTransform != null)
-                    return Quaternion.Multiply(_localRotation, _parentTransform.Rotation);
+                    return _parentTransform.Rotation + _localRotation;
                 return _localRotation;
             }
             set
@@ -171,7 +172,7 @@ namespace RocketUI
                     var result = value;
                     if (_parentTransform != null)
                     {
-                        result *= Quaternion.Inverse(_parentTransform.Rotation);
+                        result = value - _parentTransform.Rotation;
                     }
                     LocalRotation = result;
                 }
@@ -205,19 +206,25 @@ namespace RocketUI
         private void UpdateAbsolutes()
         {
             _dirty = false;
-            _world = Matrix.Identity
+            var world = Matrix.Identity
                      * Matrix.CreateTranslation(-_localScaleOrigin)
                      * Matrix.CreateScale(_localScale)
                      * Matrix.CreateTranslation(_localScaleOrigin)
 
                      * Matrix.CreateTranslation(-_localRotationOrigin)
-                     * Matrix.CreateFromQuaternion(_localRotation)
+                     * Matrix.CreateRotationX(MathHelper.ToRadians(_localRotation.Y))
+                     * Matrix.CreateRotationY(MathHelper.ToRadians(_localRotation.X))
+                     //* Matrix.CreateFromAxisAngle(Vector3.UnitX, MathHelper.ToRadians(_localRotation.X))
+                     //* Matrix.CreateFromAxisAngle(Vector3.UnitY, MathHelper.ToRadians(_localRotation.Y))
+                     //* Matrix.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.ToRadians(_localRotation.Z))
                      * Matrix.CreateTranslation(_localRotationOrigin)
                      
                      * Matrix.CreateTranslation(_localPosition);
 
             if (ParentTransform != null)
-                _world *= ParentTransform.World;
+                world *= ParentTransform.World;
+
+            _world = world;
         }
     }
 }

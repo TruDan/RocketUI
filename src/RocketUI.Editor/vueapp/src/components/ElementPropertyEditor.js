@@ -63,6 +63,26 @@ export const ObjectEditor = {
     }
 }
 
+export const BooleanEditor = {
+    name: 'BooleanEditor',
+
+    props: ["value"],
+
+    methods: {
+        onChange(newValue) {
+            this.$emit('change', !!newValue);
+        }
+    },
+
+    render() {
+        return (<VSwitch
+            inputValue={this.value}
+            {...{attrs: this.$attrs}}
+            vOn:change={this.onChange}
+        />);
+    }
+}
+
 export const ElementPropertyEditor = {
     name: 'ElementPropertyEditor',
 
@@ -74,7 +94,7 @@ export const ElementPropertyEditor = {
 
         function getAppropriateEditorComponentType() {
             if (props.schema && props.schema.type === "System.Boolean") {
-                return VSwitch;
+                return BooleanEditor;
             } else if (props.schema && props.schema.type === "Microsoft.Xna.Framework.Color") {
                 return VColorPicker;
             } else if (props.schema && props.schema.enumValues) {
