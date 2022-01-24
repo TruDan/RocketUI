@@ -21,17 +21,21 @@ namespace RocketUI.Serialization.Xaml
         public static void SaveToXaml<T>(T instance, XmlWriter xmlWriter)
         {
             var       writerSettings = new XamlXmlWriterSettings();
+            writerSettings.AssumeValidInput = true;
             using var xamlXmlWriter  = new XamlXmlWriter(xmlWriter, RocketXamlLoader.Context, writerSettings);
             SaveToXaml(instance, xamlXmlWriter);
         }
 		
         public static void SaveToXaml<T>(T instance, XamlXmlWriter xamlXmlWriter)
         {
-            var readerSettings = new XamlObjectReaderSettings();
-            readerSettings.IgnoreDefaultValues = true;
-            using var reader = new XamlObjectReader(instance, RocketXamlLoader.Context, readerSettings);
-			
-            XamlServices.Transform(reader, xamlXmlWriter);
+            // var readerSettings = new XamlObjectReaderSettings();
+            // readerSettings.IgnoreDefaultValues = true;
+            // readerSettings.LocalAssembly = typeof(T).Assembly;
+            // readerSettings.UseIgnoreDataMemberAttribute = true;
+
+            // using var reader = new XamlObjectReader(instance, RocketXamlLoader.Context, readerSettings);
+            // XamlServices.Transform(reader, xamlXmlWriter);
+            XamlServices.Save(xamlXmlWriter, instance);
         }
     }
 }

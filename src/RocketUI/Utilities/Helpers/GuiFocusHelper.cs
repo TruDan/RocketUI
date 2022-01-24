@@ -169,7 +169,7 @@ namespace RocketUI
                     transform = transformable.Transform;
                 }
 
-                var normal   = Vector3.Transform(Vector3.Backward, transform.Rotation);
+                var normal   = Vector3.Transform(Vector3.Backward, transform.World);
                 normal.Normalize();
 
                 var plane        = new Plane(transform.LocalPosition, normal);
