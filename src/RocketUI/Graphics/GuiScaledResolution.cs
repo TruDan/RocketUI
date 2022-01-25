@@ -93,8 +93,9 @@ namespace RocketUI
 
 			ViewportSize = new Size(game.Window.ClientBounds.Width, game.Window.ClientBounds.Height);
 			
-			//Graphics.DeviceReset          += (sender, args) => Update();
+			game.GraphicsDevice.DeviceReset += (sender, args) => Update();
 			game.Window.ClientSizeChanged += (sender, args) => ViewportSize = new Size(game.Window.ClientBounds.Width,  game.Window.ClientBounds.Height);
+			
 			game.Activated                += (sender, args) => Update();
 
 			TargetWidth = 360;

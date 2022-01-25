@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using RocketUI.Input;
+using RocketUI.Utilities.Extensions;
 using RocketUI.Utilities.Helpers;
 using SharpVR;
 using SimpleInjector;
@@ -170,7 +171,33 @@ namespace RocketUI
         public override void Initialize()
         {
             base.Initialize();
+            ScaledResolution.Update();
+            Mouse.WindowHandle = Game.Window.Handle;
+            
+            //Game.Window.TextInput -= WindowOnTextInput;
+            Game.Window.TextInput += WindowOnTextInput;
+            Game.Window.KeyDown += WindowOnKeyDown;
+            
             Init();
+        }
+
+        private void WindowOnKeyDown(object? sender, InputKeyEventArgs e)
+        {
+            if (!e.Key.TryConvertKeyboardInput(out var c))
+            {
+                FocusManager.OnTextInput(this, new TextInputEventArgs('\0', e.Key));
+            }
+        }
+
+        private void WindowOnTextInput(object? sender, TextInputEventArgs e)
+        {
+            
+            if (char.IsLetterOrDigit(e.Character) || char.IsPunctuation(e.Character) || char.IsSymbol(e.Character) || char.IsWhiteSpace(e.Character))
+            {
+                if (e.Key == Keys.Tab)
+                    return;
+                FocusManager.OnTextInput(this, e);
+            }
         }
 
         public void Init()
