@@ -172,7 +172,7 @@ namespace RocketUI
                 var normal   = Vector3.Transform(Vector3.Backward, transform.World);
                 normal.Normalize();
 
-                var plane        = new Plane(transform.LocalPosition, normal);
+                var plane        = new Plane(transform.Position, normal);
                 var intersection = cursorRay.Intersects(plane);
                 if (intersection.HasValue)
                 {

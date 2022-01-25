@@ -9,11 +9,11 @@ namespace RocketUI
     {
         public event EventHandler Changed;
 
-        private Vector3     _localScale          = Vector3.One;
-        private Vector3     _localScaleOrigin    = Vector3.Zero;
-        private Vector3     _localPosition       = Vector3.Zero;
-        private Vector3     _localRotationOrigin = Vector3.Zero;
-        private Vector3     _localRotation       = Vector3.Zero;
+        private Vector3     _scale          = Vector3.One;
+        private Vector3     _scaleOrigin    = Vector3.Zero;
+        private Vector3     _position       = Vector3.Zero;
+        private Vector3     _rotationOrigin = Vector3.Zero;
+        private Vector3     _rotation       = Vector3.Zero;
         private Matrix      _world               = Matrix.Identity;
         private Transform3D _parentTransform;
         private bool        _dirty;
@@ -32,153 +32,101 @@ namespace RocketUI
                     _parentTransform.Changed -= OnParentChanged;
 
                 _parentTransform = value;
-                OnChanged();
-
+                
                 if (_parentTransform != null)
                     _parentTransform.Changed += OnParentChanged;
+                
+                OnChanged();
             }
         }
 
         
         [DataMember]
-        public virtual Vector3 LocalScale
+        public virtual Vector3 Scale
         {
-            get => _localScale;
+            get => _scale;
             set
             {
-                if (_localScale == value)
+                if (_scale == value)
                     return;
-                _localScale = value;
+                _scale = value;
                 OnChanged();
             }
         }
         
         [DataMember]
-        public virtual Vector3 LocalScaleOrigin
+        public virtual Vector3 ScaleOrigin
         {
-            get => _localScaleOrigin;
+            get => _scaleOrigin;
             set
             {
-                if (_localScaleOrigin == value)
+                if (_scaleOrigin == value)
                     return;
-                _localScaleOrigin = value;
+                _scaleOrigin = value;
                 OnChanged();
             }
         }
 
         [DataMember]
-        public virtual Vector3 LocalPosition
+        public virtual Vector3 Position
         {
-            get => _localPosition;
+            get => _position;
             set
             {
-                if (_localPosition == value)
+                if (_position == value)
                     return;
-                _localPosition = value;
+                _position = value;
                 OnChanged();
             }
         }
 
         [DataMember]
-        public virtual Vector3 LocalRotationOrigin 
+        public virtual Vector3 RotationOrigin 
         {
-            get => _localRotationOrigin;
+            get => _rotationOrigin;
             set
             {
-                if (_localRotationOrigin == value)
+                if (_rotationOrigin == value)
                     return;
-                _localRotationOrigin = value;
+                _rotationOrigin = value;
                 OnChanged();
             }
         }
        
         [DataMember]
-        public virtual Vector3 LocalRotation
+        public virtual Vector3 Rotation
         {
-            get => _localRotation;
+            get => _rotation;
             set
             {
-                if (_localRotation == value)
+                if (_rotation == value)
                     return;
-                _localRotation = new Vector3(value.X % 360.0f, value.Y % 360.0f, value.Z % 360.0f);
+                _rotation = new Vector3(value.X % 360.0f, value.Y % 360.0f, value.Z % 360.0f);
                 OnChanged();
             }
         }
 
 
-        public virtual Vector3 Scale
+        public virtual Vector3 WorldPosition => World.Translation;
+
+        public virtual Vector3 WorldScale
         {
             get
             {
-                if (_dirty)
-                    UpdateAbsolutes();
-                var result = _localScale;
-                if (_parentTransform != null)
-                    result *= _parentTransform.Scale;
-                return result;
-            }
-            set
-            {
-                if (ParentTransform == null)
-                {
-                    LocalScale = value;
-                }
-                else
-                {
-                    LocalScale = value / ParentTransform.Scale;
-                }
+                _world.Decompose(out var scale, out _, out _);
+                return scale;
             }
         }
-
-        public virtual Vector3 Position
+        
+        public virtual Quaternion WorldRotation
         {
             get
             {
-                if (_dirty)
-                    UpdateAbsolutes();
-                return World.Translation;
-            }
-            set
-            {
-                if (ParentTransform == null)
-                {
-                    LocalPosition = value;
-                }
-                else
-                {
-                    LocalPosition = Vector3.Transform(value, Matrix.Invert(ParentTransform.World));
-                }
+                _world.Decompose(out _, out var rotation, out _);
+                return rotation;
             }
         }
-
-        public virtual Vector3 Rotation
-        {
-            get
-            {
-                if (_dirty)
-                    UpdateAbsolutes();
-                if(_parentTransform != null)
-                    return _parentTransform.Rotation + _localRotation;
-                return _localRotation;
-            }
-            set
-            {
-                if (ParentTransform == null)
-                {
-                    LocalRotation = value;
-                }
-                else
-                {
-                    var result = value;
-                    if (_parentTransform != null)
-                    {
-                        result = value - _parentTransform.Rotation;
-                    }
-                    LocalRotation = result;
-                }
-            }
-        }
-
+        
         public virtual Matrix World
         {
             get
@@ -194,7 +142,6 @@ namespace RocketUI
         {
             _dirty = true;
             UpdateAbsolutes();
-            Changed?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnParentChanged(object sender, EventArgs args)
@@ -207,24 +154,30 @@ namespace RocketUI
         {
             _dirty = false;
             var world = Matrix.Identity
-                     * Matrix.CreateTranslation(-_localScaleOrigin)
-                     * Matrix.CreateScale(_localScale)
-                     * Matrix.CreateTranslation(_localScaleOrigin)
+                     * Matrix.CreateTranslation(-_scaleOrigin)
+                     * Matrix.CreateScale(_scale)
+                     * Matrix.CreateTranslation(_scaleOrigin)
 
-                     * Matrix.CreateTranslation(-_localRotationOrigin)
-                     * Matrix.CreateRotationX(MathHelper.ToRadians(_localRotation.Y))
-                     * Matrix.CreateRotationY(MathHelper.ToRadians(_localRotation.X))
+                     * Matrix.CreateTranslation(-_rotationOrigin)
+                     * Matrix.CreateRotationX(MathHelper.ToRadians(_rotation.Y))
+                     * Matrix.CreateRotationY(MathHelper.ToRadians(_rotation.X))
                      //* Matrix.CreateFromAxisAngle(Vector3.UnitX, MathHelper.ToRadians(_localRotation.X))
                      //* Matrix.CreateFromAxisAngle(Vector3.UnitY, MathHelper.ToRadians(_localRotation.Y))
                      //* Matrix.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.ToRadians(_localRotation.Z))
-                     * Matrix.CreateTranslation(_localRotationOrigin)
+                     * Matrix.CreateTranslation(_rotationOrigin)
                      
-                     * Matrix.CreateTranslation(_localPosition);
+                     * Matrix.CreateTranslation(_position);
 
             if (ParentTransform != null)
-                world *= ParentTransform.World;
-
-            _world = world;
+            {
+                _world = world * ParentTransform.World;
+            }
+            else
+            {
+                _world = world;
+            }
+            
+            Changed?.Invoke(this, EventArgs.Empty);
         }
     }
 }

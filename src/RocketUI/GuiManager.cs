@@ -361,7 +361,7 @@ namespace RocketUI
                 screen.Update(gameTime);
             }
 
-            // DebugHelper.Update(gameTime);
+            DebugHelper.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
@@ -381,7 +381,7 @@ namespace RocketUI
                     screen.Draw(GuiSpriteBatch, gameTime);
 
                     DrawScreen?.Invoke(this, new GuiDrawScreenEventArgs(screen, gameTime));
-                    //  DebugHelper.DrawScreen(screen);
+                    DebugHelper.DrawScreen(screen);
                 }
                 finally
                 {
