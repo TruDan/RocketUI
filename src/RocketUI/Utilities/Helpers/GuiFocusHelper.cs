@@ -200,7 +200,7 @@ namespace RocketUI
                     newHighlightedElement = controlMatchingPosition as IGuiControl;
             }
 
-            else
+            if(newHighlightedElement == null)
             {
                 if (TryGetElementAt(cursorPosition, predicate, out var controlMatchingPosition))
                     newHighlightedElement = controlMatchingPosition as IGuiControl;
