@@ -34,6 +34,11 @@ namespace RocketUI
         public static readonly GuiTextures ButtonHover    = new GuiTextures(DefaultNamespace, nameof(ButtonHover));
         public static readonly GuiTextures ButtonFocused  = new GuiTextures(DefaultNamespace, nameof(ButtonFocused));
         public static readonly GuiTextures ButtonDisabled = new GuiTextures(DefaultNamespace, nameof(ButtonDisabled));
+        
+        public static readonly GuiTextures ControlDefault  = new GuiTextures(DefaultNamespace, nameof(ControlDefault));
+        public static readonly GuiTextures ControlHover    = new GuiTextures(DefaultNamespace, nameof(ControlHover));
+        public static readonly GuiTextures ControlFocused  = new GuiTextures(DefaultNamespace, nameof(ControlFocused));
+        public static readonly GuiTextures ControlDisabled = new GuiTextures(DefaultNamespace, nameof(ControlDisabled));
 
         public static readonly GuiTextures ScrollBarBackground =
             new GuiTextures(DefaultNamespace, nameof(ScrollBarBackground));
