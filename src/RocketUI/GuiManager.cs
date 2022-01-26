@@ -140,7 +140,7 @@ namespace RocketUI
 
         private void ScaledResolutionOnScaleChanged(object sender, UiScaleEventArgs args)
         {
-            Init();
+            SetSize(ScaledResolution.TargetWidth, ScaledResolution.TargetHeight);
         }
 
         public void SetSize(int width, int height)
@@ -165,6 +165,7 @@ namespace RocketUI
             foreach (var screen in _screens.ToArray())
             {
                 screen.Init(GuiRenderer, true);
+                screen.InvalidateLayout();
             }
         }
         
@@ -179,6 +180,13 @@ namespace RocketUI
             Game.Window.KeyDown += WindowOnKeyDown;
             
             Init();
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+            Init();
+            Reinitialize();
         }
 
         private void WindowOnKeyDown(object? sender, InputKeyEventArgs e)
@@ -209,7 +217,7 @@ namespace RocketUI
             GuiSpriteBatch?.Dispose();
             GuiSpriteBatch = new GuiSpriteBatch(GuiRenderer, Game.GraphicsDevice, SpriteBatch);
                   
-            SetSize(ScaledResolution.ViewportSize.Width, ScaledResolution.ViewportSize.Height);
+            SetSize(ScaledResolution.TargetWidth, ScaledResolution.TargetHeight);
         }
 
         private bool _doInit = true;
