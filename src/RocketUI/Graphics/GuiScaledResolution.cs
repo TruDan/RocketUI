@@ -44,7 +44,7 @@ namespace RocketUI
 			set
 			{
 				_targetWidth = value;
-				Update();
+				//Update();
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace RocketUI
 			set
 			{
 				_targetHeight = value;
-				Update();
+				//Update();
 			}
 		}
 
@@ -91,11 +91,14 @@ namespace RocketUI
 		{
 			//Graphics = game.GraphicsDevice;
 
-			ViewportSize = new Size(game.Window.ClientBounds.Width, game.Window.ClientBounds.Height);
+			ViewportSize = new Size(game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height);
 			
 			game.GraphicsDevice.DeviceReset += (sender, args) => Update();
-			game.Window.ClientSizeChanged += (sender, args) => ViewportSize = new Size(game.Window.ClientBounds.Width,  game.Window.ClientBounds.Height);
-			
+			game.Window.ClientSizeChanged += (sender, args) =>
+			{
+				ViewportSize = new Size(game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height);
+			};
+
 			game.Activated                += (sender, args) => Update();
 
 			TargetWidth = 360;

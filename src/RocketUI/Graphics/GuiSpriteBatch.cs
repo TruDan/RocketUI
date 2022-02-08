@@ -11,7 +11,7 @@ namespace RocketUI
 
         //public GraphicsContext Graphics { get; }
         public SpriteBatch         SpriteBatch      { get; private set; }
-        public GuiScaledResolution ScaledResolution { get; }
+        public GuiScaledResolution ScaledResolution => _renderer.ScaledResolution;
 
         public GraphicsContext Context { get; }
 
@@ -54,7 +54,6 @@ namespace RocketUI
             Context = renderer.CreateGuiSpriteBatchContext(_graphicsDevice);
 
             Font = _renderer.Font;
-            ScaledResolution = _renderer.ScaledResolution;
         }
         
         private static RasterizerState CopyRasterizerState(RasterizerState rasterizerState)

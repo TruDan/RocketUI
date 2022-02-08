@@ -79,16 +79,6 @@ namespace RocketUI
             FocusManager = new GuiFocusHelper(this, InputManager, game.GraphicsDevice);
         }
 
-        private void ContainerOnResolveUnregisteredType(object sender, UnregisteredTypeEventArgs e)
-        {
-            var gameService = Game.Services.GetService(e.UnregisteredServiceType);
-            if (gameService != null)
-            {
-                e.Register(() => Game.Services.GetService(e.UnregisteredServiceType));
-                return;
-            }
-        }
-
         private void InitScreen(Screen screen)
         {
             screen.GuiManager = this;
@@ -140,23 +130,24 @@ namespace RocketUI
 
         private void ScaledResolutionOnScaleChanged(object sender, UiScaleEventArgs args)
         {
-            SetSize(ScaledResolution.TargetWidth, ScaledResolution.TargetHeight);
+            Init();
+            //SetSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
         }
 
         public void SetSize(int width, int height)
         {
-            ScaledResolution.ViewportSize = new Size(width, height);
+           // ScaledResolution.ViewportSize = new Size(width, height);
             GuiSpriteBatch.UpdateProjection();
 
             foreach (var screen in _screens.ToArray())
             {
-                if (!screen.SizeToWindow)
+                if (screen.SizeToWindow)
                 {
-                    screen.InvalidateLayout();
+                    screen.UpdateSize(width, height);
                     continue;
                 }
-
-                screen.UpdateSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
+                
+                screen.InvalidateLayout();
             }
         }
 
@@ -210,6 +201,7 @@ namespace RocketUI
 
         public void Init()
         {
+            var oldSpriteBatch = SpriteBatch;
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
             GuiRenderer.Init(Game.GraphicsDevice, ServiceProvider);
             ApplyFont(GuiRenderer.Font);
@@ -217,7 +209,8 @@ namespace RocketUI
             GuiSpriteBatch?.Dispose();
             GuiSpriteBatch = new GuiSpriteBatch(GuiRenderer, Game.GraphicsDevice, SpriteBatch);
                   
-            SetSize(ScaledResolution.TargetWidth, ScaledResolution.TargetHeight);
+            SetSize(ScaledResolution.ScaledWidth, ScaledResolution.ScaledHeight);
+            oldSpriteBatch?.Dispose();
         }
 
         private bool _doInit = true;
