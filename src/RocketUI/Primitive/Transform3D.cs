@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using System.Numerics;
-using RocketUI.Utilities.Helpers;
+using Microsoft.Xna.Framework;
 
 namespace RocketUI
 {
@@ -15,7 +14,7 @@ namespace RocketUI
         private Vector3     _position       = Vector3.Zero;
         private Vector3     _rotationOrigin = Vector3.Zero;
         private Vector3     _rotation       = Vector3.Zero;
-        private Matrix4x4      _world               = Matrix4x4.Identity;
+        private Matrix      _world               = Matrix.Identity;
         private Transform3D _parentTransform;
         private bool        _dirty;
 
@@ -114,7 +113,7 @@ namespace RocketUI
         {
             get
             {
-                Matrix4x4.Decompose(_world, out var scale, out _, out _);
+                _world.Decompose(out var scale, out _, out _);
                 return scale;
             }
         }
@@ -123,12 +122,12 @@ namespace RocketUI
         {
             get
             {
-                Matrix4x4.Decompose(_world, out _, out var rotation, out _);
+                _world.Decompose(out _, out var rotation, out _);
                 return rotation;
             }
         }
         
-        public virtual Matrix4x4 World
+        public virtual Matrix World
         {
             get
             {
@@ -154,20 +153,20 @@ namespace RocketUI
         private void UpdateAbsolutes()
         {
             _dirty = false;
-            var world = Matrix4x4.Identity
-                     * Matrix4x4.CreateTranslation(-_scaleOrigin)
-                     * Matrix4x4.CreateScale(_scale)
-                     * Matrix4x4.CreateTranslation(_scaleOrigin)
+            var world = Matrix.Identity
+                     * Matrix.CreateTranslation(-_scaleOrigin)
+                     * Matrix.CreateScale(_scale)
+                     * Matrix.CreateTranslation(_scaleOrigin)
 
-                     * Matrix4x4.CreateTranslation(-_rotationOrigin)
-                     * Matrix4x4.CreateRotationX(_rotation.Y.ToRadians())
-                     * Matrix4x4.CreateRotationY(_rotation.X.ToRadians())
-                     //* Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, MathHelper.ToRadians(_localRotation.X))
-                     //* Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, MathHelper.ToRadians(_localRotation.Y))
-                     //* Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.ToRadians(_localRotation.Z))
-                     * Matrix4x4.CreateTranslation(_rotationOrigin)
+                     * Matrix.CreateTranslation(-_rotationOrigin)
+                     * Matrix.CreateRotationX(MathHelper.ToRadians(_rotation.Y))
+                     * Matrix.CreateRotationY(MathHelper.ToRadians(_rotation.X))
+                     //* Matrix.CreateFromAxisAngle(Vector3.UnitX, MathHelper.ToRadians(_localRotation.X))
+                     //* Matrix.CreateFromAxisAngle(Vector3.UnitY, MathHelper.ToRadians(_localRotation.Y))
+                     //* Matrix.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.ToRadians(_localRotation.Z))
+                     * Matrix.CreateTranslation(_rotationOrigin)
                      
-                     * Matrix4x4.CreateTranslation(_position);
+                     * Matrix.CreateTranslation(_position);
 
             if (ParentTransform != null)
             {
