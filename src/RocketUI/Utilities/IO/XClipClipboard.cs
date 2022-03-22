@@ -71,23 +71,12 @@ Error: {errorBuilder}";
 			return result;
 		}
 
-		private static Regex XClipVersionRegex = new Regex("^xclip version\\s(?<version>.*)[\\n\\r]",  RegexOptions.Compiled | RegexOptions.ECMAScript);
 		public static bool IsXClipAvailable()
 		{
 			try
 			{
 				return false;
-				// new XClipClipboard().SetText("Alex was here, sorry for replacing your keyboard contents!");
-				string content = Run("xclip -version");
-				Console.WriteLine(content);
-                
-				var    match   = XClipVersionRegex.Match(content);
-				if (match.Success)
-				{
-					return true;
-				}
-
-				return !string.IsNullOrWhiteSpace(content) && !content.Contains("but can be installed with");
+				
 			}
 			catch(Exception ex)
 			{

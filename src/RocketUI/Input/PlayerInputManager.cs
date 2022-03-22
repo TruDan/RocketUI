@@ -44,14 +44,12 @@ namespace RocketUI.Input
         private List<IInputListener> InputListeners { get; } = new List<IInputListener>();
         private IInputListener[]     _inputListeners      = Array.Empty<IInputListener>();
         private bool                 _inputListenersDirty = false;
-        private object               _listenersLock       = new object();
+        private readonly object               _listenersLock       = new object();
 
         private List<InputActionBinding> Bindings { get; } = new List<InputActionBinding>();
         private InputActionBinding[]     _bindings = Array.Empty<InputActionBinding>();
         private bool                     _bindingsDirty = false;
-        private object                   _bindingsLock  = new object();
-
-        private bool _isVr = false;
+        private readonly object                   _bindingsLock  = new object();
 
         public PlayerInputManager(PlayerIndex playerIndex, InputType inputType = InputType.GamePad)
         {
@@ -73,7 +71,7 @@ namespace RocketUI.Input
         public bool TryGetListener<TType>(out TType value) where TType : IInputListener
         {
             value = default;
-            IInputListener? first;
+            IInputListener first;
 
             lock (_listenersLock)
             {
@@ -226,11 +224,9 @@ namespace RocketUI.Input
         /// <inheritdoc />
         public void Dispose()
         {
-            var inputListeners = InputListeners.ToArray();
             InputListeners.Clear();
             _inputListeners = null;
             
-            var binding = Bindings.ToArray();
             Bindings.Clear();
             _bindings = null;
 

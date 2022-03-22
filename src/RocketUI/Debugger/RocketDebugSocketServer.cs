@@ -28,7 +28,7 @@ namespace RocketUI.Debugger
 
         public class NoTypeConverterJsonConverter<T> : JsonConverter
         {
-            static readonly IContractResolver resolver = new NoTypeConverterContractResolver();
+            private static readonly IContractResolver Resolver = new NoTypeConverterContractResolver();
 
             class NoTypeConverterContractResolver : CamelCasePropertyNamesContractResolver
             {
@@ -55,42 +55,20 @@ namespace RocketUI.Debugger
             {
                 return JsonSerializer.CreateDefault(new JsonSerializerSettings()
                 {
-                    ContractResolver = resolver
+                    ContractResolver = Resolver
                 }).Deserialize(reader, objectType);
-
-                var prevResolver = serializer.ContractResolver;
-                try
-                {
-                    serializer.ContractResolver = resolver;
-                    return serializer.Deserialize(reader, objectType);
-                }
-                finally
-                {
-                    serializer.ContractResolver = prevResolver;
-                }
             }
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
                 JsonSerializer.CreateDefault(new JsonSerializerSettings()
                 {
-                    ContractResolver = resolver
+                    ContractResolver = Resolver
                 }).Serialize(writer, value);
-                return;
-                var prevResolver = serializer.ContractResolver;
-                try
-                {
-                    serializer.ContractResolver = resolver;
-                    serializer.Serialize(writer, value);
-                }
-                finally
-                {
-                    serializer.ContractResolver = prevResolver;
-                }
             }
         }
 
-        private static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings()
         {
             Culture = CultureInfo.InvariantCulture,
             MaxDepth = 64,
@@ -113,7 +91,7 @@ namespace RocketUI.Debugger
             }
         };
 
-        private static JsonSerializerSettings _deserializerSettings = new JsonSerializerSettings()
+        private static readonly JsonSerializerSettings DeserializerSettings = new JsonSerializerSettings()
         {
             Culture = CultureInfo.InvariantCulture,
 //            MaxDepth = 128, // no max depth pls3
@@ -136,9 +114,9 @@ namespace RocketUI.Debugger
             }
         };
 
-        private GuiManager _guiManager => _serviceProvider.GetRequiredService<GuiManager>();
+        private GuiManager GuiManager => _serviceProvider.GetRequiredService<GuiManager>();
 
-        private WebSocketServer _webSocket;
+        private readonly WebSocketServer _webSocket;
 
         public RocketDebugSocketServer(IServiceProvider serviceProvider)
         {
@@ -154,10 +132,9 @@ namespace RocketUI.Debugger
             {
                 case "GetRoot":
                 {
-                    var screens = _guiManager.Screens.ToArray();
+                    var screens = GuiManager.Screens.ToArray();
                     return screens.Select(root => new SanitizedElementDetail(root)).ToArray();
                 }
-                    break;
 
                 case "GetChildren":
                 {
@@ -165,7 +142,6 @@ namespace RocketUI.Debugger
                     var element   = FindElementById(elementId);
                     return element.ChildElements.Select(x => new SanitizedElementDetail(x));
                 }
-                    break;
 
                 case "GetProperties":
                 {
@@ -173,14 +149,13 @@ namespace RocketUI.Debugger
                     var element   = FindElementById(elementId);
                     return new SanitizedElementDetail(element).Properties;
                 }
-                    break;
 
                 case "SelectElement":
                 {
                     var elementId = Guid.Parse(msg.Arguments[0]);
                     var element   = FindElementById(elementId);
-                    _guiManager.DebugHelper.Enabled = true;
-                    _guiManager.DebugHelper.HighlightedElement = element;
+                    GuiManager.DebugHelper.Enabled = true;
+                    GuiManager.DebugHelper.HighlightedElement = element;
                     break;
                 }
 
@@ -202,8 +177,6 @@ namespace RocketUI.Debugger
                     propertyInfo.SetValue(element, value);
 
                     return true;
-
-                    break;
                 }
 
                 case "GetObjectAsXaml":
@@ -212,12 +185,7 @@ namespace RocketUI.Debugger
                     var element   = FindElementById(elementId);
                     var xaml      = RocketXamlSaver.SaveToXaml(element);
                     return xaml;
-                    break;
                 }
-
-                default:
-
-                    break;
             }
 
             return null;
@@ -230,7 +198,7 @@ namespace RocketUI.Debugger
 
         private RocketElement FindElementById(Guid id)
         {
-            foreach (var screen in _guiManager.Screens.ToArray())
+            foreach (var screen in GuiManager.Screens.ToArray())
             {
                 if (screen.Id == id) return screen;
                 
@@ -245,12 +213,12 @@ namespace RocketUI.Debugger
 
         internal static string JsonSerialize<T>(T obj)
         {
-            return JsonConvert.SerializeObject(obj, _serializerSettings);
+            return JsonConvert.SerializeObject(obj, SerializerSettings);
         }
 
         internal static T JsonDeserialize<T>(string data)
         {
-            return JsonConvert.DeserializeObject<T>(data, _deserializerSettings);
+            return JsonConvert.DeserializeObject<T>(data, DeserializerSettings);
         }
 
         public void Dispose()
@@ -387,7 +355,7 @@ namespace RocketUI.Debugger
 
     class SanitizedElementDetailPropertyJsonConverter : JsonConverter<IEnumerable<SanitizedElementDetailProperty>>
     {
-        public override void WriteJson(JsonWriter writer, IEnumerable<SanitizedElementDetailProperty>? list,
+        public override void WriteJson(JsonWriter writer, IEnumerable<SanitizedElementDetailProperty> list,
             JsonSerializer                        serializer)
         {
             writer.WriteStartObject();
@@ -404,8 +372,8 @@ namespace RocketUI.Debugger
             writer.WriteEndObject();
         }
 
-        public override IEnumerable<SanitizedElementDetailProperty>? ReadJson(JsonReader reader, Type objectType,
-            IEnumerable<SanitizedElementDetailProperty>? existingValue, bool hasExistingValue,
+        public override IEnumerable<SanitizedElementDetailProperty> ReadJson(JsonReader reader, Type objectType,
+            IEnumerable<SanitizedElementDetailProperty> existingValue, bool hasExistingValue,
             JsonSerializer serializer)
         {
             throw new NotImplementedException();
@@ -457,7 +425,7 @@ namespace RocketUI.Debugger
     class SanitizedElementDetailPropertyTypeJsonConverter : JsonConverter<
         IEnumerable<SanitizedElementDetailPropertyType>>
     {
-        public override void WriteJson(JsonWriter writer, IEnumerable<SanitizedElementDetailPropertyType>? list,
+        public override void WriteJson(JsonWriter writer, IEnumerable<SanitizedElementDetailPropertyType> list,
             JsonSerializer                        serializer)
         {
             writer.WriteStartObject();
@@ -495,8 +463,8 @@ namespace RocketUI.Debugger
             writer.WriteEndObject();
         }
 
-        public override IEnumerable<SanitizedElementDetailPropertyType>? ReadJson(JsonReader reader, Type objectType,
-            IEnumerable<SanitizedElementDetailPropertyType>? existingValue, bool hasExistingValue,
+        public override IEnumerable<SanitizedElementDetailPropertyType> ReadJson(JsonReader reader, Type objectType,
+            IEnumerable<SanitizedElementDetailPropertyType> existingValue, bool hasExistingValue,
             JsonSerializer serializer)
         {
             throw new NotImplementedException();

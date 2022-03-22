@@ -9,11 +9,11 @@ namespace RocketUI.Debugger.Exceptions
         {
         }
 
-        public RocketDebuggerException([CanBeNull] string? message) : base(message)
+        public RocketDebuggerException([CanBeNull] string message) : base(message)
         {
         }
 
-        public RocketDebuggerException([CanBeNull] string? message, [CanBeNull] Exception? innerException) : base(message, innerException)
+        public RocketDebuggerException([CanBeNull] string message, [CanBeNull] Exception innerException) : base(message, innerException)
         {
         }
     }

@@ -180,7 +180,7 @@ namespace RocketUI
             Reinitialize();
         }
 
-        private void WindowOnKeyDown(object? sender, InputKeyEventArgs e)
+        private void WindowOnKeyDown(object sender, InputKeyEventArgs e)
         {
             if (!e.Key.TryConvertKeyboardInput(out var c))
             {
@@ -188,7 +188,7 @@ namespace RocketUI
             }
         }
 
-        private void WindowOnTextInput(object? sender, TextInputEventArgs e)
+        private void WindowOnTextInput(object sender, TextInputEventArgs e)
         {
             
             if (char.IsLetterOrDigit(e.Character) || char.IsPunctuation(e.Character) || char.IsSymbol(e.Character) || char.IsWhiteSpace(e.Character))

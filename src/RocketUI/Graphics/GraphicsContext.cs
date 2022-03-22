@@ -81,7 +81,7 @@ namespace RocketUI
             ForEachProperty(p => p.RestoreInitialValue());
         }
 
-        private void ForEachProperty(Action<IPropertyState<GraphicsDevice>> action)
+        private void ForEachProperty(Action<IPropertyState> action)
         {
             if (action == null) return;
             
@@ -137,7 +137,7 @@ namespace RocketUI
                 {
                     ForEachProperty(p => p.Dispose());
 
-                    Disposed?.Invoke(this, null);
+                    Disposed?.Invoke(this, null!);
                 }
 
                 _isDisposed = true;
@@ -157,12 +157,12 @@ namespace RocketUI
             return new PropertyState<GraphicsDevice, TPropertyType>(GraphicsDevice, getProperty(GraphicsDevice), setProperty);
         }
 
-        public interface IPropertyState<TPropertyOwner> : IDisposable
+        public interface IPropertyState : IDisposable
         {
             void RestoreInitialValue();
         }
 
-        public class PropertyState<TPropertyOwner, TPropertyType> : IPropertyState<TPropertyOwner>
+        public class PropertyState<TPropertyOwner, TPropertyType> : IPropertyState
         {
             public TPropertyType InitialValue { get; }
             public TPropertyType Value
@@ -175,7 +175,6 @@ namespace RocketUI
             private TPropertyType _currentValue;
             private readonly TPropertyOwner _owner;
 
-            private Func<TPropertyOwner, TPropertyType> _getValueFunc;
             private readonly Action<TPropertyOwner, TPropertyType> _setValueFunc;
 
 
