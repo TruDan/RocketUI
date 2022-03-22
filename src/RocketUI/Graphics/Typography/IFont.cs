@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace RocketUI
 {
-    public interface IFont
+    public interface IFont : IDisposable
     {
         IReadOnlyCollection<char> Characters { get; }
         //IFontGlyph GetGlyphOrDefault(char character);
