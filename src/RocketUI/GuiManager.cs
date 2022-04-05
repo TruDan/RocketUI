@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,8 +10,6 @@ using Microsoft.Xna.Framework.Input;
 using RocketUI.Input;
 using RocketUI.Utilities.Extensions;
 using RocketUI.Utilities.Helpers;
-using SharpVR;
-using SimpleInjector;
 
 namespace RocketUI
 {
@@ -224,14 +221,56 @@ namespace RocketUI
             _doInit = true;
         }
 
-        private T CreateInstance<T>()
+        private T CreateInstance<T>() where T : class
         {
-            return (T)CreateInstance(typeof(T));
+            return CreateInstance(typeof(T)) as T;
         }
 
+        private T Construct<T>() where T : class
+        {
+            return CreateInstance(typeof(T)) as T;
+        }
+        
         private object CreateInstance(Type type)
         {
-            return ServiceProvider.GetService(type);
+            var serviceProvider = ServiceProvider;
+
+            object state = null; 
+
+            foreach (var constructor in (type.GetConstructors()))
+            {
+                bool canConstruct = true;
+                object[] passedParameters = new object[0];
+                var objparams = constructor.GetParameters();
+
+                passedParameters = new object[objparams.Length];
+
+                for (var index = 0; index < objparams.Length; index++)
+                {
+                    var param = objparams[index];
+                    var p = serviceProvider.GetService(param.ParameterType);
+
+                    if (p != null)
+                    {
+                        passedParameters[index] = p;
+                    }
+                    else
+                    {
+                        canConstruct = false;
+
+                        break;
+                    }
+                }
+
+                if (canConstruct)
+                {
+                    state = constructor.Invoke(passedParameters);
+
+                    break;
+                }
+            }
+
+            return state;
         }
 
         public T CreateScreen<T>() where T : Screen
