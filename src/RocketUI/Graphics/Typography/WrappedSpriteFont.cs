@@ -38,5 +38,8 @@ namespace RocketUI
         {
             return font._spriteFont;
         }
+
+        /// <inheritdoc />
+        public void Dispose() { }
     }
 }

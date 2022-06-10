@@ -60,7 +60,7 @@ namespace RocketUI
         private Dictionary<string, SetStyleProperty> _computedSetters = new Dictionary<string, SetStyleProperty>();
         private ObservableCollection<Setter>         _setters;
         private bool                                 _dirty;
-        private void SettersOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void SettersOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             _dirty = true;
         }

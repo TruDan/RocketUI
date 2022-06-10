@@ -132,7 +132,7 @@ namespace RocketUI
                 guiTextures = Parse(text);
                 return true;
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
                 guiTextures = default;
                 return false;
